@@ -4,10 +4,15 @@ export const SITE = {
   name: "Aster Support Navi",
   shortName: "Support Navi",
   brand: "Aster Works",
-  url: (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3040").replace(
-    /\/$/,
-    "",
-  ),
+  // サイトの絶対URL（canonical/OG/sitemap の基点）。env が最優先だが、
+  // NEXT_PUBLIC_SITE_URL が空文字 "" や未設定でも new URL("") でビルドを落とさないよう、
+  // 本番(VERCEL_ENV=production)は確定ドメインに、それ以外はローカルにフォールバックする。
+  url: (() => {
+    const explicit = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+    if (explicit) return explicit.replace(/\/+$/, "");
+    if (process.env.VERCEL_ENV === "production") return "https://astersupportnavi.jp";
+    return "http://localhost:3040";
+  })(),
   locale: "ja_JP",
   description:
     "自治体ごとに散らばる個人・世帯向けの支援制度を、住所と生活状況から探し、申請前に確認すべきことまで整理する生活支援ナビ。",
