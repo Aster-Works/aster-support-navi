@@ -1,0 +1,246 @@
+@import "tailwindcss";
+
+/* =============================================================
+   Aster Support Navi — デザイントークン（Aster Works 規約に準拠）
+   出典: /Users/james/syncthing/Astro/aster-works/src/styles/global.css
+        /Users/james/syncthing/aster-compass/app/globals.css
+   Tailwind v4 の @theme で bg-navy / text-gold / .aw-card 等を生成。
+   フォントは next/font（layout.tsx）が CSS 変数 --font-inter / --font-noto を供給する。
+   ============================================================= */
+@theme {
+  /* ブランドカラー（Aster Works 共通） */
+  --color-navy: #0d1b2a;
+  --color-charcoal: #2b2d31;
+  --color-gold: #d4a24c;
+  --color-soft-gray: #e6e7e8;
+  --color-background: #fafaf8;
+
+  /* 補助トーン（Aster Works 共通） */
+  --color-gold-soft: #f3ead7;
+  --color-cream: #f4f1ea;
+  --color-ink: #1c2733;
+  /* 明背景でAA(>=4.5:1)を満たす濃いゴールド。本文・ラベルの gold はこちらを使う。 */
+  --color-gold-ink: #8a6a1f;
+
+  /* ブランドアクセント＝アスターの花の薄紫。子育ての優しさを“効かせる”色（多用しない）。 */
+  --color-aster: #6f5d97; /* AA確保のため公式 #7c6ba6 をやや沈めた本文可読トーン */
+  --color-aster-soft: #efeaf4;
+
+  /* ----- Support Navi 固有のセマンティック色 -----
+     機能（状態）を伝えるための色。必ずアイコン＋ラベルと併用し、色のみに依存しない。
+     いずれも白背景でAA以上のテキストコントラストを確保。柔らかい琥珀/深緑でYMYL配慮（赤帯を避ける）。 */
+  --color-online: #0f766e; /* オンライン申請できる（落ち着いたティール） */
+  --color-online-soft: #e6f3f0;
+  --color-deadline: #8a5a0b; /* 申請期限あり（落ち着いた琥珀・読みやすく） */
+  --color-deadline-soft: #fbf4e2;
+  --color-info: #4c6193; /* 情報・補足（彩度低めの藍） */
+  --color-info-soft: #eaf0f8;
+  --color-ok: #3a7a63; /* 確認済・前向き（深緑） */
+  --color-ok-soft: #e7f0ec;
+
+  /* フォント（next/font が変数を注入） */
+  --font-sans: var(--font-inter), var(--font-noto), ui-sans-serif, system-ui,
+    -apple-system, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo,
+    sans-serif;
+  --font-serif: "Georgia", "Hiragino Mincho ProN", "Yu Mincho", "YuMincho",
+    serif;
+}
+
+/* =============================================================
+   ベーススタイル
+   ============================================================= */
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-navy);
+    line-height: 1.8;
+    letter-spacing: 0.01em;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    line-height: 1.4;
+    letter-spacing: 0.005em;
+  }
+
+  /* フォーカスリング（アクセシビリティ） */
+  :focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background-color: color-mix(in srgb, var(--color-gold) 28%, transparent);
+    color: var(--color-navy);
+  }
+}
+
+/* =============================================================
+   共通コンポーネントクラス（aw-*）— Aster Works 共通
+   ============================================================= */
+@layer components {
+  .aw-container {
+    @apply mx-auto w-full max-w-6xl px-5 sm:px-6 lg:px-8;
+  }
+  .aw-prose-container {
+    @apply mx-auto w-full max-w-3xl px-5 sm:px-6 lg:px-8;
+  }
+
+  /* ボタン（タッチ 44px 基準: py-3） */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-medium tracking-wide transition-all duration-200 ease-out bg-navy text-white shadow-sm hover:-translate-y-0.5 hover:bg-ink hover:shadow-md;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-medium tracking-wide transition-all duration-200 ease-out border border-navy/15 bg-white/70 text-navy hover:border-navy/30 hover:bg-white;
+  }
+
+  .aw-eyebrow {
+    @apply inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-gold-ink;
+  }
+
+  .aw-card {
+    @apply rounded-2xl border border-soft-gray bg-white p-6 transition-all duration-200 ease-out sm:p-7;
+  }
+  .aw-card-hover {
+    @apply hover:-translate-y-1 hover:border-gold/40 hover:shadow-[0_18px_40px_-24px_rgba(13,27,42,0.35)];
+  }
+
+  .aw-badge {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide;
+  }
+}
+
+/* =============================================================
+   Support Navi 固有のコンポーネントクラス
+   ============================================================= */
+@layer components {
+  /* 状態バッジ（色＋アイコン＋ラベルで二重符号化） */
+  .aw-badge--online {
+    @apply bg-online-soft text-online;
+  }
+  .aw-badge--deadline {
+    @apply bg-deadline-soft text-deadline;
+  }
+  .aw-badge--info {
+    @apply bg-info-soft text-info;
+  }
+  .aw-badge--ok {
+    @apply bg-ok-soft text-ok;
+  }
+  .aw-badge--neutral {
+    @apply bg-soft-gray/60 text-charcoal;
+  }
+  .aw-badge--category {
+    @apply bg-cream text-charcoal;
+  }
+
+  /* リンクの下線ホバー（本文中の主要リンク） */
+  .aw-link {
+    @apply text-navy underline decoration-gold/50 underline-offset-4 transition-colors hover:decoration-gold;
+  }
+
+  /* フィルター用チップ（選択トグル） */
+  .aw-chip {
+    @apply inline-flex min-h-11 items-center gap-1.5 rounded-full border border-soft-gray bg-white px-3.5 py-1.5 text-sm font-medium text-charcoal transition-colors hover:border-navy/30 hover:bg-cream/60;
+  }
+  .aw-chip[aria-pressed="true"],
+  .aw-chip[data-active="true"] {
+    @apply border-navy bg-navy text-white hover:bg-ink;
+  }
+
+  /* 入力フィールド */
+  .aw-input {
+    @apply w-full rounded-xl border border-soft-gray bg-white px-4 py-3 text-[15px] text-navy placeholder:text-charcoal/70 focus:border-navy/40 focus:outline-none focus-visible:outline-2 focus-visible:outline-gold;
+  }
+  .aw-select {
+    @apply w-full appearance-none rounded-xl border border-soft-gray bg-white px-4 py-3 pr-10 text-[15px] text-navy focus:border-navy/40 focus:outline-none focus-visible:outline-2 focus-visible:outline-gold;
+  }
+
+  /* 注意・免責のコールアウト */
+  .aw-note {
+    @apply rounded-xl border border-deadline/25 bg-deadline-soft/60 px-4 py-3 text-[13px] leading-7 text-charcoal;
+  }
+  .aw-callout {
+    @apply rounded-2xl border border-info/20 bg-info-soft/60 p-5 text-[14px] leading-7 text-charcoal;
+  }
+}
+
+/* =============================================================
+   文章主体ページ（規約・免責・ガイド）の体裁
+   ============================================================= */
+@layer components {
+  .aw-doc :where(h2) {
+    @apply mt-12 mb-3 text-xl font-bold text-navy first:mt-0;
+  }
+  .aw-doc :where(h3) {
+    @apply mt-8 mb-2 text-base font-bold text-navy;
+  }
+  .aw-doc :where(p) {
+    @apply my-4 text-[15px] leading-8 text-charcoal;
+  }
+  .aw-doc :where(ul) {
+    @apply my-4 list-disc space-y-2 pl-5 text-[15px] leading-8 text-charcoal marker:text-gold;
+  }
+  .aw-doc :where(ol) {
+    @apply my-4 list-decimal space-y-2 pl-5 text-[15px] leading-8 text-charcoal marker:text-gold;
+  }
+  .aw-doc :where(a) {
+    @apply text-navy underline decoration-gold/50 underline-offset-4 hover:decoration-gold;
+  }
+}
+
+/* 誤操作抑制（モバイル） */
+@layer base {
+  button {
+    touch-action: manipulation;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+}
+
+/* =============================================================
+   印刷 / PDF保存（チェックリスト・診断結果を読みやすい1枚に）
+   ============================================================= */
+@media print {
+  body {
+    background: #fff;
+    color: #1c2733;
+    line-height: 1.6;
+  }
+  .aw-card {
+    box-shadow: none !important;
+    border-color: #d9d9d9 !important;
+    break-inside: avoid;
+    padding: 0.75rem 0;
+  }
+  a {
+    color: #0d1b2a;
+    text-decoration: none;
+  }
+  main {
+    padding-top: 0 !important;
+  }
+  .print\:hidden {
+    display: none !important;
+  }
+}

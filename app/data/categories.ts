@@ -1,0 +1,41 @@
+import type { Category } from "@/app/lib/data/types";
+
+/** MVP は「出産・子育て」周辺に絞る。Phase 4 で介護・住まい・低所得などへ拡張。 */
+export const categories: Category[] = [
+  {
+    slug: "birth",
+    name: "出産",
+    description: "妊娠・出産にともなう給付や助成。",
+    sortOrder: 1,
+  },
+  {
+    slug: "childcare",
+    name: "子育て",
+    description: "子どもを育てる世帯の手当・支援。",
+    sortOrder: 2,
+  },
+  {
+    slug: "medical",
+    name: "医療費助成",
+    description: "子どもなどの医療費の負担を軽くする助成。",
+    sortOrder: 3,
+  },
+  {
+    slug: "single-parent",
+    name: "ひとり親",
+    description: "ひとり親家庭への手当・相談・支援。",
+    sortOrder: 4,
+  },
+  {
+    slug: "education",
+    name: "就学・教育",
+    description: "保育・就学・教育にかかる費用の支援。",
+    sortOrder: 5,
+  },
+  {
+    slug: "moving",
+    name: "引っ越し・転入",
+    description: "引っ越しや転入のときに確認したい手続き。",
+    sortOrder: 6,
+  },
+];
