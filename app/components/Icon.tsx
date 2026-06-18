@@ -5,6 +5,10 @@ import {
   School,
   Backpack,
   HeartHandshake,
+  LifeBuoy,
+  HandHeart,
+  Home,
+  Accessibility,
   HelpCircle,
   type LucideIcon,
 } from "lucide-react";
@@ -17,6 +21,10 @@ const ICONS: Record<string, LucideIcon> = {
   School,
   Backpack,
   HeartHandshake,
+  LifeBuoy,
+  HandHeart,
+  Home,
+  Accessibility,
 };
 
 export function LifeEventIcon({

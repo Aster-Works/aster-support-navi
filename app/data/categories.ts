@@ -45,4 +45,11 @@ export const categories: Category[] = [
       "収入の減少・失業・低所得など、暮らしが苦しいときの相談・給付・貸付・減免。",
     sortOrder: 7,
   },
+  {
+    slug: "nursing-care",
+    name: "介護・高齢",
+    description:
+      "介護保険サービス・高齢者の在宅生活支援・家族介護者への支援など。",
+    sortOrder: 8,
+  },
 ];
