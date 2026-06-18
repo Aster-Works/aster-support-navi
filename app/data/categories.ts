@@ -38,4 +38,11 @@ export const categories: Category[] = [
     description: "引っ越しや転入のときに確認したい手続き。",
     sortOrder: 6,
   },
+  {
+    slug: "livelihood",
+    name: "生活困窮・低所得",
+    description:
+      "収入の減少・失業・低所得など、暮らしが苦しいときの相談・給付・貸付・減免。",
+    sortOrder: 7,
+  },
 ];

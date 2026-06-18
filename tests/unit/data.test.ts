@@ -12,7 +12,9 @@ import {
 describe("applyFilters", () => {
   it("自治体・カテゴリ・オンライン・キーワードで絞り込む", async () => {
     const all = await getAllPublishedPrograms();
-    expect(applyFilters(all, { municipalitySlug: "setagaya" }).length).toBe(7);
+    const setagaya = applyFilters(all, { municipalitySlug: "setagaya" });
+    expect(setagaya.length).toBeGreaterThanOrEqual(7);
+    expect(setagaya.every((p) => p.municipalitySlug === "setagaya")).toBe(true);
     expect(
       applyFilters(all, { categorySlug: "single-parent" }).length,
     ).toBeGreaterThanOrEqual(5);
@@ -37,9 +39,9 @@ describe("data layer", () => {
     }
   });
 
-  it("自治体ごとに7制度", async () => {
+  it("自治体ごとに複数の制度を持ち、すべてその自治体に属する", async () => {
     const p = await getProgramsByMunicipality("tokyo", "shinjuku");
-    expect(p.length).toBe(7);
+    expect(p.length).toBeGreaterThanOrEqual(7);
     expect(p.every((x) => x.municipalitySlug === "shinjuku")).toBe(true);
   });
 

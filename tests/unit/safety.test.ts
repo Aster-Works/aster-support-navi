@@ -126,13 +126,17 @@ describe("YMYL: 信頼性メタ（不変条件 §3）", () => {
     }
   });
 
-  it("公式URLは公的ドメイン（lg.jp / go.jp / tokyo.jp）", () => {
+  it("公式URLは公的ソース（自治体 lg.jp / go.jp / tokyo.jp、または社会福祉協議会）", () => {
     for (const p of published) {
       const host = new URL(p.officialUrl).host;
+      // 自治体公式ドメイン、または生活福祉資金等を所管する社会福祉協議会の公式サイト
+      // （社協＝公益の社会福祉法人。ホストに shakyo/syakyo を含む）を公的ソースとして許可。
+      const isShakyo = host.includes("shakyo") || host.includes("syakyo");
       expect(
         host.endsWith(".lg.jp") ||
           host.endsWith(".go.jp") ||
-          host.endsWith(".tokyo.jp"),
+          host.endsWith(".tokyo.jp") ||
+          isShakyo,
         `${p.slug}: ${host}`,
       ).toBe(true);
     }
