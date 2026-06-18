@@ -1,6 +1,6 @@
 # Aster Support Navi — 実装ノート（Phase 1 MVP）
 
-作成: 2026-06-18 / ステータス: Phase 1 MVP 実装完了
+作成: 2026-06-18 / ステータス: Phase 1 MVP + Phase 2核 実装完了・本番デプロイ済
 
 引き継ぎ仕様の原典は `/Users/james/aster-support-navi-handoff/`（PRODUCT_SPEC / TECHNICAL_ARCHITECTURE / DATA_AND_CONTENT_OPS / ROADMAP / RESEARCH_AND_POSITIONING）。本ノートは実装の地図。
 
@@ -34,7 +34,7 @@
 | `/sitemap.xml` `/robots.txt` `/opengraph-image` | generated | — |
 
 ### Phase 2 で追加した機能（事業構想の魂を注入）
-- **相談窓口 `/help`**: 「入口は公共性、根はキリストへの愛（良きサマリア人の宿屋への道案内）」。電話番号は**AI生成せず全国共通の公的短縮番号(110/119/189/188)＋公式ポータルのみ**（`app/data/helplines.ts`、`HELPLINES_VERIFIED=false`で公開前検証フラグ）。
+- **相談窓口 `/help`**: 「入口は公共性、根はキリストへの愛（良きサマリア人の宿屋への道案内）」。電話番号は**AI生成せず全国共通の公的短縮番号(110/119/189/188)＋公式ポータルのみ**（`app/data/helplines.ts`、公式URLをWebFetch検証済みで `HELPLINES_VERIFIED=true`）。
 - **診断結果の迂回路**: 「行政サービスのGoogle Maps」＝対象外時に別ルート（条件変更・自治体一覧・相談窓口）を提示。
 - **保存リスト**: `app/lib/saved.ts`（純関数＋localStorage薄ラッパ）＋SaveButton/SavedList。ログイン不要・サーバ保存なし・非機微スナップショットのみ。
 - **ガイド記事**: `app/data/guides.ts`（5本）。困りごとE-E-A-T・SEO資産。安全な枠組み記述＋検証済み関連制度リンク＋公式出典。
@@ -60,11 +60,11 @@ npm run lint && npm run build && npm test
 npm run test:e2e   # Playwright（要 npx playwright install）
 ```
 
-Vitest 38件 green / build 83ルート green（2026-06-18）。
+Vitest 52件 green / build 97ルート green（2026-06-18）。
 
 ## 残タスク（Phase 2 以降）
 
 - Phase 2: メール登録、チェックリスト PDF/印刷強化、問い合わせ文の改良。
 - Phase 3: Supabase Auth・保存リスト・家族プロフィール・期限リマインド（データ層を Supabase 実装へ）。
 - データ拡大: 23区→政令市、介護/住まい/低所得カテゴリ。レビューキュー・更新運用。
-- 公開前: 法務ページの運営者情報・連絡先・管轄確定、本番ドメイン（navi.asterworks.org 想定）、Search Console、per-support OG 画像（和文フォント同梱）。
+- 公開前: 法務ページの管轄文言・アクセス解析/委託先の具体名確定（運営者情報・連絡先 asterworks3322@gmail.com は確定済）、本番ドメイン astersupportnavi.jp の取得・Vercel接続、Search Console 登録、per-support OG 画像（和文フォント同梱）。

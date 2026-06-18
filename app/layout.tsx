@@ -5,6 +5,7 @@ import { SITE } from "@/app/lib/site";
 import { SiteHeader } from "@/app/components/SiteHeader";
 import { SiteFooter } from "@/app/components/SiteFooter";
 import { JsonLd } from "@/app/components/JsonLd";
+import { Analytics } from "@/app/components/Analytics";
 import { organizationJsonLd, websiteJsonLd } from "@/app/lib/seo";
 
 const inter = Inter({
@@ -65,6 +66,7 @@ export default function RootLayout({
         <SiteFooter />
         <JsonLd data={websiteJsonLd()} />
         <JsonLd data={organizationJsonLd()} />
+        <Analytics />
       </body>
     </html>
   );
