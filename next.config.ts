@@ -20,6 +20,17 @@ const nextConfig: NextConfig = {
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
+  // www → apex（裸ドメイン）へ 308 恒久リダイレクト。canonical は apex なので host を一本化する。
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "www.astersupport.com" }],
+        destination: "https://astersupport.com/:path*",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
