@@ -130,8 +130,12 @@ describe("YMYL: 信頼性メタ（不変条件 §3）", () => {
     for (const p of published) {
       const host = new URL(p.officialUrl).host;
       // 自治体公式ドメイン、または生活福祉資金等を所管する社会福祉協議会の公式サイト
-      // （社協＝公益の社会福祉法人。ホストに shakyo/syakyo を含む）を公的ソースとして許可。
-      const isShakyo = host.includes("shakyo") || host.includes("syakyo");
+      // （社協＝公益の社会福祉法人。ホストに shakyo/syakyo、または英略称 cosw
+      //  ＝Council of Social Welfare を含む）を公的ソースとして許可。
+      const isShakyo =
+        host.includes("shakyo") ||
+        host.includes("syakyo") ||
+        host.includes("cosw");
       expect(
         host.endsWith(".lg.jp") ||
           host.endsWith(".go.jp") ||
