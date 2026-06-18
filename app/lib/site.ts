@@ -10,7 +10,7 @@ export const SITE = {
   url: (() => {
     const explicit = process.env.NEXT_PUBLIC_SITE_URL?.trim();
     if (explicit) return explicit.replace(/\/+$/, "");
-    if (process.env.VERCEL_ENV === "production") return "https://astersupportnavi.jp";
+    if (process.env.VERCEL_ENV === "production") return "https://astersupport.com";
     return "http://localhost:3040";
   })(),
   locale: "ja_JP",

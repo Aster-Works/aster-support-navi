@@ -64,10 +64,12 @@ app/
 
 ## 公開前に必要なこと
 
-- 法務ページ（プライバシー/利用規約）の運営者情報・連絡先・合意管轄の確定
-- 相談窓口・公式URLの人手による最終検証（`HELPLINES_VERIFIED=true` へ）
-- 本番ドメイン `astersupportnavi.jp` の取得と `NEXT_PUBLIC_SITE_URL` 設定
-- Google Search Console / 計測の事業用アカウント設定
+- ~~法務ページの運営者情報・連絡先・合意管轄・アクセス解析/委託先の確定~~（確定済）
+- ~~相談窓口・公式URLの最終検証（`HELPLINES_VERIFIED=true`）~~（検証済）
+- ~~本番ドメイン取得と `NEXT_PUBLIC_SITE_URL` 設定~~（`astersupport.com` 取得・Vercel接続・env設定済）
+- Google Search Console 登録（`astersupport.com`）
+- GA4 計測の有効化（事業用アカウントで作成→`NEXT_PUBLIC_GA_ID` を設定。拡張計測オフ）
+- 商用のため Vercel team を Pro 化
 
 ## ロードマップ
 

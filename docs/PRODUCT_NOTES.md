@@ -67,4 +67,4 @@ Vitest 52件 green / build 97ルート green（2026-06-18）。
 - Phase 2: メール登録、チェックリスト PDF/印刷強化、問い合わせ文の改良。
 - Phase 3: Supabase Auth・保存リスト・家族プロフィール・期限リマインド（データ層を Supabase 実装へ）。
 - データ拡大: 23区→政令市、介護/住まい/低所得カテゴリ。レビューキュー・更新運用。
-- 公開前: 法務ページの管轄文言・アクセス解析/委託先の具体名確定（運営者情報・連絡先 asterworks3322@gmail.com は確定済）、本番ドメイン astersupportnavi.jp の取得・Vercel接続、Search Console 登録、per-support OG 画像（和文フォント同梱）。
+- 公開前: 本番ドメイン **astersupport.com**（取得・Vercel接続・`NEXT_PUBLIC_SITE_URL` 設定済）、Search Console 登録、GA4 の事業用アカウント作成→`NEXT_PUBLIC_GA_ID` 設定（拡張計測オフ）、Vercel team の Pro 化（商用）、per-support OG 画像（和文フォント同梱）。法務（管轄文言・アクセス解析/委託先・運営者情報）は確定済。
