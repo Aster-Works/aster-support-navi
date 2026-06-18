@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { buildMetadata } from "@/app/lib/seo";
 import { LegalPage } from "@/app/components/LegalPage";
+import { OperatorInfo } from "@/app/components/OperatorInfo";
 
 export const metadata: Metadata = buildMetadata({
   title: "プライバシーポリシー",
@@ -68,8 +69,10 @@ export default function PrivacyPage() {
         運営者（Aster Works）の問い合わせ窓口までご連絡ください。なお、個人情報保護委員会へご相談いただくこともできます。
       </p>
       <p className="aw-note">
-        ※ 本ページは公開前に、運営者情報・連絡先・委託先の具体名を確定して最終確認する必要があります。
+        ※ アクセス解析や外部委託先（ホスティング等）の具体名は、導入時に本ページへ追記します。
       </p>
+
+      <OperatorInfo />
     </LegalPage>
   );
 }

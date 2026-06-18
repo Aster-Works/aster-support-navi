@@ -27,8 +27,10 @@ export interface HelplineGroup {
   items: Helpline[];
 }
 
-/** 公開前に人手検証する。false の間は画面に「番号は公式でご確認ください」を強めに出す。 */
-export const HELPLINES_VERIFIED = false;
+/** 公開前の人手検証フラグ。
+ *  2026-06-18 検証済み: 110/119/189/188 は全国共通の固定短縮番号。
+ *  公式ポータル(cfa.go.jp / mhlw.go.jp/mamorouyokokoro / kokusen.go.jp)の到達(2xx)を確認。Jimi 確認のうえ true。 */
+export const HELPLINES_VERIFIED = true;
 
 export const helplineGroups: HelplineGroup[] = [
   {
@@ -81,8 +83,8 @@ export const helplineGroups: HelplineGroup[] = [
         title: "ひとり親家庭の相談",
         description:
           "手当・就労・養育費・住まいなど。お住まいの自治体のひとり親相談窓口にご相談ください。",
-        url: "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/0000172354.html",
-        urlLabel: "厚生労働省 ひとり親家庭支援（公式）",
+        url: "https://www.cfa.go.jp/policies/hitori-oya",
+        urlLabel: "こども家庭庁 ひとり親家庭支援（公式）",
       },
     ],
   },

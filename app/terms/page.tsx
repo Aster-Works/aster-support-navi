@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { buildMetadata } from "@/app/lib/seo";
 import { LegalPage } from "@/app/components/LegalPage";
+import { OperatorInfo } from "@/app/components/OperatorInfo";
 
 export const metadata: Metadata = buildMetadata({
   title: "利用規約",
@@ -58,10 +59,11 @@ export default function TermsPage() {
       <h2>7. サービスの変更・中断・終了</h2>
       <p>本サービスは、予告なく内容の変更・中断・終了をする場合があります。</p>
 
-      <h2>8. 準拠法・裁判管轄</h2>
+      <h2>8. 準拠法・合意管轄</h2>
       <p>
-        本規約の準拠法は日本法とします。本サービスに関して紛争が生じた場合の管轄裁判所は、別途定める裁判所とします。
-        消費者契約法・特定商取引法等の強行法規には従います。
+        本規約の準拠法は日本法とします。本サービスの利用または本規約に関して運営者と利用者の間に紛争が生じた場合は、
+        運営者の住所地を管轄する地方裁判所または簡易裁判所を、第一審の専属的合意管轄裁判所とします。
+        ただし、消費者契約法その他の強行法規により利用者に認められる権利（管轄に関するものを含みます）を妨げるものではありません。
       </p>
 
       <h2>9. 規約の変更・お問い合わせ</h2>
@@ -73,9 +75,7 @@ export default function TermsPage() {
       <p>
         生命・生活に関わる緊急事態の場合は、本サービスではなく、お住まいの自治体の相談窓口や公的な相談ダイヤルへ直接ご連絡ください。
       </p>
-      <p className="aw-note">
-        ※ 本ページは公開前に、運営者情報・合意管轄裁判所・連絡先を確定して最終確認する必要があります。
-      </p>
+      <OperatorInfo />
     </LegalPage>
   );
 }

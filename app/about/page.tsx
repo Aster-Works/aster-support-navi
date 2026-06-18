@@ -3,6 +3,7 @@ import Link from "next/link";
 import { buildMetadata } from "@/app/lib/seo";
 import { SITE } from "@/app/lib/site";
 import { LegalPage } from "@/app/components/LegalPage";
+import { OperatorInfo } from "@/app/components/OperatorInfo";
 
 export const metadata: Metadata = buildMetadata({
   title: "このサイトについて",
@@ -66,6 +67,8 @@ export default function AboutPage() {
           <Link href="/terms">利用規約</Link>
         </li>
       </ul>
+
+      <OperatorInfo />
     </LegalPage>
   );
 }
