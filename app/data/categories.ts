@@ -52,4 +52,11 @@ export const categories: Category[] = [
       "介護保険サービス・高齢者の在宅生活支援・家族介護者への支援など。",
     sortOrder: 8,
   },
+  {
+    slug: "housing",
+    name: "住まい・住宅",
+    description:
+      "公的住宅・家賃や住み替えの支援・住宅改修の助成・居住支援など、住まいの相談。",
+    sortOrder: 9,
+  },
 ];
