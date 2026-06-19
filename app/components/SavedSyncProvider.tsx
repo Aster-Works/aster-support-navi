@@ -24,8 +24,13 @@ interface SavedSyncValue {
   email: string | null;
   /** クラウド同期が使えるか（env 設定済み）。 */
   enabled: boolean;
-  /** マジックリンクを送る。 */
-  signIn: (email: string) => Promise<{ ok: boolean; error?: string }>;
+  /** メール（ID）＋パスワードでログイン。 */
+  signIn: (email: string, password: string) => Promise<{ ok: boolean; error?: string }>;
+  /** メール（ID）＋パスワードで新規登録（メール確認オフなら即ログイン）。 */
+  signUp: (
+    email: string,
+    password: string,
+  ) => Promise<{ ok: boolean; error?: string; needsConfirm?: boolean }>;
   signOut: () => Promise<void>;
 }
 
@@ -39,6 +44,7 @@ export function useSavedSync(): SavedSyncValue {
       email: null,
       enabled: false,
       signIn: async () => ({ ok: false, error: "未対応" }),
+      signUp: async () => ({ ok: false, error: "未対応" }),
       signOut: async () => {},
     }
   );
@@ -173,13 +179,27 @@ export function SavedSyncProvider({ children }: { children: React.ReactNode }) {
   }, [supabase, reconcile]);
 
   const signIn = useCallback(
-    async (addr: string) => {
+    async (addr: string, password: string) => {
       if (!supabase) return { ok: false, error: "クラウド同期は未設定です" };
-      const { error } = await supabase.auth.signInWithOtp({
+      const { error } = await supabase.auth.signInWithPassword({
         email: addr.trim(),
-        options: { emailRedirectTo: `${window.location.origin}/saved` },
+        password,
       });
       return error ? { ok: false, error: error.message } : { ok: true };
+    },
+    [supabase],
+  );
+
+  const signUp = useCallback(
+    async (addr: string, password: string) => {
+      if (!supabase) return { ok: false, error: "クラウド同期は未設定です" };
+      const { data, error } = await supabase.auth.signUp({
+        email: addr.trim(),
+        password,
+      });
+      if (error) return { ok: false, error: error.message };
+      // メール確認オフなら session が返り即ログイン。確認オンなら session が無い。
+      return { ok: true, needsConfirm: !data.session };
     },
     [supabase],
   );
@@ -190,7 +210,7 @@ export function SavedSyncProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <Ctx.Provider
-      value={{ status, email, enabled: Boolean(supabase), signIn, signOut }}
+      value={{ status, email, enabled: Boolean(supabase), signIn, signUp, signOut }}
     >
       {children}
     </Ctx.Provider>
