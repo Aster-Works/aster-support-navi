@@ -28,7 +28,22 @@
   （support_programs は published のみ公開 select。sources/revisions/review_queue/app_roles は拒否＝Slice B で管理者ポリシー追加）。
 - `scripts/export-seed-to-sql.ts` … seed→冪等 SQL を生成（`npx tsx`、DB へは書かない）。出力は gitignore。
 - 移行手順: ① migration 適用 → ② 生成 SQL を service_role で投入 → ③ `DATA_SOURCE=hybrid` で検証 → ④ `supabase`。
-- 検証: typecheck / Vitest 74件 / lint / build 1247 SSG すべて green。多面的レビュー（parity・往復整合・RLS・RSC境界・SQL）＋敵対的検証済み。
+- 検証: typecheck / Vitest 74件 / lint / build すべて green。多面的レビュー（parity・往復整合・RLS・RSC境界・SQL）＋敵対的検証済み。
+- 本番Supabase（ref atdhkmniczfxowfkzwjr）へ migration 適用＋829制度投入済（`supabase db push` ＋ `supabase db query --linked --file` チャンク投入）。
+
+### Slice B: 管理画面・運用基盤（2026-06-20 実装・本番Supabase適用済）
+
+- DB（`20260620100000_admin_authz.sql` ＋ 強化 `20260620110000_admin_authz_hardening.sql`）:
+  `private.is_admin()`（SECURITY DEFINER・非公開スキーマ）／管理者RLS（authenticated かつ is_admin で
+  全ステータス read/write。公開の published-only 読みは維持）／`log_support_revision()`（編集を自動監査。
+  auth.uid() null=service_role/バルク投入はスキップ）／`enforce_publish_quality()`（公開品質ゲートを
+  DB レベルで強制＝必須項目を欠いたまま published にできない）。app_roles は self-read のみ。
+- UI（`app/admin/*`・`app/lib/admin/client.ts`）: ブラウザ anon クライアント＋管理者RLSのみ（service_role 不使用）。
+  AdminGate（ログイン）/ ダッシュボード / 制度一覧（status filter・品質フラグ）/ 編集（18項目＋
+  draft→review→published→archived＋品質ゲート enforcement）/ 品質（未達・stale）/ レビューキュー。`/admin` は noindex + robots disallow。
+- 認可の最終境界は DB の RLS。AdminGate はUX用。多層防御＝①クライアント品質ゲート ②DBトリガ強制 ③公開側 isPublishable 再フィルタ。
+- 検証: 実認証 admin JWT で end-to-end（非admin→draft不可視 / admin→draft可視・編集・revision記録 / incomplete publish 拒否 / valid publish 成功）。匿名 gate・admin walkthrough をブラウザ実地検証。build 1251 / Vitest 74 green。セキュリティレビュー（RLS認可・client安全性・監査・整合性 ×敵対的検証）対応済。
+- 残: 制度の新規作成フォーム・タグ（カテゴリ/生活イベント）編集・source 管理 UI・CSV import（仕様§16）・差分検知→review_queue 自動投入。最初の本番 admin 付与（Jimi のログインユーザーを app_roles に登録）。
 
 ## ルート
 
