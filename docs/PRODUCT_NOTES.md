@@ -11,9 +11,24 @@
 ## アーキテクチャ
 
 - Next.js 16 App Router / React 19 / Tailwind v4 / TypeScript。npm、dev/start ポート 3040。
-- データは型付き seed（`app/data/*.ts`）。ページは必ず `app/lib/data`（データアクセス層）経由で読む。
-  関数は async で定義済みなので、Phase 3 で Supabase 実装へ差し替えても呼び出し側は不変。
+- データは `app/lib/data`（データアクセス層）経由でのみ読む。**Slice A 以降、実体の読み取りは
+  `SupportRepository`（seed / supabase / hybrid）が担う**。`DATA_SOURCE` を切り替えても、この層の
+  公開 API（= ページ・コンポーネントの呼び出し側）は完全に不変。
 - 純関数は `app/lib`（`eligibility` 診断マッチ / `dates` 期限 / `slug` / `copy` 文言ガード / `checklist`）。すべて Vitest 網羅。
+
+### Slice A: データ基盤の堅牢化（2026-06-20 実装・公開挙動は seed 既定で不変）
+
+- `app/lib/data/repository.ts` … `SupportRepository` interface・`resolveDataSource()`・`getRepository()`。
+- `app/lib/data/seedRepository.ts` … 既定。型付き seed を読む（published は module scope で一度評価）。
+- `app/lib/data/supabaseRepository.ts` … Supabase 制度DB（published のみ）を読む `supabaseRepository` と、
+  DB 優先＋seed 補完の `hybridRepository`。接続失敗・env 未設定時は seed へグレースフルフォールバック。
+  `mapProgram` / `unionBySlug` / `unionMunicipalities` は純関数として Vitest 網羅。
+- `app/lib/supabase-server.ts` … サーバー専用クライアント（遅延生成・anon 読取・service_role 不使用）。
+- `supabase/migrations/20260620090000_content_schema.sql` … 制度DB全テーブル＋RLS
+  （support_programs は published のみ公開 select。sources/revisions/review_queue/app_roles は拒否＝Slice B で管理者ポリシー追加）。
+- `scripts/export-seed-to-sql.ts` … seed→冪等 SQL を生成（`npx tsx`、DB へは書かない）。出力は gitignore。
+- 移行手順: ① migration 適用 → ② 生成 SQL を service_role で投入 → ③ `DATA_SOURCE=hybrid` で検証 → ④ `supabase`。
+- 検証: typecheck / Vitest 74件 / lint / build 1247 SSG すべて green。多面的レビュー（parity・往復整合・RLS・RSC境界・SQL）＋敵対的検証済み。
 
 ## ルート
 

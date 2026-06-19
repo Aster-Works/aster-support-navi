@@ -43,3 +43,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# generated seed SQL (run scripts/export-seed-to-sql.ts)
+supabase/seed/*.generated.sql
