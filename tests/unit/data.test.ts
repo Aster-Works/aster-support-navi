@@ -25,7 +25,20 @@ describe("applyFilters", () => {
     ).toBe(true);
     const kw = applyFilters(all, { keyword: "児童手当" });
     expect(kw.length).toBeGreaterThan(0);
-    expect(kw.every((p) => p.title.includes("児童手当"))).toBe(true);
+    // キーワードは title/summary/plainLanguageSummary/targetPeople/benefitAmountText を横断照合する。
+    expect(
+      kw.every((p) =>
+        [
+          p.title,
+          p.summary,
+          p.plainLanguageSummary ?? "",
+          p.targetPeople,
+          p.benefitAmountText ?? "",
+        ]
+          .join(" ")
+          .includes("児童手当"),
+      ),
+    ).toBe(true);
   });
 });
 

@@ -10,4 +10,12 @@ export const prefectures: Prefecture[] = [
   { slug: "fukuoka", name: "福岡県", nameKana: "ふくおかけん", region: "九州" },
   { slug: "hyogo", name: "兵庫県", nameKana: "ひょうごけん", region: "近畿" },
   { slug: "kyoto", name: "京都府", nameKana: "きょうとふ", region: "近畿" },
+  { slug: "saitama", name: "埼玉県", nameKana: "さいたまけん", region: "関東" },
+  { slug: "chiba", name: "千葉県", nameKana: "ちばけん", region: "関東" },
+  { slug: "niigata", name: "新潟県", nameKana: "にいがたけん", region: "中部" },
+  { slug: "shizuoka", name: "静岡県", nameKana: "しずおかけん", region: "中部" },
+  { slug: "okayama", name: "岡山県", nameKana: "おかやまけん", region: "中国" },
+  { slug: "hiroshima", name: "広島県", nameKana: "ひろしまけん", region: "中国" },
+  { slug: "kumamoto", name: "熊本県", nameKana: "くまもとけん", region: "九州" },
+  { slug: "miyagi", name: "宮城県", nameKana: "みやぎけん", region: "東北" },
 ];
