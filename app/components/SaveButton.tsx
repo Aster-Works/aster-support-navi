@@ -9,6 +9,7 @@ import {
   toggleSavedList,
   isInSaved,
   toSavedItem,
+  SAVED_CHANGED_EVENT,
 } from "@/app/lib/saved";
 
 export interface SaveButtonProgram {
@@ -37,8 +38,11 @@ export function SaveButton({
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setSaved(isInSaved(loadSaved(), program.slug));
+    const sync = () => setSaved(isInSaved(loadSaved(), program.slug));
+    sync();
+    // クラウド同期で別端末から取り込まれた保存状態も反映する。
+    window.addEventListener(SAVED_CHANGED_EVENT, sync);
+    return () => window.removeEventListener(SAVED_CHANGED_EVENT, sync);
   }, [program.slug]);
 
   function toggle() {

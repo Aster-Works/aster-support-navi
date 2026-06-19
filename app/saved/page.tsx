@@ -3,6 +3,7 @@ import { Bookmark } from "lucide-react";
 import { buildMetadata } from "@/app/lib/seo";
 import { SectionHeading } from "@/app/components/SectionHeading";
 import { SavedList } from "@/app/components/SavedList";
+import { SavedCloudPanel } from "@/app/components/SavedCloudPanel";
 import { Disclaimer } from "@/app/components/Disclaimer";
 
 export const metadata: Metadata = buildMetadata({
@@ -23,9 +24,11 @@ export default function SavedPage() {
           as="h1"
           eyebrow="保存リスト"
           title="保存した制度"
-          description="あとで確認したい制度を保存しておけます。ログインは不要で、この端末にだけ保存されます。"
+          description="あとで確認したい制度を保存しておけます。ログイン不要でこの端末に保存され、ログインすれば複数の端末で同期できます。"
         />
       </div>
+
+      <SavedCloudPanel />
 
       <SavedList />
 

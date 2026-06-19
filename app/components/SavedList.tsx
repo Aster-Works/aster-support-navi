@@ -15,6 +15,7 @@ import {
   loadSaved,
   persistSaved,
   removeFromSaved,
+  SAVED_CHANGED_EVENT,
   type SavedItem,
 } from "@/app/lib/saved";
 import { formatCheckedAt } from "@/app/lib/dates";
@@ -25,9 +26,13 @@ export function SavedList() {
   const [announce, setAnnounce] = useState("");
 
   useEffect(() => {
+    const sync = () => setItems(loadSaved());
+    sync();
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setItems(loadSaved());
     setReady(true);
+    // クラウド同期（別端末からの取り込み）でも一覧を更新する。
+    window.addEventListener(SAVED_CHANGED_EVENT, sync);
+    return () => window.removeEventListener(SAVED_CHANGED_EVENT, sync);
   }, []);
 
   function remove(slug: string) {

@@ -73,9 +73,13 @@ export function loadSaved(): SavedItem[] {
   }
 }
 
+/** 保存リスト変更を全コンポーネント・同期プロバイダへ通知するイベント名。 */
+export const SAVED_CHANGED_EVENT = "asn:saved-changed";
+
 export function persistSaved(items: SavedItem[]): void {
   try {
     window.localStorage.setItem(SAVED_STORAGE_KEY, JSON.stringify(items));
+    window.dispatchEvent(new CustomEvent(SAVED_CHANGED_EVENT));
   } catch {
     /* localStorage 利用不可でも致命的ではない */
   }

@@ -6,6 +6,7 @@ import { SiteHeader } from "@/app/components/SiteHeader";
 import { SiteFooter } from "@/app/components/SiteFooter";
 import { JsonLd } from "@/app/components/JsonLd";
 import { Analytics } from "@/app/components/Analytics";
+import { SavedSyncProvider } from "@/app/components/SavedSyncProvider";
 import { organizationJsonLd, websiteJsonLd } from "@/app/lib/seo";
 
 const inter = Inter({
@@ -59,11 +60,13 @@ export default function RootLayout({
         >
           本文へスキップ
         </a>
-        <SiteHeader />
-        <main id="main" className="flex-1">
-          {children}
-        </main>
-        <SiteFooter />
+        <SavedSyncProvider>
+          <SiteHeader />
+          <main id="main" className="flex-1">
+            {children}
+          </main>
+          <SiteFooter />
+        </SavedSyncProvider>
         <JsonLd data={websiteJsonLd()} />
         <JsonLd data={organizationJsonLd()} />
         <Analytics />
