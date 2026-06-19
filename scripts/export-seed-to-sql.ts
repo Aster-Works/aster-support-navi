@@ -39,8 +39,7 @@ const lines: string[] = [];
 const out = (line = "") => lines.push(line);
 
 out("-- 自動生成: scripts/export-seed-to-sql.ts（手で編集しない）");
-out("-- 型付き seed → Supabase content schema（冪等 upsert）");
-out("begin;");
+out("-- 型付き seed → Supabase content schema（冪等 upsert）/ masters（FK 親）");
 out();
 
 // ---- prefectures -----------------------------------------------------------
@@ -94,14 +93,15 @@ for (const m of municipalities) {
 }
 out();
 
-// ---- support_programs（published のみ投入） --------------------------------
+// ---- support_programs（published のみ投入・チャンク分割で Management API の上限回避） ----
 const publishable = programs.filter(isPublishable);
-out(`-- support_programs（公開可能ゲート通過のみ: ${publishable.length} / ${programs.length}）`);
 const muniId = (p: SupportProgram) =>
   `(select m.id from public.municipalities m join public.prefectures pr on pr.id = m.prefecture_id where pr.slug = ${s(p.prefectureSlug)} and m.slug = ${s(p.municipalitySlug)})`;
 
+const programBlocks: string[] = [];
 for (const p of publishable) {
-  out(
+  const blk: string[] = [];
+  blk.push(
     `insert into public.support_programs (
   municipality_id, slug, title, summary, plain_language_summary, benefit_type,
   target_people, benefit_amount_text, application_deadline_text, application_period_end,
@@ -118,7 +118,7 @@ for (const p of publishable) {
   'published', now(), coalesce(${s(p.updatedAt)}, now())
 )`,
   );
-  out(`on conflict (slug) do update set
+  blk.push(`on conflict (slug) do update set
   municipality_id = excluded.municipality_id, title = excluded.title, summary = excluded.summary,
   plain_language_summary = excluded.plain_language_summary, benefit_type = excluded.benefit_type,
   target_people = excluded.target_people, benefit_amount_text = excluded.benefit_amount_text,
@@ -132,33 +132,50 @@ for (const p of publishable) {
   updated_at = excluded.updated_at;`);
 
   // 関連（カテゴリ / 生活イベント）: 一旦クリアして貼り直し（冪等）。
-  out(
+  blk.push(
     `delete from public.support_program_categories where support_program_id = (select id from public.support_programs where slug = ${s(p.slug)});`,
   );
   for (const c of p.categorySlugs) {
-    out(
+    blk.push(
       `insert into public.support_program_categories (support_program_id, category_id) select sp.id, c.id from public.support_programs sp, public.categories c where sp.slug = ${s(p.slug)} and c.slug = ${s(c)} on conflict do nothing;`,
     );
   }
-  out(
+  blk.push(
     `delete from public.support_program_life_events where support_program_id = (select id from public.support_programs where slug = ${s(p.slug)});`,
   );
   for (const le of p.lifeEventSlugs) {
-    out(
+    blk.push(
       `insert into public.support_program_life_events (support_program_id, life_event_id) select sp.id, le.id from public.support_programs sp, public.life_events le where sp.slug = ${s(p.slug)} and le.slug = ${s(le)} on conflict do nothing;`,
     );
   }
-  out();
+  programBlocks.push(blk.join("\n"));
 }
 
-out("commit;");
-out();
-
+// ---- 出力: masters を最初に、programs を CHUNK 件ずつ別ファイルに -----------
+const CHUNK = 100;
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const target = resolve(__dirname, "../supabase/seed/content_seed.generated.sql");
-mkdirSync(dirname(target), { recursive: true });
-writeFileSync(target, lines.join("\n"), "utf8");
+const seedDir = resolve(__dirname, "../supabase/seed");
+mkdirSync(seedDir, { recursive: true });
+
+const wrap = (body: string) => `begin;\n${body}\ncommit;\n`;
+const written: string[] = [];
+
+const mastersPath = resolve(seedDir, "content_seed.00_masters.generated.sql");
+writeFileSync(mastersPath, wrap(lines.join("\n")), "utf8");
+written.push(mastersPath);
+
+let part = 1;
+for (let i = 0; i < programBlocks.length; i += CHUNK) {
+  const body = programBlocks.slice(i, i + CHUNK).join("\n\n");
+  const name = `content_seed.${String(part).padStart(2, "0")}_programs.generated.sql`;
+  const pth = resolve(seedDir, name);
+  writeFileSync(pth, wrap(body), "utf8");
+  written.push(pth);
+  part++;
+}
 
 console.log(
-  `生成完了: ${target}\n  都道府県 ${prefectures.length} / 自治体 ${municipalities.length} / カテゴリ ${categories.length} / 生活イベント ${lifeEvents.length} / 制度 ${publishable.length}（published）`,
+  `生成完了（${written.length} ファイル・適用順）:\n` +
+    written.map((f) => "  " + f.split("/seed/")[1]).join("\n") +
+    `\n  都道府県 ${prefectures.length} / 自治体 ${municipalities.length} / カテゴリ ${categories.length} / 生活イベント ${lifeEvents.length} / 制度 ${publishable.length}（published・${CHUNK}件/チャンク）`,
 );
