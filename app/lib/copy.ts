@@ -65,21 +65,35 @@ export const DISCLAIMER_PROGRAM =
 
 /** seed の uncertainFields（内部表現）を、公開ページ向けの自然な文へ整える。 */
 const FIELD_LABELS: Record<string, string> = {
+  officialUrl: "公式URL",
   benefitAmountText: "金額・補助率",
   applicationDeadlineText: "申請期限",
   requiredDocumentsText: "必要書類",
+  requiredDocumentstext: "必要書類",
   targetPeople: "対象条件",
   applicationMethodText: "申請方法",
   onlineApplicationAvailable: "オンライン申請の可否",
+  contactName: "問い合わせ先",
+  contactPhone: "問い合わせ電話番号",
+  contactUrl: "問い合わせ先URL",
+  sourceConfidence: "出典の確認度",
+  summary: "概要",
+  contact電話番号: "問い合わせ電話番号",
 };
 
 export function humanizeUncertain(s: string): string {
-  const m = /^([A-Za-z]+)\s*[（(](.+)[）)]\s*$/.exec(s);
-  if (m) {
-    const label = FIELD_LABELS[m[1]] ?? m[1];
-    return `${label}：${m[2]}`;
+  let text = s.trim();
+  const entries = Object.entries(FIELD_LABELS).sort(
+    ([a], [b]) => b.length - a.length,
+  );
+  for (const [field, label] of entries) {
+    text = text.replace(new RegExp(escapeRegExp(field), "g"), label);
   }
-  return s;
+  return text.replace(/^([^（(]+)[（(](.+)[）)]$/, "$1：$2");
+}
+
+function escapeRegExp(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 /** 診断結果ページ用の免責。 */

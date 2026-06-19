@@ -31,7 +31,7 @@ export async function generateMetadata({
   const active = await getActiveMunicipalities(pref.slug);
   return buildMetadata({
     title: `${pref.name}の支援制度を自治体から探す`,
-    description: `${pref.name}の区市町村ごとに、出産・子育てなどの支援制度を整理しています。お住まいの自治体を選んで、確認すべき制度と申請準備を確認できます。`,
+    description: `${pref.name}の区市町村ごとに、公開中の支援制度を整理しています。お住まいの自治体を選んで、確認すべき制度と申請準備を確認できます。`,
     path: `/${pref.slug}`,
     // 公開制度を持つ自治体が無い都道府県は薄いページのため index しない。
     noindex: active.length === 0,
@@ -66,7 +66,7 @@ export default async function PrefecturePage({
           as="h1"
           eyebrow={pref.region ?? "自治体から探す"}
           title={`${pref.name}の支援制度を自治体から探す`}
-          description={`お住まいの・転入予定の自治体を選んでください。まずは出産・子育て支援から整備しています。`}
+          description="お住まいの・転入予定の自治体を選んでください。公式ページと最終確認日を確認できた制度から公開しています。"
         />
 
         {active.length > 0 && (

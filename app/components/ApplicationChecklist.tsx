@@ -6,16 +6,52 @@ import type { SupportProgram } from "@/app/lib/data/types";
 import { buildChecklist, buildInquiryText } from "@/app/lib/checklist";
 import { OfficialLink } from "@/app/components/OfficialLink";
 
+export interface ChecklistProgram {
+  slug: string;
+  title: string;
+  eligibilityText: string;
+  deadlineText?: string;
+  documentsText?: string;
+  methodText: string;
+  online: boolean;
+  officeName?: string;
+  phone?: string;
+  contactHref?: string;
+  officialHref: string;
+}
+
 /** 申請前チェックリスト（ローカル状態のみ・保存なし）。
  *  チェック状態は端末の localStorage に保存。印刷／問い合わせ文コピーに対応。 */
 export function ApplicationChecklist({
   program,
   municipalityName,
 }: {
-  program: SupportProgram;
+  program: ChecklistProgram;
   municipalityName: string;
 }) {
-  const items = buildChecklist(program);
+  const source: Pick<
+    SupportProgram,
+    | "title"
+    | "targetPeople"
+    | "applicationDeadlineText"
+    | "requiredDocumentsText"
+    | "applicationMethodText"
+    | "onlineApplicationAvailable"
+    | "contactName"
+    | "contactPhone"
+    | "contactUrl"
+  > = {
+    title: program.title,
+    targetPeople: program.eligibilityText,
+    applicationDeadlineText: program.deadlineText,
+    requiredDocumentsText: program.documentsText,
+    applicationMethodText: program.methodText,
+    onlineApplicationAvailable: program.online,
+    contactName: program.officeName,
+    contactPhone: program.phone,
+    contactUrl: program.contactHref,
+  };
+  const items = buildChecklist(source);
   const storageKey = `asn:checklist:${program.slug}`;
   const [checked, setChecked] = useState<Record<string, boolean>>({});
   const [copied, setCopied] = useState(false);
@@ -44,7 +80,7 @@ export function ApplicationChecklist({
   }
 
   async function copyInquiry() {
-    const text = buildInquiryText(program, municipalityName);
+    const text = buildInquiryText(source, municipalityName);
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
@@ -110,7 +146,7 @@ export function ApplicationChecklist({
       </ul>
 
       <div className="mt-5 flex flex-wrap gap-2.5 print:hidden">
-        <OfficialLink url={program.officialUrl} className="btn-primary" />
+        <OfficialLink url={program.officialHref} className="btn-primary" />
         <button type="button" onClick={copyInquiry} className="btn-secondary">
           {copied ? (
             <>

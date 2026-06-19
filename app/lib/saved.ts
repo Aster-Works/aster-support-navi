@@ -16,9 +16,21 @@ export interface SavedItem {
 
 export const SAVED_STORAGE_KEY = "asn:saved";
 
+export type SavedProgramSource = Pick<
+  SupportProgram,
+  | "slug"
+  | "title"
+  | "municipalitySlug"
+  | "summary"
+  | "onlineApplicationAvailable"
+  | "applicationDeadlineText"
+  | "applicationPeriodEnd"
+  | "lastOfficialCheckedAt"
+>;
+
 /** 制度から保存スナップショットを作る（純関数・Vitest 対象）。savedAt は呼び出し側が渡す。 */
 export function toSavedItem(
-  p: SupportProgram,
+  p: SavedProgramSource,
   opts: { municipalityName: string; categoryName?: string; savedAt: string },
 ): SavedItem {
   return {

@@ -102,6 +102,29 @@ export default async function SupportDetailPage({
     (c) => c.slug === program.categorySlugs[0],
   );
   const catName = (s: string) => categories.find((c) => c.slug === s)?.name;
+  const saveProgram = {
+    slug: program.slug,
+    title: program.title,
+    municipalitySlug: program.municipalitySlug,
+    summary: program.summary,
+    online: !!program.onlineApplicationAvailable,
+    deadlineText: program.applicationDeadlineText,
+    deadlineEnd: program.applicationPeriodEnd,
+    checkedAt: program.lastOfficialCheckedAt,
+  };
+  const checklistProgram = {
+    slug: program.slug,
+    title: program.title,
+    eligibilityText: program.targetPeople,
+    deadlineText: program.applicationDeadlineText,
+    documentsText: program.requiredDocumentsText,
+    methodText: program.applicationMethodText,
+    online: !!program.onlineApplicationAvailable,
+    officeName: program.contactName,
+    phone: program.contactPhone,
+    contactHref: program.contactUrl,
+    officialHref: program.officialUrl,
+  };
 
   const crumbs = [
     { name: "ホーム", path: "/" },
@@ -138,7 +161,7 @@ export default async function SupportDetailPage({
           </p>
           <div className="mt-5">
             <SaveButton
-              program={program}
+              program={saveProgram}
               municipalityName={muni.name}
               categoryName={primaryCategory?.name}
             />
@@ -272,18 +295,21 @@ export default async function SupportDetailPage({
                     次の点は最新の情報を公式ページでご確認ください。
                   </p>
                   <ul className="mt-3 space-y-2">
-                    {program.uncertainFields.map((u) => (
-                      <li
-                        key={u}
-                        className="flex items-start gap-2 text-[14px] leading-7 text-charcoal"
-                      >
-                        <span
-                          className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-info"
-                          aria-hidden="true"
-                        />
-                        {humanizeUncertain(u)}
-                      </li>
-                    ))}
+                    {program.uncertainFields.map((u, index) => {
+                      const label = humanizeUncertain(u);
+                      return (
+                        <li
+                          key={`${program.slug}-uncertain-${index}`}
+                          className="flex items-start gap-2 text-[14px] leading-7 text-charcoal"
+                        >
+                          <span
+                            className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-info"
+                            aria-hidden="true"
+                          />
+                          {label}
+                        </li>
+                      );
+                    })}
                   </ul>
                 </section>
               )}
@@ -298,7 +324,7 @@ export default async function SupportDetailPage({
           <aside className="space-y-6 lg:sticky lg:top-20 lg:self-start">
             <TrustSignal program={program} />
             <ApplicationChecklist
-              program={program}
+              program={checklistProgram}
               municipalityName={muni.name}
             />
           </aside>

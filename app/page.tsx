@@ -66,7 +66,7 @@ export default async function HomePage() {
           <div className="max-w-2xl">
             <p className="aw-eyebrow">
               <Compass className="h-3.5 w-3.5" aria-hidden="true" />
-              支援制度ナビ・東京23区（出産・子育て）
+              支援制度ナビ・東京23区（順次整備中）
             </p>
             <h1 className="mt-4 text-3xl font-bold leading-tight tracking-tight text-navy sm:text-[42px] sm:leading-[1.2]">
               {COPY.brandPromise}
@@ -254,7 +254,7 @@ export default async function HomePage() {
         <SectionHeading
           eyebrow="対応している自治体"
           title="東京23区から探す"
-          description="まずは出産・子育て支援から整備しています。順次、自治体と制度を増やしていきます。"
+          description="出産・子育て、生活困窮・住まい、介護・高齢などを順次整備しています。公式ページと最終確認日を確認できた制度から公開しています。"
         />
         <ul className="mt-8 flex flex-wrap gap-2">
           {allMunis.map((m) => {

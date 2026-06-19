@@ -11,6 +11,7 @@ import { lifeEvents } from "@/app/data/lifeEvents";
 import { programs } from "@/app/data/programs";
 import { guides, type Guide } from "@/app/data/guides";
 import {
+  hasActiveDeadline,
   isPublishable,
   type Category,
   type LifeEvent,
@@ -164,10 +165,7 @@ export function applyFilters(
   if (f.lifeEventSlug)
     out = out.filter((p) => p.lifeEventSlugs.includes(f.lifeEventSlug!));
   if (f.onlineOnly) out = out.filter((p) => p.onlineApplicationAvailable);
-  if (f.hasDeadline)
-    out = out.filter(
-      (p) => !!p.applicationDeadlineText || !!p.applicationPeriodEnd,
-    );
+  if (f.hasDeadline) out = out.filter(hasActiveDeadline);
   if (f.keyword) {
     const q = f.keyword.trim().toLowerCase();
     if (q) {

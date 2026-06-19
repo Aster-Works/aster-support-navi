@@ -6,8 +6,21 @@ export interface ChecklistItem {
   detail?: string;
 }
 
+export type ChecklistProgramSource = Pick<
+  SupportProgram,
+  | "title"
+  | "targetPeople"
+  | "applicationDeadlineText"
+  | "requiredDocumentsText"
+  | "applicationMethodText"
+  | "onlineApplicationAvailable"
+  | "contactName"
+  | "contactPhone"
+  | "contactUrl"
+>;
+
 /** 制度から申請前チェックリストを組み立てる（純関数・Vitest 対象）。 */
-export function buildChecklist(p: SupportProgram): ChecklistItem[] {
+export function buildChecklist(p: ChecklistProgramSource): ChecklistItem[] {
   const items: ChecklistItem[] = [];
   items.push({
     id: "eligibility",
@@ -58,7 +71,7 @@ export function buildChecklist(p: SupportProgram): ChecklistItem[] {
 /** 役所への問い合わせ文テンプレートを生成する（純関数・Vitest 対象）。
  *  断定せず、確認のための質問にとどめる。 */
 export function buildInquiryText(
-  p: SupportProgram,
+  p: ChecklistProgramSource,
   municipalityName: string,
 ): string {
   return [

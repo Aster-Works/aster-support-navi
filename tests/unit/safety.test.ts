@@ -10,11 +10,13 @@ import {
 import {
   FORBIDDEN_PHRASES,
   findForbiddenPhrases,
+  humanizeUncertain,
   COPY,
   DISCLAIMER_SHORT,
   DISCLAIMER_PROGRAM,
   DISCLAIMER_DIAGNOSIS,
 } from "@/app/lib/copy";
+import { applyFilters } from "@/app/lib/data";
 
 const published = programs.filter(isPublishable);
 
@@ -150,6 +152,22 @@ describe("YMYL: 信頼性メタ（不変条件 §3）", () => {
     const slugs = published.map((p) => p.slug);
     expect(new Set(slugs).size).toBe(slugs.length);
   });
+
+  it("公開表示用の未確認項目に内部フィールド名が残らない", () => {
+    const rawKeys =
+      /benefitAmountText|applicationDeadlineText|requiredDocumentsText|requiredDocumentstext|applicationMethodText|onlineApplicationAvailable|officialUrl|targetPeople|contactName|contactPhone|sourceConfidence|summary/;
+    const offenders = published
+      .flatMap((p) =>
+        (p.uncertainFields ?? []).map((u) => ({
+          slug: p.slug,
+          original: u,
+          rendered: humanizeUncertain(u),
+        })),
+      )
+      .filter((x) => rawKeys.test(x.rendered));
+
+    expect(offenders).toEqual([]);
+  });
 });
 
 describe("hasActiveDeadline（誤った期限バッジを出さない）", () => {
@@ -171,5 +189,11 @@ describe("hasActiveDeadline（誤った期限バッジを出さない）", () =>
     );
     expect(real).toBeTruthy();
     expect(hasActiveDeadline(real!)).toBe(true);
+  });
+
+  it("申請期限フィルターは期限バッジと同じ判定を使う", () => {
+    const filtered = applyFilters(published, { hasDeadline: true });
+    expect(filtered.length).toBeGreaterThan(0);
+    expect(filtered.every(hasActiveDeadline)).toBe(true);
   });
 });

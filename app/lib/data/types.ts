@@ -106,12 +106,21 @@ export function isPublishable(p: SupportProgram): boolean {
   );
 }
 
+export type DeadlineSource = Pick<
+  SupportProgram,
+  "applicationDeadlineText" | "applicationPeriodEnd"
+>;
+
 /** 「申請期限あり」バッジを出してよいか。
  *  期限テキストが「確認できなかった」「受付終了」等の場合は前向きな期限ではないため出さない。 */
-export function hasActiveDeadline(p: SupportProgram): boolean {
+export function hasActiveDeadline(p: DeadlineSource): boolean {
   const t = p.applicationDeadlineText ?? "";
   if (!t && !p.applicationPeriodEnd) return false;
-  if (/確認できません|記載は確認|受付を終了|終了しました|特に定め|設けられていない/.test(t)) {
+  if (
+    /確認できません|記載は確認|受付を終了|受付は終了|すでに受付|終了しました|特に定め|設けられていない/.test(
+      t,
+    )
+  ) {
     return false;
   }
   return true;

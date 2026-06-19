@@ -50,8 +50,8 @@ export async function generateMetadata({
     });
   }
   return buildMetadata({
-    title: `${muni.name}の出産・子育て支援制度一覧`,
-    description: `${muni.name}に住む方・転入する方が確認したい、児童手当・子ども医療費助成・出産子育て応援・ひとり親支援などの制度を整理しています。対象の可能性・申請方法・公式ページ・最終確認日を掲載。`,
+    title: `${muni.name}の支援制度一覧`,
+    description: `${muni.name}に住む方・転入する方が確認したい支援制度を整理しています。対象の可能性・申請方法・公式ページ・最終確認日を掲載。`,
     path: `/${prefecture}/${city}`,
   });
 }
@@ -142,7 +142,7 @@ export default async function MunicipalityPage({
           title={`${muni.name}で確認したい支援制度`}
           description={
             muni.intro ??
-            `${muni.name}に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。`
+            `${muni.name}に住む方・転入する方が確認したい支援制度を整理しています。`
           }
         />
 

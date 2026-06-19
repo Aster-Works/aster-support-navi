@@ -11,6 +11,17 @@ import {
   toSavedItem,
 } from "@/app/lib/saved";
 
+export interface SaveButtonProgram {
+  slug: string;
+  title: string;
+  municipalitySlug: string;
+  summary: string;
+  online: boolean;
+  deadlineText?: string;
+  deadlineEnd?: string;
+  checkedAt: string;
+}
+
 /** 制度の保存トグル（localStorage・ログイン不要）。 */
 export function SaveButton({
   program,
@@ -18,7 +29,7 @@ export function SaveButton({
   categoryName,
   className = "btn-secondary",
 }: {
-  program: SupportProgram;
+  program: SaveButtonProgram;
   municipalityName: string;
   categoryName?: string;
   className?: string;
@@ -31,7 +42,27 @@ export function SaveButton({
   }, [program.slug]);
 
   function toggle() {
-    const item = toSavedItem(program, {
+    const source: Pick<
+      SupportProgram,
+      | "slug"
+      | "title"
+      | "municipalitySlug"
+      | "summary"
+      | "onlineApplicationAvailable"
+      | "applicationDeadlineText"
+      | "applicationPeriodEnd"
+      | "lastOfficialCheckedAt"
+    > = {
+      slug: program.slug,
+      title: program.title,
+      municipalitySlug: program.municipalitySlug,
+      summary: program.summary,
+      onlineApplicationAvailable: program.online,
+      applicationDeadlineText: program.deadlineText,
+      applicationPeriodEnd: program.deadlineEnd,
+      lastOfficialCheckedAt: program.checkedAt,
+    };
+    const item = toSavedItem(source, {
       municipalityName,
       categoryName,
       savedAt: new Date().toISOString(),

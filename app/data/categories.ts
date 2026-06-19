@@ -59,4 +59,11 @@ export const categories: Category[] = [
       "公的住宅・家賃や住み替えの支援・住宅改修の助成・居住支援など、住まいの相談。",
     sortOrder: 9,
   },
+  {
+    slug: "disability",
+    name: "障害・医療",
+    description:
+      "障害者手帳・障害福祉サービス・自立支援医療・医療費助成・手当・補装具など、障害のある方への支援。",
+    sortOrder: 10,
+  },
 ];

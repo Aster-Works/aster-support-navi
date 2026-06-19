@@ -106,7 +106,7 @@ export function DiagnosisFlow({
               ))}
             </div>
             <p className="mt-3 text-[12px] text-charcoal/70">
-              東京23区の出産・子育て支援に対応しています。
+              東京23区で公開中の制度候補に対応しています。
             </p>
           </Question>
         )}
