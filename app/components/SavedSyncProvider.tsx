@@ -31,6 +31,8 @@ interface SavedSyncValue {
     email: string,
     password: string,
   ) => Promise<{ ok: boolean; error?: string; needsConfirm?: boolean }>;
+  /** Google アカウントでログイン（OAuth リダイレクト）。 */
+  signInWithGoogle: () => Promise<{ ok: boolean; error?: string }>;
   signOut: () => Promise<void>;
 }
 
@@ -45,6 +47,7 @@ export function useSavedSync(): SavedSyncValue {
       enabled: false,
       signIn: async () => ({ ok: false, error: "未対応" }),
       signUp: async () => ({ ok: false, error: "未対応" }),
+      signInWithGoogle: async () => ({ ok: false, error: "未対応" }),
       signOut: async () => {},
     }
   );
@@ -204,13 +207,30 @@ export function SavedSyncProvider({ children }: { children: React.ReactNode }) {
     [supabase],
   );
 
+  const signInWithGoogle = useCallback(async () => {
+    if (!supabase) return { ok: false, error: "クラウド同期は未設定です" };
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}/saved` },
+    });
+    return error ? { ok: false, error: error.message } : { ok: true };
+  }, [supabase]);
+
   const signOut = useCallback(async () => {
     if (supabase) await supabase.auth.signOut();
   }, [supabase]);
 
   return (
     <Ctx.Provider
-      value={{ status, email, enabled: Boolean(supabase), signIn, signUp, signOut }}
+      value={{
+        status,
+        email,
+        enabled: Boolean(supabase),
+        signIn,
+        signUp,
+        signInWithGoogle,
+        signOut,
+      }}
     >
       {children}
     </Ctx.Provider>
