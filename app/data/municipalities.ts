@@ -26,4 +26,13 @@ export const municipalities: Municipality[] = [
   { slug: "adachi", prefectureSlug: "tokyo", name: "足立区", nameKana: "あだちく", officialSiteUrl: "https://www.city.adachi.tokyo.jp/", intro: "足立区に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
   { slug: "katsushika", prefectureSlug: "tokyo", name: "葛飾区", nameKana: "かつしかく", officialSiteUrl: "https://www.city.katsushika.lg.jp/", intro: "葛飾区に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
   { slug: "edogawa", prefectureSlug: "tokyo", name: "江戸川区", nameKana: "えどがわく", officialSiteUrl: "https://www.city.edogawa.tokyo.jp/", intro: "江戸川区に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
+  // 政令指定都市（出産・子育て）。officialSiteUrl は各市公式サイトのルート。
+  { slug: "yokohama", prefectureSlug: "kanagawa", name: "横浜市", nameKana: "よこはまし", officialSiteUrl: "https://www.city.yokohama.lg.jp/", intro: "横浜市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
+  { slug: "kawasaki", prefectureSlug: "kanagawa", name: "川崎市", nameKana: "かわさきし", officialSiteUrl: "https://www.city.kawasaki.jp/", intro: "川崎市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
+  { slug: "osaka", prefectureSlug: "osaka", name: "大阪市", nameKana: "おおさかし", officialSiteUrl: "https://www.city.osaka.lg.jp/", intro: "大阪市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
+  { slug: "nagoya", prefectureSlug: "aichi", name: "名古屋市", nameKana: "なごやし", officialSiteUrl: "https://www.city.nagoya.jp/", intro: "名古屋市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
+  { slug: "sapporo", prefectureSlug: "hokkaido", name: "札幌市", nameKana: "さっぽろし", officialSiteUrl: "https://www.city.sapporo.jp/", intro: "札幌市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
+  { slug: "fukuoka", prefectureSlug: "fukuoka", name: "福岡市", nameKana: "ふくおかし", officialSiteUrl: "https://www.city.fukuoka.lg.jp/", intro: "福岡市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
+  { slug: "kobe", prefectureSlug: "hyogo", name: "神戸市", nameKana: "こうべし", officialSiteUrl: "https://www.city.kobe.lg.jp/", intro: "神戸市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
+  { slug: "kyoto", prefectureSlug: "kyoto", name: "京都市", nameKana: "きょうとし", officialSiteUrl: "https://www.city.kyoto.lg.jp/", intro: "京都市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
 ];

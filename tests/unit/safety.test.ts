@@ -138,11 +138,15 @@ describe("YMYL: 信頼性メタ（不変条件 §3）", () => {
         host.includes("shakyo") ||
         host.includes("syakyo") ||
         host.includes("cosw");
+      // 政令市など lg.jp を使わない自治体公式サイト（例: www.city.nagoya.jp、
+      // 子育て応援サイト kosodate.city.sapporo.jp 等。"city" がドメインラベルのもの）も許可。
+      const isCity = host.startsWith("city.") || host.includes(".city.");
       expect(
         host.endsWith(".lg.jp") ||
           host.endsWith(".go.jp") ||
           host.endsWith(".tokyo.jp") ||
-          isShakyo,
+          isShakyo ||
+          isCity,
         `${p.slug}: ${host}`,
       ).toBe(true);
     }
