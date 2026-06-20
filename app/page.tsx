@@ -13,6 +13,7 @@ import {
 import {
   getActiveMunicipalities,
   getMunicipalities,
+  getPrefectures,
   getLifeEvents,
   getCategories,
   getPresentCategories,
@@ -36,26 +37,60 @@ export const metadata: Metadata = buildMetadata({
 export const revalidate = 86400;
 
 export default async function HomePage() {
-  const [active, allMunis, lifeEvents, categories, presentCategories, recent] =
-    await Promise.all([
-      getActiveMunicipalities("tokyo"),
-      getMunicipalities("tokyo"),
-      getLifeEvents(),
-      getCategories(),
-      getPresentCategories(),
-      getRecentlyUpdatedPrograms(6),
-    ]);
+  const [
+    active,
+    allMunis,
+    prefectures,
+    lifeEvents,
+    categories,
+    presentCategories,
+    recent,
+  ] = await Promise.all([
+    getActiveMunicipalities(), // 全都道府県の制度あり自治体
+    getMunicipalities(), // 全自治体（検索補完用）
+    getPrefectures(),
+    getLifeEvents(),
+    getCategories(),
+    getPresentCategories(),
+    getRecentlyUpdatedPrograms(6),
+  ]);
 
-  const activeSlugs = new Set(active.map((m) => m.slug));
+  const activeKeys = new Set(
+    active.map((m) => `${m.prefectureSlug}/${m.slug}`),
+  );
   const muniOptions: MuniOption[] = allMunis.map((m) => ({
     name: m.name,
     nameKana: m.nameKana,
     slug: m.slug,
     prefectureSlug: m.prefectureSlug,
-    active: activeSlugs.has(m.slug),
+    active: activeKeys.has(`${m.prefectureSlug}/${m.slug}`),
   }));
   const catName = (slug: string) =>
     categories.find((c) => c.slug === slug)?.name;
+
+  // 制度あり自治体を都道府県ごとにまとめる（東京を先頭、以降は名前順）。
+  const prefName = new Map(prefectures.map((p) => [p.slug, p.name]));
+  const byPref = new Map<string, typeof active>();
+  for (const m of active) {
+    const arr = byPref.get(m.prefectureSlug) ?? [];
+    arr.push(m);
+    byPref.set(m.prefectureSlug, arr);
+  }
+  const regionGroups = [...byPref.entries()]
+    .map(([slug, munis]) => ({
+      slug,
+      name: prefName.get(slug) ?? slug,
+      munis: [...munis].sort((a, b) =>
+        (a.nameKana ?? a.name).localeCompare(b.nameKana ?? b.name, "ja"),
+      ),
+    }))
+    .sort((a, b) =>
+      a.slug === "tokyo"
+        ? -1
+        : b.slug === "tokyo"
+          ? 1
+          : a.name.localeCompare(b.name, "ja"),
+    );
 
   return (
     <>
@@ -69,7 +104,7 @@ export default async function HomePage() {
           <div className="max-w-2xl">
             <p className="aw-eyebrow">
               <Compass className="h-3.5 w-3.5" aria-hidden="true" />
-              支援制度ナビ・東京23区（順次整備中）
+              支援制度ナビ・東京23区＋政令指定都市（順次整備中）
             </p>
             <h1 className="mt-4 text-3xl font-bold leading-tight tracking-tight text-navy sm:text-[42px] sm:leading-[1.2]">
               {COPY.brandPromise}
@@ -99,6 +134,39 @@ export default async function HomePage() {
               </Link>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* 地域から探す */}
+      <section className="aw-container py-12">
+        <SectionHeading
+          eyebrow="地域から探す"
+          title="お住まいの自治体から探す"
+          description="東京23区と政令指定都市などを順次整備しています。自治体名から、確認すべき制度へ進めます。"
+        />
+        <div className="mt-6 space-y-5">
+          {regionGroups.map((g) => (
+            <div key={g.slug}>
+              <h3 className="text-[13px] font-bold text-navy">
+                {g.name}
+                <span className="ml-2 text-[11px] font-normal text-charcoal/60">
+                  {g.munis.length}自治体
+                </span>
+              </h3>
+              <ul className="mt-2 flex flex-wrap gap-2">
+                {g.munis.map((m) => (
+                  <li key={`${m.prefectureSlug}-${m.slug}`}>
+                    <Link
+                      href={`/${m.prefectureSlug}/${m.slug}`}
+                      className="aw-chip"
+                    >
+                      {m.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -252,39 +320,6 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* 対応自治体 */}
-      <section className="aw-container pb-16">
-        <SectionHeading
-          eyebrow="対応している自治体"
-          title="東京23区から探す"
-          description="出産・子育て、生活困窮・住まい、介護・高齢などを順次整備しています。公式ページと最終確認日を確認できた制度から公開しています。"
-        />
-        <ul className="mt-8 flex flex-wrap gap-2">
-          {allMunis.map((m) => {
-            const isActive = activeSlugs.has(m.slug);
-            return (
-              <li key={m.slug}>
-                {isActive ? (
-                  <Link href={`/${m.prefectureSlug}/${m.slug}`} className="aw-chip">
-                    {m.name}
-                  </Link>
-                ) : (
-                  <span
-                    className="aw-chip cursor-default border-soft-gray bg-soft-gray/40 text-charcoal/70"
-                    aria-disabled="true"
-                    title="準備中"
-                  >
-                    {m.name}
-                    <span className="aw-badge aw-badge--neutral text-[11px]">
-                      準備中
-                    </span>
-                  </span>
-                )}
-              </li>
-            );
-          })}
-        </ul>
-      </section>
     </>
   );
 }
