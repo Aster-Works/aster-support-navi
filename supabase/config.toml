@@ -159,8 +159,12 @@ enabled = true
 site_url = "https://astersupport.com"
 # The public URL that Auth serves on. Defaults to the API external URL with `/auth/v1` appended.
 # external_url = ""
-# A list of *exact* URLs that auth providers are permitted to redirect to post authentication.
-additional_redirect_urls = ["https://astersupport.com", "http://localhost:3040"]
+# A list of URLs that auth providers are permitted to redirect to post authentication.
+# `/**` ワイルドカードで /admin・/saved などサブパスへの OAuth リダイレクトを許可する
+# （これが無いと Google ログインのコードが落ち、セッションが張れずログイン画面へ戻る）。
+# ⚠ 本番(リモート)はこの値を Management API で直接 PATCH 済み。`supabase config push` は
+#   config.toml に Google プロバイダ設定が無いため Google を無効化してしまう点に注意（push しないこと）。
+additional_redirect_urls = ["https://astersupport.com", "https://astersupport.com/**", "http://localhost:3040", "http://localhost:3040/**"]
 # How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 (1 week).
 jwt_expiry = 3600
 # JWT issuer URL. If not set, defaults to auth.external_url.
