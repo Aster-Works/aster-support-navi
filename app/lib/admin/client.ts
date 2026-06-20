@@ -324,6 +324,49 @@ export async function fetchMunicipalityOptions(): Promise<MunicipalityOption[]> 
     }));
 }
 
+// ---- 公開ページの即時再生成（ISR on-demand revalidate） -------------------
+/** ある制度の編集が影響する公開ページのパス一覧。 */
+export function affectedPaths(p: {
+  prefectureSlug: string;
+  municipalitySlug: string;
+  slug: string;
+  categorySlugs: string[];
+  lifeEventSlugs: string[];
+}): string[] {
+  const paths = new Set<string>();
+  paths.add("/");
+  paths.add(`/supports/${p.slug}`);
+  paths.add(`/${p.prefectureSlug}`);
+  paths.add(`/${p.prefectureSlug}/${p.municipalitySlug}`);
+  for (const le of p.lifeEventSlugs)
+    paths.add(`/${p.prefectureSlug}/${p.municipalitySlug}/${le}`);
+  for (const c of p.categorySlugs) paths.add(`/compare/${c}`);
+  return [...paths];
+}
+
+/** 管理者セッションのトークンで /api/admin/revalidate を叩き、公開ページを即時再生成。
+ *  失敗しても保存自体は成功扱いにする（反映は ISR の時間経過でも追従するため）。 */
+export async function revalidatePublic(paths: string[]): Promise<void> {
+  if (paths.length === 0) return;
+  const sb = getSupabase();
+  if (!sb) return;
+  const { data } = await sb.auth.getSession();
+  const token = data.session?.access_token;
+  if (!token) return;
+  try {
+    await fetch("/api/admin/revalidate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ paths }),
+    });
+  } catch {
+    // 反映は ISR(revalidate=86400) でも追従するため、ここでは握りつぶす。
+  }
+}
+
 /** 既存制度の slug→status（CSV 取込で「新規/更新/公開中の上書き」を判定するため）。 */
 export async function fetchSlugStatusMap(): Promise<Map<string, PublishStatus>> {
   const { data, error } = await client()

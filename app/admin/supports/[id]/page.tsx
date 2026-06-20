@@ -12,6 +12,8 @@ import {
   fetchCategoryOptions,
   fetchLifeEventOptions,
   qualityIssues,
+  affectedPaths,
+  revalidatePublic,
   type AdminProgram,
   type SupportPatch,
   type MasterOption,
@@ -119,15 +121,26 @@ export default function AdminSupportEditPage() {
       try {
         await updateSupport(id, form);
         await setProgramTags(id, selectedCats, selectedEvents);
+        if (program) {
+          await revalidatePublic(
+            affectedPaths({
+              prefectureSlug: program.prefectureSlug,
+              municipalitySlug: program.municipalitySlug,
+              slug: program.slug,
+              categorySlugs: selectedCats,
+              lifeEventSlugs: selectedEvents,
+            }),
+          );
+        }
         await load();
-        setMsg({ ok: true, text: "保存しました。" });
+        setMsg({ ok: true, text: "保存し、公開ページへ反映しました。" });
       } catch (err) {
         setMsg({ ok: false, text: String((err as Error).message ?? err) });
       } finally {
         setSaving(false);
       }
     },
-    [id, form, load, selectedCats, selectedEvents],
+    [id, form, load, selectedCats, selectedEvents, program],
   );
 
   const onStatus = useCallback(
@@ -137,8 +150,17 @@ export default function AdminSupportEditPage() {
       setMsg(null);
       try {
         await setStatus(program, to);
+        await revalidatePublic(
+          affectedPaths({
+            prefectureSlug: program.prefectureSlug,
+            municipalitySlug: program.municipalitySlug,
+            slug: program.slug,
+            categorySlugs: program.categorySlugs,
+            lifeEventSlugs: program.lifeEventSlugs,
+          }),
+        );
         await load();
-        setMsg({ ok: true, text: `ステータスを「${to}」にしました。` });
+        setMsg({ ok: true, text: `ステータスを「${to}」にし、公開ページへ反映しました。` });
       } catch (err) {
         setMsg({ ok: false, text: String((err as Error).message ?? err) });
       } finally {

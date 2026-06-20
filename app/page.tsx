@@ -32,6 +32,9 @@ export const metadata: Metadata = buildMetadata({
   path: "/",
 });
 
+// ISR。制度の編集・公開時は管理画面から revalidatePath("/") で即時反映する。
+export const revalidate = 86400;
+
 export default async function HomePage() {
   const [active, allMunis, lifeEvents, categories, presentCategories, recent] =
     await Promise.all([

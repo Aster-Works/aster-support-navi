@@ -8,6 +8,8 @@ import {
   fetchMunicipalityOptions,
   fetchSlugStatusMap,
   importPrograms,
+  affectedPaths,
+  revalidatePublic,
   type ImportResult,
 } from "@/app/lib/admin/client";
 import {
@@ -66,8 +68,14 @@ export default function AdminImportPage() {
     if (!result || result.valid.length === 0) return;
     setBusy(true);
     setError(null);
-    importPrograms(result.valid)
-      .then((r) => setImported(r))
+    const rows = result.valid;
+    importPrograms(rows)
+      .then(async (r) => {
+        setImported(r);
+        // 影響する公開ページをまとめて即時再生成（重複除去・上限内）。
+        const paths = [...new Set(rows.flatMap((row) => affectedPaths(row)))];
+        await revalidatePublic(paths);
+      })
       .catch((e) => setError(String(e.message ?? e)))
       .finally(() => setBusy(false));
   };
