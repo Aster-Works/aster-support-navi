@@ -31,6 +31,7 @@ import { Disclaimer } from "@/app/components/Disclaimer";
 import { SupportCard } from "@/app/components/SupportCard";
 import { ApplicationChecklist } from "@/app/components/ApplicationChecklist";
 import { SaveButton } from "@/app/components/SaveButton";
+import { ReminderButton } from "@/app/components/ReminderButton";
 
 export const revalidate = 86400;
 export const dynamicParams = true;
@@ -323,6 +324,10 @@ export default async function SupportDetailPage({
           {/* サイド */}
           <aside className="space-y-6 lg:sticky lg:top-20 lg:self-start">
             <TrustSignal program={program} />
+            <ReminderButton
+              programSlug={program.slug}
+              programTitle={program.title}
+            />
             <ApplicationChecklist
               program={checklistProgram}
               municipalityName={muni.name}
