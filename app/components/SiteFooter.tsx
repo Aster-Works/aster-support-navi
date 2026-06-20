@@ -31,7 +31,7 @@ const COLUMNS: { heading: string; links: { href: string; label: string }[] }[] =
 export function SiteFooter() {
   const year = new Date().getFullYear();
   return (
-    <footer className="mt-20 border-t border-soft-gray bg-white">
+    <footer className="mt-20 border-t border-soft-gray bg-white print:hidden">
       <div className="aw-container py-12">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr]">
           <div>

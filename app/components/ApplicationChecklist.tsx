@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Printer, Copy, Check, ListChecks } from "lucide-react";
 import type { SupportProgram } from "@/app/lib/data/types";
 import { buildChecklist, buildInquiryText } from "@/app/lib/checklist";
+import { track } from "@/app/lib/track";
 import { OfficialLink } from "@/app/components/OfficialLink";
 
 export interface ChecklistProgram {
@@ -84,6 +85,7 @@ export function ApplicationChecklist({
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
+      track("inquiry_text_copied");
       window.setTimeout(() => setCopied(false), 2000);
     } catch {
       setCopied(false);
@@ -165,7 +167,10 @@ export function ApplicationChecklist({
         </span>
         <button
           type="button"
-          onClick={() => window.print()}
+          onClick={() => {
+            track("checklist_printed", { context: "support" });
+            window.print();
+          }}
           className="btn-secondary"
         >
           <Printer className="h-4 w-4" aria-hidden="true" />

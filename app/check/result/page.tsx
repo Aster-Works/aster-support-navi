@@ -11,9 +11,11 @@ import {
 import {
   getAllPublishedPrograms,
   getMunicipality,
+  getMunicipalities,
   getCategories,
   getLifeEvents,
 } from "@/app/lib/data";
+import { PrepPacket, type PrepProgram } from "@/app/components/PrepPacket";
 import { buildMetadata } from "@/app/lib/seo";
 import {
   decodeAnswers,
@@ -57,11 +59,15 @@ export default async function CheckResultPage({
     );
   }
 
-  const [programs, categories, lifeEvents] = await Promise.all([
+  const [programs, categories, lifeEvents, allMunis] = await Promise.all([
     getAllPublishedPrograms(),
     getCategories(),
     getLifeEvents(),
+    getMunicipalities(),
   ]);
+  const muniNameOf = (prefSlug: string, slug: string) =>
+    allMunis.find((m) => m.prefectureSlug === prefSlug && m.slug === slug)
+      ?.name ?? slug;
   let candidates = matchPrograms(answers, programs);
   if (!answers.municipality) {
     // 自治体未指定（手書きURL等）では、自治体をまたいだ同種候補の重複を畳む。
@@ -96,6 +102,20 @@ export default async function CheckResultPage({
         .flatMap((e) => e.commonChecks ?? []),
     ),
   ).slice(0, 8);
+
+  const prepPrograms: PrepProgram[] = candidates.map(({ program }) => ({
+    slug: program.slug,
+    title: program.title,
+    municipalityName: muniNameOf(program.prefectureSlug, program.municipalitySlug),
+    targetPeople: program.targetPeople,
+    deadlineText: program.applicationDeadlineText,
+    documentsText: program.requiredDocumentsText,
+    methodText: program.applicationMethodText,
+    online: !!program.onlineApplicationAvailable,
+    officeName: program.contactName,
+    phone: program.contactPhone,
+    officialUrl: program.officialUrl,
+  }));
 
   return (
     <div className="aw-container py-10">
@@ -198,6 +218,18 @@ export default async function CheckResultPage({
           </ul>
         </>
       )}
+
+      {/* 複数制度をまとめた申請準備リスト（印刷・PDF保存。diagnosis_completed も計測） */}
+      <PrepPacket
+        programs={prepPrograms}
+        heading={
+          muni
+            ? `${muni.name}で確認するとよい制度の申請準備リスト`
+            : "確認するとよい制度の申請準備リスト"
+        }
+        nextChecks={nextChecks}
+        context="diagnosis"
+      />
 
       {/* 次に確認すること */}
       {nextChecks.length > 0 && (

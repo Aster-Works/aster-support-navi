@@ -1,13 +1,14 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowRight, ArrowLeft, Check, ShieldCheck } from "lucide-react";
 import {
   encodeAnswers,
   type ChildAgeBand,
   type DiagnosisAnswers,
 } from "@/app/lib/eligibility";
+import { track } from "@/app/lib/track";
 
 interface Opt {
   slug: string;
@@ -31,6 +32,11 @@ export function DiagnosisFlow({
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [a, setA] = useState<DiagnosisAnswers>({});
+
+  // 診断開始を計測（機微情報なし・回数のみ）。
+  useEffect(() => {
+    track("diagnosis_started");
+  }, []);
 
   const steps = [
     "お住まいの自治体",

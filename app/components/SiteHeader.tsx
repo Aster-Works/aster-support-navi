@@ -10,7 +10,7 @@ const NAV = [
 
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-40 border-b border-soft-gray/80 bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/70">
+    <header className="sticky top-0 z-40 border-b border-soft-gray/80 bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/70 print:hidden">
       <div className="aw-container flex h-16 items-center justify-between gap-4">
         <Link
           href="/"

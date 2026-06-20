@@ -11,6 +11,7 @@ import {
   toSavedItem,
   SAVED_CHANGED_EVENT,
 } from "@/app/lib/saved";
+import { track } from "@/app/lib/track";
 
 export interface SaveButtonProgram {
   slug: string;
@@ -73,7 +74,9 @@ export function SaveButton({
     });
     const next = toggleSavedList(loadSaved(), item);
     persistSaved(next);
-    setSaved(isInSaved(next, program.slug));
+    const nowSaved = isInSaved(next, program.slug);
+    setSaved(nowSaved);
+    if (nowSaved) track("saved_program_added");
   }
 
   return (
