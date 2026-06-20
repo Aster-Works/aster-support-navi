@@ -8,10 +8,15 @@ import {
   fetchSupport,
   updateSupport,
   setStatus,
+  setProgramTags,
+  fetchCategoryOptions,
+  fetchLifeEventOptions,
   qualityIssues,
   type AdminProgram,
   type SupportPatch,
+  type MasterOption,
 } from "@/app/lib/admin/client";
+import { TagPicker } from "@/app/admin/TagPicker";
 import type { BenefitType, PublishStatus, SourceConfidence } from "@/app/lib/data/types";
 
 const TEXT_FIELDS: { key: keyof SupportPatch; label: string; area?: boolean }[] = [
@@ -72,6 +77,10 @@ export default function AdminSupportEditPage() {
   const id = params.id;
   const [program, setProgram] = useState<AdminProgram | null>(null);
   const [form, setForm] = useState<SupportPatch>({});
+  const [catOptions, setCatOptions] = useState<MasterOption[]>([]);
+  const [eventOptions, setEventOptions] = useState<MasterOption[]>([]);
+  const [selectedCats, setSelectedCats] = useState<string[]>([]);
+  const [selectedEvents, setSelectedEvents] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
@@ -80,7 +89,11 @@ export default function AdminSupportEditPage() {
     return fetchSupport(id)
       .then((p) => {
         setProgram(p);
-        if (p) setForm(toForm(p));
+        if (p) {
+          setForm(toForm(p));
+          setSelectedCats(p.categorySlugs);
+          setSelectedEvents(p.lifeEventSlugs);
+        }
       })
       .catch((e) =>
         setMsg({ ok: false, text: String((e as Error).message ?? e) }),
@@ -90,6 +103,12 @@ export default function AdminSupportEditPage() {
 
   useEffect(() => {
     void load();
+    Promise.all([fetchCategoryOptions(), fetchLifeEventOptions()])
+      .then(([c, e]) => {
+        setCatOptions(c);
+        setEventOptions(e);
+      })
+      .catch(() => {});
   }, [load]);
 
   const onSave = useCallback(
@@ -99,6 +118,7 @@ export default function AdminSupportEditPage() {
       setMsg(null);
       try {
         await updateSupport(id, form);
+        await setProgramTags(id, selectedCats, selectedEvents);
         await load();
         setMsg({ ok: true, text: "保存しました。" });
       } catch (err) {
@@ -107,7 +127,7 @@ export default function AdminSupportEditPage() {
         setSaving(false);
       }
     },
-    [id, form, load],
+    [id, form, load, selectedCats, selectedEvents],
   );
 
   const onStatus = useCallback(
@@ -289,10 +309,19 @@ export default function AdminSupportEditPage() {
           </label>
         </div>
 
-        <div className="rounded-lg bg-soft-gray/40 p-3 text-xs text-charcoal/70">
-          カテゴリ: {program.categorySlugs.join(", ") || "なし"} ／ 生活イベント:{" "}
-          {program.lifeEventSlugs.join(", ") || "なし"}
-          <span className="ml-1">（タグ編集は今後対応）</span>
+        <div className="space-y-3 rounded-lg bg-soft-gray/30 p-3">
+          <TagPicker
+            label="カテゴリ"
+            options={catOptions}
+            selected={selectedCats}
+            onChange={setSelectedCats}
+          />
+          <TagPicker
+            label="生活イベント"
+            options={eventOptions}
+            selected={selectedEvents}
+            onChange={setSelectedEvents}
+          />
         </div>
 
         <button type="submit" disabled={saving} className="btn-primary">

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Loader2, Search, AlertTriangle } from "lucide-react";
+import { Loader2, Search, AlertTriangle, Plus } from "lucide-react";
 import {
   fetchSupports,
   qualityIssues,
@@ -56,7 +56,17 @@ export default function AdminSupportsPage() {
 
   return (
     <div>
-      <h1 className="text-xl font-semibold text-navy">制度</h1>
+      <div className="flex items-center justify-between gap-3">
+        <h1 className="text-xl font-semibold text-navy">制度</h1>
+        <div className="flex items-center gap-2">
+          <Link href="/admin/import" className="btn-secondary">
+            CSV取込
+          </Link>
+          <Link href="/admin/supports/new" className="btn-primary">
+            <Plus className="h-4 w-4" aria-hidden="true" /> 新規作成
+          </Link>
+        </div>
+      </div>
       <div className="mt-4 flex flex-wrap items-center gap-2">
         {STATUSES.map((s) => (
           <button

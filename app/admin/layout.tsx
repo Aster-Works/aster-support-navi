@@ -1,6 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { LayoutDashboard, ListChecks, ShieldAlert, Inbox } from "lucide-react";
+import {
+  LayoutDashboard,
+  ListChecks,
+  ShieldAlert,
+  Inbox,
+  Upload,
+} from "lucide-react";
 import { AdminGate } from "./AdminGate";
 
 export const metadata: Metadata = {
@@ -11,6 +17,7 @@ export const metadata: Metadata = {
 const NAV = [
   { href: "/admin", label: "ダッシュボード", icon: LayoutDashboard },
   { href: "/admin/supports", label: "制度", icon: ListChecks },
+  { href: "/admin/import", label: "取込", icon: Upload },
   { href: "/admin/quality", label: "品質", icon: ShieldAlert },
   { href: "/admin/review-queue", label: "レビュー", icon: Inbox },
 ];

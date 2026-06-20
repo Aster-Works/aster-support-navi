@@ -13,6 +13,7 @@ import type {
   PublishStatus,
   SourceConfidence,
 } from "@/app/lib/data/types";
+import type { ImportRow } from "./csv";
 
 export interface AdminProgram {
   id: string;
@@ -269,6 +270,210 @@ export async function setStatus(
     .update(patch)
     .eq("id", program.id);
   if (error) throw new Error(error.message);
+}
+
+// ---- マスタ（タグ・自治体の選択肢）---------------------------------------
+export interface MasterOption {
+  id: string;
+  slug: string;
+  name: string;
+}
+export interface MunicipalityOption extends MasterOption {
+  prefectureName: string;
+  prefectureSlug: string;
+}
+
+export async function fetchCategoryOptions(): Promise<MasterOption[]> {
+  const { data, error } = await client()
+    .from("categories")
+    .select("id, slug, name")
+    .order("sort_order");
+  if (error) throw new Error(error.message);
+  return (data ?? []) as MasterOption[];
+}
+
+export async function fetchLifeEventOptions(): Promise<MasterOption[]> {
+  const { data, error } = await client()
+    .from("life_events")
+    .select("id, slug, name")
+    .order("sort_order");
+  if (error) throw new Error(error.message);
+  return (data ?? []) as MasterOption[];
+}
+
+export async function fetchMunicipalityOptions(): Promise<MunicipalityOption[]> {
+  const { data, error } = await client()
+    .from("municipalities")
+    .select("id, slug, name, prefecture:prefectures!inner ( slug, name )")
+    .order("name");
+  if (error) throw new Error(error.message);
+  type Row = {
+    id: string;
+    slug: string;
+    name: string;
+    prefecture: { slug: string; name: string } | null;
+  };
+  return (data as unknown as Row[])
+    .filter((r) => r.prefecture)
+    .map((r) => ({
+      id: r.id,
+      slug: r.slug,
+      name: r.name,
+      prefectureSlug: r.prefecture!.slug,
+      prefectureName: r.prefecture!.name,
+    }));
+}
+
+// ---- タグ（カテゴリ / 生活イベント）の差し替え ----------------------------
+/** 制度のカテゴリ/生活イベントを、指定 slug 集合へ置き換える（join 行を delete→insert）。 */
+export async function setProgramTags(
+  programId: string,
+  categorySlugs: string[],
+  lifeEventSlugs: string[],
+): Promise<void> {
+  const sb = client();
+  const [cats, events] = await Promise.all([
+    fetchCategoryOptions(),
+    fetchLifeEventOptions(),
+  ]);
+  const catIds = categorySlugs
+    .map((s) => cats.find((c) => c.slug === s)?.id)
+    .filter((x): x is string => Boolean(x));
+  const eventIds = lifeEventSlugs
+    .map((s) => events.find((e) => e.slug === s)?.id)
+    .filter((x): x is string => Boolean(x));
+
+  const delCat = await sb
+    .from("support_program_categories")
+    .delete()
+    .eq("support_program_id", programId);
+  if (delCat.error) throw new Error(delCat.error.message);
+  if (catIds.length) {
+    const ins = await sb
+      .from("support_program_categories")
+      .insert(catIds.map((category_id) => ({ support_program_id: programId, category_id })));
+    if (ins.error) throw new Error(ins.error.message);
+  }
+
+  const delEvent = await sb
+    .from("support_program_life_events")
+    .delete()
+    .eq("support_program_id", programId);
+  if (delEvent.error) throw new Error(delEvent.error.message);
+  if (eventIds.length) {
+    const ins = await sb
+      .from("support_program_life_events")
+      .insert(
+        eventIds.map((life_event_id) => ({ support_program_id: programId, life_event_id })),
+      );
+    if (ins.error) throw new Error(ins.error.message);
+  }
+}
+
+// ---- 新規制度の作成 -------------------------------------------------------
+export interface CreateSupportInput {
+  municipalityId: string;
+  slug: string;
+  title: string;
+  summary: string;
+  targetPeople: string;
+  applicationMethodText: string;
+  officialUrl: string;
+  lastOfficialCheckedAt: string;
+  benefitType: BenefitType;
+  sourceConfidence: SourceConfidence;
+  categorySlugs: string[];
+  lifeEventSlugs: string[];
+}
+
+/** 新規制度を draft で作成し、タグを設定して、作成された id を返す。 */
+export async function createSupport(input: CreateSupportInput): Promise<string> {
+  const { data, error } = await client()
+    .from("support_programs")
+    .insert({
+      municipality_id: input.municipalityId,
+      slug: input.slug.trim(),
+      title: input.title,
+      summary: input.summary,
+      target_people: input.targetPeople,
+      application_method_text: input.applicationMethodText,
+      official_url: input.officialUrl,
+      last_official_checked_at: input.lastOfficialCheckedAt,
+      benefit_type: input.benefitType,
+      source_confidence: input.sourceConfidence,
+      status: "draft",
+    })
+    .select("id")
+    .single();
+  if (error) throw new Error(error.message);
+  const id = (data as { id: string }).id;
+  await setProgramTags(id, input.categorySlugs, input.lifeEventSlugs);
+  return id;
+}
+
+// ---- CSV 取込（検証済み行を upsert） --------------------------------------
+export interface ImportResult {
+  ok: number;
+  failed: { slug: string; error: string }[];
+}
+
+/** 検証済みの ImportRow[] を upsert（slug 衝突は更新）し、タグを設定する。 */
+export async function importPrograms(rows: ImportRow[]): Promise<ImportResult> {
+  const sb = client();
+  const munis = await fetchMunicipalityOptions();
+  const muniMap = new Map(
+    munis.map((m) => [`${m.prefectureSlug}/${m.slug}`, m.id]),
+  );
+  const result: ImportResult = { ok: 0, failed: [] };
+  for (const row of rows) {
+    const muniId = muniMap.get(`${row.prefectureSlug}/${row.municipalitySlug}`);
+    if (!muniId) {
+      result.failed.push({ slug: row.slug, error: "自治体を解決できません" });
+      continue;
+    }
+    const { data, error } = await sb
+      .from("support_programs")
+      .upsert(
+        {
+          municipality_id: muniId,
+          slug: row.slug,
+          title: row.title,
+          summary: row.summary,
+          target_people: row.targetPeople,
+          application_method_text: row.applicationMethodText,
+          official_url: row.officialUrl,
+          last_official_checked_at: row.lastOfficialCheckedAt,
+          benefit_type: row.benefitType,
+          source_confidence: row.sourceConfidence,
+          status: row.status,
+        },
+        { onConflict: "slug" },
+      )
+      .select("id")
+      .single();
+    if (error || !data) {
+      result.failed.push({
+        slug: row.slug,
+        error: error?.message ?? "upsert に失敗",
+      });
+      continue;
+    }
+    try {
+      await setProgramTags(
+        (data as { id: string }).id,
+        row.categorySlugs,
+        row.lifeEventSlugs,
+      );
+    } catch (e) {
+      result.failed.push({
+        slug: row.slug,
+        error: "タグ設定に失敗: " + (e as Error).message,
+      });
+      continue;
+    }
+    result.ok++;
+  }
+  return result;
 }
 
 // ---- 統計（ダッシュボード）------------------------------------------------
