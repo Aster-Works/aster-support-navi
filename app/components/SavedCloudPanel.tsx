@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Cloud, ShieldCheck, LogIn, LogOut } from "lucide-react";
 import { useSavedSync } from "@/app/components/SavedSyncProvider";
+import { EmailOptIn } from "@/app/components/EmailOptIn";
 
 /** /saved 上部の「複数端末で同期」案内＋メール（ID）＋パスワードのログイン/新規登録。 */
 export function SavedCloudPanel() {
@@ -20,15 +21,18 @@ export function SavedCloudPanel() {
 
   if (status === "signedin") {
     return (
-      <div className="aw-card mt-6 flex flex-wrap items-center justify-between gap-3 bg-aster-soft/40">
-        <p className="inline-flex items-center gap-2 text-[14px] text-navy">
-          <ShieldCheck className="h-4 w-4 text-ok" aria-hidden="true" />
-          <span className="font-bold">{email}</span> で同期中（複数の端末で見返せます）
-        </p>
-        <button type="button" className="btn-secondary" onClick={() => void signOut()}>
-          <LogOut className="h-4 w-4" aria-hidden="true" />
-          ログアウト
-        </button>
+      <div className="aw-card mt-6 bg-aster-soft/40">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p className="inline-flex items-center gap-2 text-[14px] text-navy">
+            <ShieldCheck className="h-4 w-4 text-ok" aria-hidden="true" />
+            <span className="font-bold">{email}</span> で同期中（複数の端末で見返せます）
+          </p>
+          <button type="button" className="btn-secondary" onClick={() => void signOut()}>
+            <LogOut className="h-4 w-4" aria-hidden="true" />
+            ログアウト
+          </button>
+        </div>
+        <EmailOptIn />
       </div>
     );
   }

@@ -15,10 +15,17 @@ import {
   loadSaved,
   persistSaved,
   removeFromSaved,
+  setSavedStatus,
+  savedStatusCounts,
+  isStale,
   SAVED_CHANGED_EVENT,
+  SAVED_STATUS_LABEL,
+  SAVED_STATUS_ORDER,
   type SavedItem,
+  type SavedStatus,
 } from "@/app/lib/saved";
 import { formatCheckedAt } from "@/app/lib/dates";
+import { track } from "@/app/lib/track";
 
 export function SavedList() {
   const [items, setItems] = useState<SavedItem[]>([]);
@@ -41,6 +48,16 @@ export function SavedList() {
     setItems(next);
     setAnnounce(`保存リストから削除しました。残り${next.length}件です。`);
   }
+
+  function changeStatus(slug: string, status: SavedStatus) {
+    const next = setSavedStatus(items, slug, status);
+    persistSaved(next);
+    setItems(next);
+    track("saved_status_changed", { context: status });
+  }
+
+  const today = new Date().toISOString().slice(0, 10);
+  const counts = savedStatusCounts(items);
 
   // 全分岐で常設するライブリージョン（削除・残件数を読み上げる）。
   const liveRegion = (
@@ -90,6 +107,18 @@ export function SavedList() {
       <p className="mt-6 text-[13px] text-charcoal/70">
         {items.length} 件を保存中（この端末にのみ保存）
       </p>
+      {/* 進捗サマリ（ステータス別件数） */}
+      <div className="mt-3 flex flex-wrap gap-2">
+        {SAVED_STATUS_ORDER.filter((s) => counts[s] > 0).map((s) => (
+          <span
+            key={s}
+            className="aw-badge aw-badge--neutral"
+            title={`${SAVED_STATUS_LABEL[s]} ${counts[s]}件`}
+          >
+            {SAVED_STATUS_LABEL[s]} {counts[s]}
+          </span>
+        ))}
+      </div>
       <ul className="mt-4 space-y-3">
         {items.map((it) => (
           <li key={it.slug}>
@@ -113,6 +142,11 @@ export function SavedList() {
                       申請期限あり
                     </span>
                   )}
+                  {isStale(it.lastOfficialCheckedAt, today) && (
+                    <span className="aw-badge aw-badge--info" title="最終確認から時間が経っています">
+                      情報が古い可能性
+                    </span>
+                  )}
                 </div>
                 <h2 className="mt-2 text-[16px] font-bold text-navy">
                   <Link href={`/supports/${it.slug}`} className="hover:underline">
@@ -132,6 +166,22 @@ export function SavedList() {
               </div>
 
               <div className="flex shrink-0 gap-2 sm:w-40 sm:flex-col">
+                <label className="block">
+                  <span className="sr-only">{it.title}の進捗</span>
+                  <select
+                    className="aw-select w-full text-[13px]"
+                    value={it.status ?? "saved"}
+                    onChange={(e) =>
+                      changeStatus(it.slug, e.target.value as SavedStatus)
+                    }
+                  >
+                    {SAVED_STATUS_ORDER.map((s) => (
+                      <option key={s} value={s}>
+                        {SAVED_STATUS_LABEL[s]}
+                      </option>
+                    ))}
+                  </select>
+                </label>
                 <Link
                   href={`/supports/${it.slug}`}
                   className="btn-primary flex-1"
