@@ -21,6 +21,7 @@ const COLUMNS: { heading: string; links: { href: string; label: string }[] }[] =
       heading: "このサイトについて",
       links: [
         { href: "/about", label: "Aster Support Navi とは" },
+        { href: "/pro", label: "支援団体・相談員の方へ（Pro）" },
         { href: "/disclaimer", label: "免責事項" },
         { href: "/privacy", label: "プライバシーポリシー" },
         { href: "/terms", label: "利用規約" },
