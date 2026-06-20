@@ -9,8 +9,10 @@ import {
   getActiveMunicipalities,
 } from "@/app/lib/data";
 import { buildMetadata } from "@/app/lib/seo";
+import { buildRegionGroups } from "@/app/lib/region";
 import { Breadcrumbs } from "@/app/components/Breadcrumbs";
 import { SectionHeading } from "@/app/components/SectionHeading";
+import { RegionBrowse } from "@/app/components/RegionBrowse";
 
 export const revalidate = 86400;
 export const dynamicParams = true;
@@ -47,11 +49,16 @@ export default async function PrefecturePage({
   const pref = await getPrefecture(prefecture);
   if (!pref) notFound();
 
-  const [all, active] = await Promise.all([
+  const [all, active, allActive, prefectures] = await Promise.all([
     getMunicipalities(pref.slug),
     getActiveMunicipalities(pref.slug),
+    getActiveMunicipalities(), // 全都道府県（他の地域への導線用）
+    getPrefectures(),
   ]);
   const activeSlugs = new Set(active.map((m) => m.slug));
+  const otherGroups = buildRegionGroups(allActive, prefectures, {
+    exclude: pref.slug,
+  });
 
   return (
     <>
@@ -124,6 +131,20 @@ export default async function PrefecturePage({
             })}
           </ul>
         </section>
+
+        {otherGroups.length > 0 && (
+          <section className="mt-12 border-t border-soft-gray pt-8">
+            <h2 className="text-sm font-semibold tracking-wide text-charcoal/70">
+              他の都道府県から探す
+            </h2>
+            <p className="mt-1 text-[13px] text-charcoal/70">
+              政令指定都市など、{pref.name}以外の地域も整備しています。
+            </p>
+            <div className="mt-4">
+              <RegionBrowse groups={otherGroups} />
+            </div>
+          </section>
+        )}
       </div>
     </>
   );

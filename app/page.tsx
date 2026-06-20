@@ -20,6 +20,8 @@ import {
   getRecentlyUpdatedPrograms,
 } from "@/app/lib/data";
 import { SITE } from "@/app/lib/site";
+import { buildRegionGroups } from "@/app/lib/region";
+import { RegionBrowse } from "@/app/components/RegionBrowse";
 import { buildMetadata } from "@/app/lib/seo";
 import { COPY } from "@/app/lib/copy";
 import { HomeSearch, type MuniOption } from "@/app/components/HomeSearch";
@@ -69,28 +71,7 @@ export default async function HomePage() {
     categories.find((c) => c.slug === slug)?.name;
 
   // 制度あり自治体を都道府県ごとにまとめる（東京を先頭、以降は名前順）。
-  const prefName = new Map(prefectures.map((p) => [p.slug, p.name]));
-  const byPref = new Map<string, typeof active>();
-  for (const m of active) {
-    const arr = byPref.get(m.prefectureSlug) ?? [];
-    arr.push(m);
-    byPref.set(m.prefectureSlug, arr);
-  }
-  const regionGroups = [...byPref.entries()]
-    .map(([slug, munis]) => ({
-      slug,
-      name: prefName.get(slug) ?? slug,
-      munis: [...munis].sort((a, b) =>
-        (a.nameKana ?? a.name).localeCompare(b.nameKana ?? b.name, "ja"),
-      ),
-    }))
-    .sort((a, b) =>
-      a.slug === "tokyo"
-        ? -1
-        : b.slug === "tokyo"
-          ? 1
-          : a.name.localeCompare(b.name, "ja"),
-    );
+  const regionGroups = buildRegionGroups(active, prefectures);
 
   return (
     <>
@@ -144,29 +125,8 @@ export default async function HomePage() {
           title="お住まいの自治体から探す"
           description="東京23区と政令指定都市などを順次整備しています。自治体名から、確認すべき制度へ進めます。"
         />
-        <div className="mt-6 space-y-5">
-          {regionGroups.map((g) => (
-            <div key={g.slug}>
-              <h3 className="text-[13px] font-bold text-navy">
-                {g.name}
-                <span className="ml-2 text-[11px] font-normal text-charcoal/60">
-                  {g.munis.length}自治体
-                </span>
-              </h3>
-              <ul className="mt-2 flex flex-wrap gap-2">
-                {g.munis.map((m) => (
-                  <li key={`${m.prefectureSlug}-${m.slug}`}>
-                    <Link
-                      href={`/${m.prefectureSlug}/${m.slug}`}
-                      className="aw-chip"
-                    >
-                      {m.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+        <div className="mt-6">
+          <RegionBrowse groups={regionGroups} />
         </div>
       </section>
 
