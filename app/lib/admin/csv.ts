@@ -37,13 +37,32 @@ const BENEFIT_TYPES = new Set([
   "other",
 ]);
 const CONFIDENCES = new Set(["high", "medium", "low"]);
-const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+/** 上限（管理者の手元でも巨大入力でブラウザを固めないため）。 */
+export const MAX_CSV_BYTES = 5_000_000;
+export const MAX_CSV_ROWS = 5000;
+
+/** YYYY-MM-DD の「実在する日付」か（2026-02-30 や 2026-13-45 を弾く）。 */
+export function isRealDate(s: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
+  const [y, m, d] = s.split("-").map(Number);
+  const dt = new Date(Date.UTC(y, m - 1, d));
+  return (
+    dt.getUTCFullYear() === y &&
+    dt.getUTCMonth() === m - 1 &&
+    dt.getUTCDate() === d
+  );
+}
 
 export interface ImportContext {
   categorySlugs: Set<string>;
   lifeEventSlugs: Set<string>;
   /** `${prefectureSlug}/${municipalitySlug}` の集合。 */
   municipalityKeys: Set<string>;
+  /** 既存制度の slug（upsert で更新になる行の判定用・任意）。 */
+  existingSlugs?: Set<string>;
+  /** 既存で status='published' の slug（公開中の上書き警告用・任意）。 */
+  publishedSlugs?: Set<string>;
 }
 
 export interface ImportRow {
@@ -61,6 +80,10 @@ export interface ImportRow {
   lastOfficialCheckedAt: string;
   sourceConfidence: string;
   status: string;
+  /** 既存 slug への upsert（= 更新・上書き）か。 */
+  isUpdate: boolean;
+  /** 公開中（published）の制度を上書きするか（要注意）。 */
+  overwritesPublished: boolean;
 }
 
 export interface RowError {
@@ -76,6 +99,11 @@ export interface ValidateResult {
 
 /** RFC4180 風 CSV パーサ（"" エスケープ・引用内のカンマ/改行に対応）。 */
 export function parseCsv(text: string): string[][] {
+  if (text.length > MAX_CSV_BYTES) {
+    throw new Error("CSV が大きすぎます（最大 5MB）。分割してください。");
+  }
+  // BOM（Excel 等が付与）を除去。
+  if (text.charCodeAt(0) === 0xfeff) text = text.slice(1);
   const rows: string[][] = [];
   let row: string[] = [];
   let field = "";
@@ -154,6 +182,13 @@ export function validateImport(
       headerError: `必須列が不足しています: ${missing.join(", ")}`,
     };
   }
+  if (rows.length - 1 > MAX_CSV_ROWS) {
+    return {
+      valid: [],
+      errors: [],
+      headerError: `行が多すぎます（最大 ${MAX_CSV_ROWS} 行）。分割してください。`,
+    };
+  }
 
   const valid: ImportRow[] = [];
   const errors: RowError[] = [];
@@ -163,6 +198,13 @@ export function validateImport(
     const cells = rows[r];
     const get = (k: string) => (cells[idx[k]] ?? "").trim();
     const msgs: string[] = [];
+
+    // 列数がヘッダと合わない（引用閉じ忘れ・カンマ過不足）を検出。
+    if (cells.length !== headers.length) {
+      msgs.push(
+        `列数が不正です（ヘッダ ${headers.length} 列に対し ${cells.length} 列。引用符の閉じ忘れ等）`,
+      );
+    }
 
     const slug = get("slug");
     const cats = splitList(get("category_slugs"));
@@ -178,8 +220,10 @@ export function validateImport(
     if (!get("application_method_text"))
       msgs.push("application_method_text が空です");
     if (!get("official_url")) msgs.push("official_url が空です");
-    if (!DATE_RE.test(get("last_official_checked_at")))
-      msgs.push("last_official_checked_at は YYYY-MM-DD 形式が必要です");
+    if (!isRealDate(get("last_official_checked_at")))
+      msgs.push(
+        "last_official_checked_at は実在する YYYY-MM-DD が必要です",
+      );
     if (!STATUSES.has(status)) msgs.push(`status が不正です: ${status}`);
     if (!BENEFIT_TYPES.has(get("benefit_type")))
       msgs.push(`benefit_type が不正です: ${get("benefit_type")}`);
@@ -219,6 +263,8 @@ export function validateImport(
         lastOfficialCheckedAt: get("last_official_checked_at"),
         sourceConfidence: get("source_confidence"),
         status,
+        isUpdate: ctx.existingSlugs?.has(slug) ?? false,
+        overwritesPublished: ctx.publishedSlugs?.has(slug) ?? false,
       });
     }
   }

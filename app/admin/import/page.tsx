@@ -6,6 +6,7 @@ import {
   fetchCategoryOptions,
   fetchLifeEventOptions,
   fetchMunicipalityOptions,
+  fetchSlugStatusMap,
   importPrograms,
   type ImportResult,
 } from "@/app/lib/admin/client";
@@ -30,14 +31,20 @@ export default function AdminImportPage() {
       fetchCategoryOptions(),
       fetchLifeEventOptions(),
       fetchMunicipalityOptions(),
+      fetchSlugStatusMap(),
     ])
-      .then(([cats, events, munis]) => {
+      .then(([cats, events, munis, slugStatus]) => {
+        const published = new Set<string>();
+        for (const [slug, status] of slugStatus)
+          if (status === "published") published.add(slug);
         setCtx({
           categorySlugs: new Set(cats.map((c) => c.slug)),
           lifeEventSlugs: new Set(events.map((e) => e.slug)),
           municipalityKeys: new Set(
             munis.map((m) => `${m.prefectureSlug}/${m.slug}`),
           ),
+          existingSlugs: new Set(slugStatus.keys()),
+          publishedSlugs: published,
         });
       })
       .catch((e) => setError(String(e.message ?? e)));
@@ -46,7 +53,13 @@ export default function AdminImportPage() {
   const onValidate = () => {
     if (!ctx) return;
     setImported(null);
-    setResult(validateImport(parseCsv(text), ctx));
+    setError(null);
+    try {
+      setResult(validateImport(parseCsv(text), ctx));
+    } catch (e) {
+      setResult(null);
+      setError(String((e as Error).message ?? e));
+    }
   };
 
   const onImport = () => {
@@ -118,9 +131,15 @@ export default function AdminImportPage() {
 
       {result && !result.headerError && (
         <div className="mt-4 space-y-3">
-          <p className="flex items-center gap-2 text-sm">
-            <CheckCircle2 className="h-4 w-4 text-green-600" aria-hidden="true" />
-            取込可能 {result.valid.length} 件
+          <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
+            <span className="flex items-center gap-2">
+              <CheckCircle2 className="h-4 w-4 text-green-600" aria-hidden="true" />
+              取込可能 {result.valid.length} 件
+            </span>
+            <span className="text-charcoal/60">
+              新規 {result.valid.filter((v) => !v.isUpdate).length} ／ 更新{" "}
+              {result.valid.filter((v) => v.isUpdate).length}
+            </span>
             {result.errors.length > 0 && (
               <span className="flex items-center gap-1 text-amber-700">
                 <AlertTriangle className="h-4 w-4" aria-hidden="true" />
@@ -128,6 +147,27 @@ export default function AdminImportPage() {
               </span>
             )}
           </p>
+          {result.valid.some((v) => v.overwritesPublished) && (
+            <p className="flex items-start gap-2 rounded-lg bg-amber-50 p-3 text-sm text-amber-800">
+              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+              <span>
+                <strong>
+                  {result.valid.filter((v) => v.overwritesPublished).length} 件
+                </strong>
+                は<strong>公開中</strong>の制度の<strong>内容</strong>
+                を上書きします（公開ステータスは維持され、CSV の status
+                は無視されます。非公開化は管理画面の操作で行ってください）:{" "}
+                {result.valid
+                  .filter((v) => v.overwritesPublished)
+                  .map((v) => v.slug)
+                  .slice(0, 10)
+                  .join(", ")}
+                {result.valid.filter((v) => v.overwritesPublished).length > 10
+                  ? " …"
+                  : ""}
+              </span>
+            </p>
+          )}
           {result.errors.length > 0 && (
             <div className="max-h-64 overflow-auto rounded-lg border border-soft-gray text-xs">
               {result.errors.map((e) => (
@@ -143,7 +183,11 @@ export default function AdminImportPage() {
 
       {imported && (
         <div className="mt-4 rounded-lg bg-green-50 p-3 text-sm text-green-800">
-          <p className="font-medium">取込完了: 成功 {imported.ok} 件</p>
+          <p className="font-medium">
+            取込完了: 成功 {imported.ok} 件
+            {imported.statusPreserved > 0 &&
+              `（うち ${imported.statusPreserved} 件は公開中のため status を維持）`}
+          </p>
           {imported.failed.length > 0 && (
             <ul className="mt-1 list-disc pl-4 text-red-700">
               {imported.failed.map((f) => (

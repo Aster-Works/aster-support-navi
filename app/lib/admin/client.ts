@@ -324,6 +324,20 @@ export async function fetchMunicipalityOptions(): Promise<MunicipalityOption[]> 
     }));
 }
 
+/** 既存制度の slug→status（CSV 取込で「新規/更新/公開中の上書き」を判定するため）。 */
+export async function fetchSlugStatusMap(): Promise<Map<string, PublishStatus>> {
+  const { data, error } = await client()
+    .from("support_programs")
+    .select("slug, status")
+    .limit(20000);
+  if (error) throw new Error(error.message);
+  const map = new Map<string, PublishStatus>();
+  for (const r of (data ?? []) as { slug: string; status: PublishStatus }[]) {
+    map.set(r.slug, r.status);
+  }
+  return map;
+}
+
 // ---- タグ（カテゴリ / 生活イベント）の差し替え ----------------------------
 /** 制度のカテゴリ/生活イベントを、指定 slug 集合へ置き換える（join 行を delete→insert）。 */
 export async function setProgramTags(
@@ -414,41 +428,57 @@ export async function createSupport(input: CreateSupportInput): Promise<string> 
 // ---- CSV 取込（検証済み行を upsert） --------------------------------------
 export interface ImportResult {
   ok: number;
+  /** 公開中だったため CSV の status を無視し published を維持した行数。 */
+  statusPreserved: number;
   failed: { slug: string; error: string }[];
 }
 
-/** 検証済みの ImportRow[] を upsert（slug 衝突は更新）し、タグを設定する。 */
+/** 検証済みの ImportRow[] を upsert（slug 衝突は更新）し、タグを設定する。
+ *  安全策: 既存で公開中（published）の制度は CSV で status を変更しない
+ *  （誤った非公開化・破壊を防ぐ。ステータス変更は管理画面の操作で行う）。 */
 export async function importPrograms(rows: ImportRow[]): Promise<ImportResult> {
   const sb = client();
-  const munis = await fetchMunicipalityOptions();
+  const [munis, slugStatus] = await Promise.all([
+    fetchMunicipalityOptions(),
+    fetchSlugStatusMap(),
+  ]);
   const muniMap = new Map(
     munis.map((m) => [`${m.prefectureSlug}/${m.slug}`, m.id]),
   );
-  const result: ImportResult = { ok: 0, failed: [] };
+  const result: ImportResult = { ok: 0, statusPreserved: 0, failed: [] };
   for (const row of rows) {
     const muniId = muniMap.get(`${row.prefectureSlug}/${row.municipalitySlug}`);
     if (!muniId) {
       result.failed.push({ slug: row.slug, error: "自治体を解決できません" });
       continue;
     }
+    const existing = slugStatus.get(row.slug);
+    // 公開中の制度は status を維持（CSV による降格・非公開化を拒否）。
+    let effectiveStatus = row.status;
+    if (existing === "published" && row.status !== "published") {
+      effectiveStatus = "published";
+      result.statusPreserved++;
+    }
+    const payload: Record<string, unknown> = {
+      municipality_id: muniId,
+      slug: row.slug,
+      title: row.title,
+      summary: row.summary,
+      target_people: row.targetPeople,
+      application_method_text: row.applicationMethodText,
+      official_url: row.officialUrl,
+      last_official_checked_at: row.lastOfficialCheckedAt,
+      benefit_type: row.benefitType,
+      source_confidence: row.sourceConfidence,
+      status: effectiveStatus,
+    };
+    // 新たに published へ昇格する場合は published_at を設定（setStatus と整合）。
+    if (effectiveStatus === "published" && existing !== "published") {
+      payload.published_at = new Date().toISOString();
+    }
     const { data, error } = await sb
       .from("support_programs")
-      .upsert(
-        {
-          municipality_id: muniId,
-          slug: row.slug,
-          title: row.title,
-          summary: row.summary,
-          target_people: row.targetPeople,
-          application_method_text: row.applicationMethodText,
-          official_url: row.officialUrl,
-          last_official_checked_at: row.lastOfficialCheckedAt,
-          benefit_type: row.benefitType,
-          source_confidence: row.sourceConfidence,
-          status: row.status,
-        },
-        { onConflict: "slug" },
-      )
+      .upsert(payload, { onConflict: "slug" })
       .select("id")
       .single();
     if (error || !data) {
