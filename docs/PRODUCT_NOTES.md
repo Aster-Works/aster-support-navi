@@ -52,10 +52,13 @@
 - **研究→敵対検証Workflow**（`scripts/` の `gen-append-programs.ts`／`preview-append-programs.ts` と併用）: (市×カテゴリ) ごとに、研究エージェントが各市公式ドメイン限定 WebSearch→WebFetch で実URL確認・窓口/連絡先抽出、検証エージェントが独立に再WebFetchで scope/到達/断定を再審査。session limit で検証段が一部未了→ research のみの層は curl で全URL HTTP 200 を確認し補完。
 - **多層の捏造防止ゲート**: ①研究WebFetch ②敵対検証WebFetch ③`gen-append` の公式ホスト許可リスト＋`FORBIDDEN_PHRASES`＋`isPublishable`＋slug一意（未達は published→draft 降格） ④`tests/unit/safety.test.ts`（全 published に公式URL/確認日/対象/公的ソースhost/禁止語不在を強制）。
 - **社協ホスト**: 生活福祉資金は各市社協が窓口。`gen-append`/`preview`/`safety.test` に検証済み社協ホストの明示許可（`EXTRA_ALLOWED_HOSTS`＝`csw-kawasaki.or.jp`・`www.with-kobe.or.jp`）を追加。shakyo/syakyo/cosw 含むホストは既存ルールで許可。
-- **取り込み結果**: 制度 829→**1066**（published 1063 / draft 3）。政令市の制度 ~136→**373**（single-parent 76・livelihood 71・nursing-care 53・disability 68）。静的ページ 1247→**1541**。全URL HTTP 200、typecheck/lint/Vitest 94件/build すべて green。
-- **draft の3件**は研究が公式ページを確認できず自己申告で非公開化（shizuoka self-reliance-consultation・niigata high-cost-care・shizuoka single-parent-medical-aid）。seed には残るが `isPublishable` で描画されない。
-- **lastOfficialCheckedAt = 2026-06-21**。redirect 14件は同一ホストの正規URLへ置換済み。
-- **要追いタスク（本番デプロイ前推奨）**: ①234 published の独立敵対検証パス（fukuoka 障害者手帳のような scope 過大を全件で再点検。今回 session limt で大半が未了）。②取りこぼし補完（熊本市・仙台市・北九州市障害）。③seed→Supabase へ反映する場合は `export-seed-to-sql` 再生成。
+- **取り込み結果**: 制度 829→**1099**（published 1094 / draft 5）。政令市の制度 ~136→**406**（4カテゴリ深掘り）。静的ページ 1247→**1579**。全URL HTTP 200、typecheck/lint/Vitest 94件/build すべて green。**本番デプロイ済（2026-06-21・commit `bf5ea83`・https://astersupport.com で新ページ200・内容描画確認）**。
+- **2回のWorkflow**: ①本体（20市×4カテゴリ。session limit で検証段の大半が未了→研究層＋curl で補完）②取りこぼし補完（熊本/仙台/北九州障害＝前回失敗の9ペア。検証段も完了＝二層検証）。
+- **draft の5件**は研究が公式ページを確認できず自己申告で非公開化。seed には残るが `isPublishable` で描画されない。
+- **lastOfficialCheckedAt = 2026-06-21**。redirect 14件は同一ホストの正規URLへ置換済み。社協3ホスト（csw-kawasaki/with-kobe/kumamoto-city-csw）を検証して `EXTRA_ALLOWED_HOSTS` に追加。
+- **TS2590 対応**: programs.ts が 1099件で「union 型が複雑すぎる」型エラー→ 5チャンク（programs_0..4）に分割し `.concat()` で結合（巨大 seed 配列の定番回避策。今後の拡充でも分割を維持）。
+- **独立検証**: 私（メインループ）の WebFetch 抜き取り 17サンプル（全20市・全4カテゴリ）→ 16完全一致＋1（福岡 障害者手帳が身体のみ）を是正。障害者手帳は15/16がハブページと確認。
+- **要追い（任意・品質向上）**: ①全 published の独立敵対検証パス（本体Workflowは session limit で検証段の大半が未了。福岡型 scope 過大の全件再点検）。②seed→Supabase 反映（現状は hybrid の seed 補完で公開中＝描画は正常だが admin 編集対象にするなら `export-seed-to-sql` 再生成＋投入）。
 
 ## ルート
 
