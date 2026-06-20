@@ -129,6 +129,13 @@ describe("YMYL: 信頼性メタ（不変条件 §3）", () => {
   });
 
   it("公式URLは公的ソース（自治体 lg.jp / go.jp / tokyo.jp、または社会福祉協議会）", () => {
+    // 公式ながら標準パターンに当たらない社協等の検証済みホスト（WebFetchで実在確認済み）。
+    // scripts/gen-append-programs.ts の EXTRA_ALLOWED_HOSTS と一致させる。
+    const extraAllowed = new Set<string>([
+      "csw-kawasaki.or.jp", // 川崎市社会福祉協議会（生活福祉資金）
+      "www.with-kobe.or.jp", // 神戸市社会福祉協議会（生活福祉資金）
+      "www.kumamoto-city-csw.or.jp", // 熊本市社会福祉協議会（生活福祉資金）
+    ]);
     for (const p of published) {
       const host = new URL(p.officialUrl).host;
       // 自治体公式ドメイン、または生活福祉資金等を所管する社会福祉協議会の公式サイト
@@ -137,7 +144,8 @@ describe("YMYL: 信頼性メタ（不変条件 §3）", () => {
       const isShakyo =
         host.includes("shakyo") ||
         host.includes("syakyo") ||
-        host.includes("cosw");
+        host.includes("cosw") ||
+        extraAllowed.has(host);
       // 政令市など lg.jp を使わない自治体公式サイト（例: www.city.nagoya.jp、
       // 子育て応援サイト kosodate.city.sapporo.jp 等。"city" がドメインラベルのもの）も許可。
       const isCity = host.startsWith("city.") || host.includes(".city.");

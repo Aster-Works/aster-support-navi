@@ -1,6 +1,6 @@
-# Aster Support Navi — 実装ノート（Phase 1 MVP）
+# Aster Support Navi — 実装ノート
 
-作成: 2026-06-18 / ステータス: Phase 1 MVP + Phase 2核 実装完了・本番デプロイ済
+作成: 2026-06-18 / 最終更新: 2026-06-21 / ステータス: Phase 1–2 + Slice A–E 実装完了・本番デプロイ済。Phase 4（コンテンツ拡充）進行中。
 
 引き継ぎ仕様の原典は `/Users/james/aster-support-navi-handoff/`（PRODUCT_SPEC / TECHNICAL_ARCHITECTURE / DATA_AND_CONTENT_OPS / ROADMAP / RESEARCH_AND_POSITIONING）。本ノートは実装の地図。
 
@@ -44,6 +44,18 @@
 - 認可の最終境界は DB の RLS。AdminGate はUX用。多層防御＝①クライアント品質ゲート ②DBトリガ強制 ③公開側 isPublishable 再フィルタ。
 - 検証: 実認証 admin JWT で end-to-end（非admin→draft不可視 / admin→draft可視・編集・revision記録 / incomplete publish 拒否 / valid publish 成功）。匿名 gate・admin walkthrough をブラウザ実地検証。build 1251 / Vitest 74 green。セキュリティレビュー（RLS認可・client安全性・監査・整合性 ×敵対的検証）対応済。
 - 残: 制度の新規作成フォーム・タグ（カテゴリ/生活イベント）編集・source 管理 UI・CSV import（仕様§16）・差分検知→review_queue 自動投入。最初の本番 admin 付与（Jimi のログインユーザーを app_roles に登録）。
+
+### 政令市データ拡充 — 4カテゴリ深掘り（Phase 4・2026-06-21）
+
+20政令市はそれまで出産・子育てのみだった。**法令で全市に必ず存在する制度**だけに絞り、ひとり親 / 生活困窮 / 介護 / 障害の4カテゴリへ深掘り（制度の存在は法令で保証＝市ごとに不明なのは公式URL・窓口だけ＝YMYL捏造リスク最小）。
+
+- **研究→敵対検証Workflow**（`scripts/` の `gen-append-programs.ts`／`preview-append-programs.ts` と併用）: (市×カテゴリ) ごとに、研究エージェントが各市公式ドメイン限定 WebSearch→WebFetch で実URL確認・窓口/連絡先抽出、検証エージェントが独立に再WebFetchで scope/到達/断定を再審査。session limit で検証段が一部未了→ research のみの層は curl で全URL HTTP 200 を確認し補完。
+- **多層の捏造防止ゲート**: ①研究WebFetch ②敵対検証WebFetch ③`gen-append` の公式ホスト許可リスト＋`FORBIDDEN_PHRASES`＋`isPublishable`＋slug一意（未達は published→draft 降格） ④`tests/unit/safety.test.ts`（全 published に公式URL/確認日/対象/公的ソースhost/禁止語不在を強制）。
+- **社協ホスト**: 生活福祉資金は各市社協が窓口。`gen-append`/`preview`/`safety.test` に検証済み社協ホストの明示許可（`EXTRA_ALLOWED_HOSTS`＝`csw-kawasaki.or.jp`・`www.with-kobe.or.jp`）を追加。shakyo/syakyo/cosw 含むホストは既存ルールで許可。
+- **取り込み結果**: 制度 829→**1066**（published 1063 / draft 3）。政令市の制度 ~136→**373**（single-parent 76・livelihood 71・nursing-care 53・disability 68）。静的ページ 1247→**1541**。全URL HTTP 200、typecheck/lint/Vitest 94件/build すべて green。
+- **draft の3件**は研究が公式ページを確認できず自己申告で非公開化（shizuoka self-reliance-consultation・niigata high-cost-care・shizuoka single-parent-medical-aid）。seed には残るが `isPublishable` で描画されない。
+- **lastOfficialCheckedAt = 2026-06-21**。redirect 14件は同一ホストの正規URLへ置換済み。
+- **要追いタスク（本番デプロイ前推奨）**: ①234 published の独立敵対検証パス（fukuoka 障害者手帳のような scope 過大を全件で再点検。今回 session limt で大半が未了）。②取りこぼし補完（熊本市・仙台市・北九州市障害）。③seed→Supabase へ反映する場合は `export-seed-to-sql` 再生成。
 
 ## ルート
 
