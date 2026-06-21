@@ -159,6 +159,28 @@
     @apply border-navy bg-navy text-white hover:bg-ink;
   }
 
+  /* セクションの縦リズム（ページ全体で統一）。
+     ad hoc な py-12/14/16 を置き換え、上下の余白を一定のリズムに揃える。 */
+  .aw-section {
+    @apply py-14 sm:py-16;
+  }
+  .aw-section-tight {
+    @apply py-10 sm:py-12;
+  }
+
+  /* ヘッダーのナビリンク（ホバー＋現在地の二重表現）。
+     現在地は色だけでなく aria-current="page" でも伝える。 */
+  .aw-navlink {
+    @apply inline-flex min-h-11 items-center rounded-full px-3 py-2.5 text-sm font-medium text-charcoal transition-colors hover:bg-cream/70 hover:text-navy;
+  }
+  .aw-navlink[aria-current="page"] {
+    @apply bg-cream font-semibold text-navy;
+  }
+  /* モバイルメニュー内のフル幅リンク行 */
+  .aw-navlink--row {
+    @apply w-full min-h-12 justify-start gap-2.5 rounded-xl px-3 text-[15px];
+  }
+
   /* 入力フィールド */
   .aw-input {
     @apply w-full rounded-xl border border-soft-gray bg-white px-4 py-3 text-[15px] text-navy placeholder:text-charcoal/70 focus:border-navy/40 focus:outline-none focus-visible:outline-2 focus-visible:outline-gold;

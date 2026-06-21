@@ -1,12 +1,7 @@
 import Link from "next/link";
-import { Flower2, ClipboardCheck, Bookmark } from "lucide-react";
+import { Flower2 } from "lucide-react";
 import { SITE } from "@/app/lib/site";
-
-const NAV = [
-  { href: "/search", label: "制度を探す" },
-  { href: "/area", label: "エリアから探す" },
-  { href: "/about", label: "このサイトについて" },
-];
+import { PrimaryNav } from "@/app/components/PrimaryNav";
 
 export function SiteHeader() {
   return (
@@ -30,37 +25,7 @@ export function SiteHeader() {
           </span>
         </Link>
 
-        <nav
-          aria-label="グローバルナビゲーション"
-          className="flex items-center gap-1 sm:gap-2"
-        >
-          <ul className="hidden items-center gap-1 sm:flex">
-            {NAV.map((n) => (
-              <li key={n.href}>
-                <Link
-                  href={n.href}
-                  className="inline-flex min-h-11 items-center rounded-full px-3 py-2.5 text-sm font-medium text-charcoal transition-colors hover:bg-cream/70 hover:text-navy"
-                >
-                  {n.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-          <Link
-            href="/saved"
-            aria-label="保存した制度"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full text-charcoal transition-colors hover:bg-cream/70 hover:text-navy"
-          >
-            <Bookmark className="h-5 w-5" aria-hidden="true" />
-          </Link>
-          <Link
-            href="/check"
-            className="btn-primary min-h-11 px-4 py-2.5 text-[13px]"
-          >
-            <ClipboardCheck className="h-4 w-4" aria-hidden="true" />
-            かんたん診断
-          </Link>
-        </nav>
+        <PrimaryNav />
       </div>
     </header>
   );

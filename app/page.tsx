@@ -118,7 +118,7 @@ export default async function HomePage() {
       </section>
 
       {/* 地域から探す */}
-      <section className="aw-container py-12">
+      <section className="aw-container aw-section">
         <SectionHeading
           eyebrow="エリアから探す"
           title="地方・都道府県から支援制度を探す"
@@ -139,7 +139,7 @@ export default async function HomePage() {
       </section>
 
       {/* 生活イベントから探す */}
-      <section className="aw-container py-14">
+      <section className="aw-container aw-section">
         <SectionHeading
           eyebrow="生活イベントから探す"
           title="いまの状況から、確認すべき制度へ"
@@ -176,11 +176,13 @@ export default async function HomePage() {
       </section>
 
       {/* 人気カテゴリ */}
-      <section className="aw-container pb-4">
-        <h2 className="text-sm font-semibold tracking-wide text-charcoal/70">
-          カテゴリから探す
-        </h2>
-        <ul className="mt-3 flex flex-wrap gap-2">
+      <section className="aw-container aw-section">
+        <SectionHeading
+          eyebrow="カテゴリから探す"
+          title="制度の種類から探す"
+          description="関心のあるカテゴリから、対応する自治体の制度をたどれます。"
+        />
+        <ul className="mt-8 flex flex-wrap gap-2">
           {presentCategories.map((c) => (
             <li key={c.slug}>
               <Link href={`/compare/${c.slug}`} className="aw-chip">
@@ -210,7 +212,7 @@ export default async function HomePage() {
       </section>
 
       {/* 3ステップ */}
-      <section className="aw-container py-14">
+      <section className="aw-container aw-section">
         <div className="grid gap-5 sm:grid-cols-3">
           {[
             {
@@ -241,7 +243,7 @@ export default async function HomePage() {
       </section>
 
       {/* 診断バンド */}
-      <section className="aw-container py-6">
+      <section className="aw-container aw-section-tight">
         <div className="aw-card flex flex-col items-start gap-5 border-navy/10 bg-navy text-white sm:flex-row sm:items-center sm:justify-between">
           <div className="max-w-xl">
             <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-gold">
@@ -266,7 +268,7 @@ export default async function HomePage() {
 
       {/* 最近更新された制度 */}
       {recent.length > 0 && (
-        <section className="aw-container py-14">
+        <section className="aw-container aw-section">
           <SectionHeading
             eyebrow="最近更新された制度"
             title="新しく確認・更新された制度"
