@@ -28831,7 +28831,7 @@ const programs_4: SupportProgram[] = [
     sourceConfidence: "high",
     uncertainFields: ["benefitAmountText", "applicationDeadlineText", "contactPhone"],
     disclaimerNote: "本情報は仙台市の公式ページをもとに作成しています。対象要件・保護費・申請手続きの詳細は必ず公式ページでご確認ください。",
-    status: "draft",
+    status: "published",
     updatedAt: "2026-06-21",
   },
   {
@@ -29276,7 +29276,7 @@ const programs_4: SupportProgram[] = [
     lastOfficialCheckedAt: "2026-06-21",
     sourceConfidence: "low",
     uncertainFields: ["requiredDocumentsText", "applicationMethodText", "contactPhone", "contactName"],
-    status: "draft",
+    status: "published",
     updatedAt: "2026-06-21",
   },
   {
@@ -29556,7 +29556,7 @@ const programs_4: SupportProgram[] = [
     sourceConfidence: "high",
     uncertainFields: ["requiredDocumentsText"],
     disclaimerNote: "本情報は八王子市の公式ページをもとにした概要です。対象範囲・所得制限・自己負担・必要書類などの最新かつ正確な内容は、必ず八王子市の公式ページでご確認ください。",
-    status: "draft",
+    status: "published",
     updatedAt: "2026-06-21",
   },
   {
