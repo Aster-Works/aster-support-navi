@@ -63,6 +63,8 @@ const EXTRA_ALLOWED_HOSTS = new Set<string>([
   "www.kumamoto-city-csw.or.jp", // 熊本市社会福祉協議会（生活福祉資金）
   "www.heartful-volunteer.net", // 久留米市社会福祉協議会（生活福祉資金）
   "www.himeji-wel.or.jp", // 姫路市社会福祉協議会（生活福祉資金）
+  "www.dondon-net.or.jp", // 鹿児島市社会福祉協議会（生活福祉資金）
+  "www.matsuyama-wel.jp", // 松山市社会福祉協議会（生活福祉資金）
 ]);
 
 const allowedHost = (url: string): boolean => {

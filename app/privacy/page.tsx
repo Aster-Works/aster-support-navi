@@ -12,7 +12,7 @@ export const metadata: Metadata = buildMetadata({
 
 export default function PrivacyPage() {
   return (
-    <LegalPage title="プライバシーポリシー" path="/privacy" updated="2026-06-18">
+    <LegalPage title="プライバシーポリシー" path="/privacy" updated="2026-06-22">
       <p>
         Aster Support Navi（以下「本サービス」）は、個人情報保護法および個人情報保護委員会
         （https://www.ppc.go.jp/）のガイドラインに準拠し、利用者のプライバシーを尊重します。
@@ -63,6 +63,12 @@ export default function PrivacyPage() {
           利用状況の把握とサイト改善のため。Cookie 等により閲覧ページ・参照元・おおよその地域・
           端末種別などの統計情報を収集します。<strong>個人を特定する情報は送信しません。</strong>
         </li>
+        <li>
+          <strong>広告配信：Google AdSense（Google LLC・米国）</strong> ―
+          運営継続のため、一部のガイドページ等に限定して広告を表示する場合があります。
+          Cookie 等により閲覧ページ、端末情報、広告表示・クリック情報などが処理されることがあります。
+          かんたん診断、保存リスト、相談窓口、ひとり親・生活困窮・障害・介護など機微性の高いページには広告を表示しない方針です。
+        </li>
       </ul>
       <p>
         <strong>かんたん診断・検索の入力内容（妊娠の有無・子どもの年齢・ひとり親かどうか・収入帯・検索語など）は、
@@ -72,7 +78,8 @@ export default function PrivacyPage() {
       <p>
         アクセス解析を無効化したい場合は、ブラウザの Cookie 設定のほか、Google が提供する
         「Google アナリティクス オプトアウト アドオン」（https://tools.google.com/dlpage/gaoptout）をご利用いただけます。
-        本サービスは広告目的の識別子・リマーケティング機能は使用しません。
+        本サービス側では、診断入力や検索語を広告配信やリマーケティングの目的で送信しません。
+        広告を表示する場合も、ページ単位で抑制し、機微性の高いページでは表示しない方針です。
       </p>
       <p className="aw-note">
         ※ 上記の外部サービスは米国の事業者であり、情報は国外へ移転されます。各社のプライバシーポリシー

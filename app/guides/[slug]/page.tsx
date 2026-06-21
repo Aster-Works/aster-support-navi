@@ -21,6 +21,8 @@ import { SupportCard } from "@/app/components/SupportCard";
 import { JsonLd } from "@/app/components/JsonLd";
 import { Disclaimer } from "@/app/components/Disclaimer";
 import { formatJaDate } from "@/app/lib/dates";
+import { AdSenseUnit } from "@/app/components/AdSenseUnit";
+import { ADSENSE_GUIDE_SLOT, canShowGuideAds } from "@/app/lib/ads";
 
 export const revalidate = 86400;
 
@@ -70,6 +72,9 @@ export default async function GuideDetailPage({
     { name: "ガイド", path: "/guides" },
     { name: guide.title, path: `/guides/${guide.slug}` },
   ];
+  const guideAdSlot = canShowGuideAds(guide.slug)
+    ? ADSENSE_GUIDE_SLOT
+    : undefined;
 
   return (
     <>
@@ -176,6 +181,11 @@ export default async function GuideDetailPage({
           </section>
         )}
       </article>
+
+      <AdSenseUnit
+        slot={guideAdSlot}
+        className="aw-prose-container mt-0"
+      />
 
       {/* 関連制度（prose 幅の外で広く） */}
       {related.length > 0 && (

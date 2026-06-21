@@ -18,4 +18,13 @@ export const prefectures: Prefecture[] = [
   { slug: "hiroshima", name: "広島県", nameKana: "ひろしまけん", region: "中国" },
   { slug: "kumamoto", name: "熊本県", nameKana: "くまもとけん", region: "九州" },
   { slug: "miyagi", name: "宮城県", nameKana: "みやぎけん", region: "東北" },
+  // 中核市第2バッチの県（2026-06-22）
+  { slug: "tochigi", name: "栃木県", nameKana: "とちぎけん", region: "関東" },
+  { slug: "ishikawa", name: "石川県", nameKana: "いしかわけん", region: "中部" },
+  { slug: "gifu", name: "岐阜県", nameKana: "ぎふけん", region: "中部" },
+  { slug: "nara", name: "奈良県", nameKana: "ならけん", region: "近畿" },
+  { slug: "ehime", name: "愛媛県", nameKana: "えひめけん", region: "四国" },
+  { slug: "nagasaki", name: "長崎県", nameKana: "ながさきけん", region: "九州" },
+  { slug: "oita", name: "大分県", nameKana: "おおいたけん", region: "九州" },
+  { slug: "kagoshima", name: "鹿児島県", nameKana: "かごしまけん", region: "九州" },
 ];

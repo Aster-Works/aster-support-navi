@@ -46,6 +46,8 @@ const EXTRA_ALLOWED_HOSTS = new Set<string>([
   "www.kumamoto-city-csw.or.jp",
   "www.heartful-volunteer.net",
   "www.himeji-wel.or.jp",
+  "www.dondon-net.or.jp",
+  "www.matsuyama-wel.jp",
 ]);
 
 const allowedHost = (url: string): boolean => {

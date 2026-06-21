@@ -56,4 +56,13 @@ export const municipalities: Municipality[] = [
   { slug: "kurume", prefectureSlug: "fukuoka", name: "久留米市", nameKana: "くるめし", officialSiteUrl: "https://www.city.kurume.fukuoka.jp/", intro: "久留米市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
   { slug: "himeji", prefectureSlug: "hyogo", name: "姫路市", nameKana: "ひめじし", officialSiteUrl: "https://www.city.himeji.lg.jp/", intro: "姫路市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
   { slug: "funabashi", prefectureSlug: "chiba", name: "船橋市", nameKana: "ふなばしし", officialSiteUrl: "https://www.city.funabashi.lg.jp/", intro: "船橋市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
+  // 中核市（第2バッチ・2026-06-22）。officialSiteUrl は各市公式サイトのルート。研究→敵対検証で5基幹カテゴリを整備。
+  { slug: "utsunomiya", prefectureSlug: "tochigi", name: "宇都宮市", nameKana: "うつのみやし", officialSiteUrl: "https://www.city.utsunomiya.lg.jp/", intro: "宇都宮市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
+  { slug: "kanazawa", prefectureSlug: "ishikawa", name: "金沢市", nameKana: "かなざわし", officialSiteUrl: "https://www4.city.kanazawa.lg.jp/", intro: "金沢市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
+  { slug: "gifu", prefectureSlug: "gifu", name: "岐阜市", nameKana: "ぎふし", officialSiteUrl: "https://www.city.gifu.lg.jp/", intro: "岐阜市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
+  { slug: "nara", prefectureSlug: "nara", name: "奈良市", nameKana: "ならし", officialSiteUrl: "https://www.city.nara.lg.jp/", intro: "奈良市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
+  { slug: "matsuyama", prefectureSlug: "ehime", name: "松山市", nameKana: "まつやまし", officialSiteUrl: "https://www.city.matsuyama.ehime.jp/", intro: "松山市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
+  { slug: "nagasaki", prefectureSlug: "nagasaki", name: "長崎市", nameKana: "ながさきし", officialSiteUrl: "https://www.city.nagasaki.lg.jp/", intro: "長崎市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
+  { slug: "oita", prefectureSlug: "oita", name: "大分市", nameKana: "おおいたし", officialSiteUrl: "https://www.city.oita.oita.jp/", intro: "大分市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
+  { slug: "kagoshima", prefectureSlug: "kagoshima", name: "鹿児島市", nameKana: "かごしまし", officialSiteUrl: "https://www.city.kagoshima.lg.jp/", intro: "鹿児島市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
 ];
