@@ -181,6 +181,12 @@
     @apply w-full min-h-12 justify-start gap-2.5 rounded-xl px-3 text-[15px];
   }
 
+  /* 小見出し（セクション内のサブラベル）。SectionHeading より一段下の階層。
+     これまで各ページに散らばっていた text-sm 系の見出しを一本化する。 */
+  .aw-subheading {
+    @apply text-sm font-semibold tracking-wide text-charcoal/70;
+  }
+
   /* 入力フィールド */
   .aw-input {
     @apply w-full rounded-xl border border-soft-gray bg-white px-4 py-3 text-[15px] text-navy placeholder:text-charcoal/70 focus:border-navy/40 focus:outline-none focus-visible:outline-2 focus-visible:outline-gold;

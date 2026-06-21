@@ -156,7 +156,7 @@ export default async function MunicipalityPage({
         {/* 生活イベント導線 */}
         {lifeEvents.length > 0 && (
           <section className="mt-8">
-            <h2 className="text-sm font-semibold tracking-wide text-charcoal/70">
+            <h2 className="aw-subheading">
               生活イベントから探す
             </h2>
             <ul className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -186,7 +186,7 @@ export default async function MunicipalityPage({
         {/* カテゴリ絞り込み導線 */}
         {presentCategories.length > 0 && (
           <section className="mt-8">
-            <h2 className="text-sm font-semibold tracking-wide text-charcoal/70">
+            <h2 className="aw-subheading">
               カテゴリで絞り込む
             </h2>
             <ul className="mt-3 flex flex-wrap gap-2">

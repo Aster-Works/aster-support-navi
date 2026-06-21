@@ -174,9 +174,7 @@ export default async function SupportDetailPage({
           <div>
             {/* まず確認すること */}
             <section className="aw-card bg-cream/50">
-              <h2 className="text-sm font-bold tracking-wide text-charcoal/70">
-                まず確認すること
-              </h2>
+              <h2 className="aw-subheading">まず確認すること</h2>
               <dl className="mt-3 grid gap-x-6 gap-y-3 sm:grid-cols-2">
                 <div>
                   <dt className="text-[12px] font-semibold text-charcoal/70">

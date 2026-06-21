@@ -80,7 +80,7 @@ export default async function PrefecturePage({
 
         {active.length > 0 && (
           <section className="mt-10">
-            <h2 className="text-sm font-semibold tracking-wide text-charcoal/70">
+            <h2 className="aw-subheading">
               制度を確認できる自治体
             </h2>
             <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -103,7 +103,7 @@ export default async function PrefecturePage({
 
         {inactive.length > 0 && (
           <section className="mt-10">
-            <h2 className="text-sm font-semibold tracking-wide text-charcoal/70">
+            <h2 className="aw-subheading">
               準備中の自治体
             </h2>
             <p className="mt-1 text-[13px] text-charcoal/70">
@@ -129,7 +129,7 @@ export default async function PrefecturePage({
 
         {otherGroups.length > 0 && (
           <section className="mt-12 border-t border-soft-gray pt-8">
-            <h2 className="text-sm font-semibold tracking-wide text-charcoal/70">
+            <h2 className="aw-subheading">
               他の都道府県から探す
             </h2>
             <p className="mt-1 text-[13px] text-charcoal/70">
