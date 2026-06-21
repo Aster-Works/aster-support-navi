@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Search, SlidersHorizontal, X } from "lucide-react";
+import { Search, SlidersHorizontal, X, ChevronLeft, ChevronRight } from "lucide-react";
 import {
   getPrograms,
   getActiveMunicipalities,
@@ -24,6 +24,39 @@ export const metadata: Metadata = buildMetadata({
 type SP = Record<string, string | string[] | undefined>;
 const one = (v: string | string[] | undefined) =>
   Array.isArray(v) ? v[0] : v;
+
+const PER_PAGE_OPTIONS = [25, 50, 75, 100] as const;
+const DEFAULT_PER_PAGE = 25;
+
+/** フィルター条件を保ったまま page / perPage を差し替えた /search URL を作る。 */
+function buildSearchHref(sp: SP, perPage: number, page: number): string {
+  const params = new URLSearchParams();
+  for (const k of ["q", "category", "event", "municipality", "online", "deadline"]) {
+    const v = one(sp[k]);
+    if (v) params.set(k, v);
+  }
+  if (perPage !== DEFAULT_PER_PAGE) params.set("perPage", String(perPage));
+  if (page > 1) params.set("page", String(page));
+  const qs = params.toString();
+  return qs ? `/search?${qs}` : "/search";
+}
+
+/** 表示するページ番号（先頭・末尾・現在地まわり）と省略記号を返す。 */
+function pageWindow(current: number, total: number): (number | "ellipsis")[] {
+  const set = new Set<number>();
+  for (const p of [1, total, current - 1, current, current + 1]) {
+    if (p >= 1 && p <= total) set.add(p);
+  }
+  const sorted = [...set].sort((a, b) => a - b);
+  const out: (number | "ellipsis")[] = [];
+  let prev = 0;
+  for (const p of sorted) {
+    if (prev && p - prev > 1) out.push("ellipsis");
+    out.push(p);
+    prev = p;
+  }
+  return out;
+}
 
 export default async function SearchPage({
   searchParams,
@@ -57,6 +90,21 @@ export default async function SearchPage({
     !!filters.municipalitySlug ||
     filters.onlineOnly ||
     filters.hasDeadline;
+
+  // ページネーション（サーバー側・URLクエリ駆動。JS不要・共有可能）
+  const perPageRaw = Number(one(sp.perPage));
+  const perPage = (PER_PAGE_OPTIONS as readonly number[]).includes(perPageRaw)
+    ? perPageRaw
+    : DEFAULT_PER_PAGE;
+  const total = results.length;
+  const totalPages = Math.max(1, Math.ceil(total / perPage));
+  const pageRaw = Math.floor(Number(one(sp.page)));
+  const currentPage = Math.min(
+    Math.max(Number.isFinite(pageRaw) && pageRaw >= 1 ? pageRaw : 1, 1),
+    totalPages,
+  );
+  const start = (currentPage - 1) * perPage;
+  const pageResults = results.slice(start, start + perPage);
 
   return (
     <div className="aw-container py-10">
@@ -210,11 +258,37 @@ export default async function SearchPage({
 
         {/* 結果 */}
         <div>
-          <p className="text-[13px] text-charcoal/70" aria-live="polite">
-            {results.length} 件の制度{hasAnyFilter ? "（絞り込み中）" : ""}
-          </p>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-[13px] text-charcoal/70" aria-live="polite">
+              {total} 件の制度{hasAnyFilter ? "（絞り込み中）" : ""}
+              {total > 0 && (
+                <span className="text-charcoal/70">
+                  {" "}
+                  （{start + 1}–{Math.min(start + perPage, total)} 件目を表示）
+                </span>
+              )}
+            </p>
 
-          {results.length === 0 ? (
+            {total > PER_PAGE_OPTIONS[0] && (
+              <div className="flex items-center gap-1.5">
+                <span className="text-[12px] text-charcoal/70">表示件数</span>
+                {PER_PAGE_OPTIONS.map((n) => (
+                  <Link
+                    key={n}
+                    href={buildSearchHref(sp, n, 1)}
+                    data-active={n === perPage}
+                    aria-label={`${n}件ずつ表示`}
+                    aria-current={n === perPage ? "true" : undefined}
+                    className="aw-chip min-w-11 justify-center"
+                  >
+                    {n}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {total === 0 ? (
             <div className="aw-card mt-4">
               <p className="text-[15px] font-bold text-navy">
                 条件に合う制度が見つかりませんでした
@@ -228,17 +302,79 @@ export default async function SearchPage({
               </p>
             </div>
           ) : (
-            <ul className="mt-4 grid gap-4 sm:grid-cols-2">
-              {results.map((p) => (
-                <li key={p.slug} className="h-full">
-                  <SupportCard
-                    program={p}
-                    categoryName={catName(p.categorySlugs[0])}
-                    municipalityName={muniName(p.municipalitySlug)}
-                  />
-                </li>
-              ))}
-            </ul>
+            <>
+              <ul className="mt-4 grid gap-4 sm:grid-cols-2">
+                {pageResults.map((p) => (
+                  <li key={p.slug} className="h-full">
+                    <SupportCard
+                      program={p}
+                      categoryName={catName(p.categorySlugs[0])}
+                      municipalityName={muniName(p.municipalitySlug)}
+                    />
+                  </li>
+                ))}
+              </ul>
+
+              {totalPages > 1 && (
+                <>
+                  <nav
+                    aria-label="検索結果のページ送り"
+                    className="mt-8 flex flex-wrap items-center justify-center gap-1.5"
+                  >
+                    {currentPage > 1 && (
+                      <Link
+                        href={buildSearchHref(sp, perPage, currentPage - 1)}
+                        rel="prev"
+                        aria-label="前のページ"
+                        className="aw-chip"
+                      >
+                        <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+                        前へ
+                      </Link>
+                    )}
+
+                    {pageWindow(currentPage, totalPages).map((p, i) =>
+                      p === "ellipsis" ? (
+                        <span
+                          key={`ellipsis-${i}`}
+                          className="px-1 text-charcoal/70"
+                          aria-hidden="true"
+                        >
+                          …
+                        </span>
+                      ) : (
+                        <Link
+                          key={p}
+                          href={buildSearchHref(sp, perPage, p)}
+                          aria-label={`${p}ページ目`}
+                          aria-current={p === currentPage ? "page" : undefined}
+                          data-active={p === currentPage}
+                          className="aw-chip min-w-11 justify-center"
+                        >
+                          {p}
+                        </Link>
+                      ),
+                    )}
+
+                    {currentPage < totalPages && (
+                      <Link
+                        href={buildSearchHref(sp, perPage, currentPage + 1)}
+                        rel="next"
+                        aria-label="次のページ"
+                        className="aw-chip"
+                      >
+                        次へ
+                        <ChevronRight className="h-4 w-4" aria-hidden="true" />
+                      </Link>
+                    )}
+                  </nav>
+
+                  <p className="mt-3 text-center text-[12px] text-charcoal/70">
+                    {currentPage} / {totalPages} ページ
+                  </p>
+                </>
+              )}
+            </>
           )}
         </div>
       </div>
