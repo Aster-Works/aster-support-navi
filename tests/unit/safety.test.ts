@@ -135,6 +135,8 @@ describe("YMYL: 信頼性メタ（不変条件 §3）", () => {
       "csw-kawasaki.or.jp", // 川崎市社会福祉協議会（生活福祉資金）
       "www.with-kobe.or.jp", // 神戸市社会福祉協議会（生活福祉資金）
       "www.kumamoto-city-csw.or.jp", // 熊本市社会福祉協議会（生活福祉資金）
+      "www.heartful-volunteer.net", // 久留米市社会福祉協議会（生活福祉資金）
+      "www.himeji-wel.or.jp", // 姫路市社会福祉協議会（生活福祉資金）
     ]);
     for (const p of published) {
       const host = new URL(p.officialUrl).host;

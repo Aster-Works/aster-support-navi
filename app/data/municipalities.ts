@@ -47,4 +47,13 @@ export const municipalities: Municipality[] = [
   { slug: "kitakyushu", prefectureSlug: "fukuoka", name: "北九州市", nameKana: "きたきゅうしゅうし", officialSiteUrl: "https://www.city.kitakyushu.lg.jp/", intro: "北九州市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
   { slug: "kumamoto", prefectureSlug: "kumamoto", name: "熊本市", nameKana: "くまもとし", officialSiteUrl: "https://www.city.kumamoto.jp/", intro: "熊本市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
   { slug: "sendai", prefectureSlug: "miyagi", name: "仙台市", nameKana: "せんだいし", officialSiteUrl: "https://www.city.sendai.jp/", intro: "仙台市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
+  // 中核市（第1バッチ・2026-06-21）。officialSiteUrl は各市公式サイトのルート。研究→敵対検証で5基幹カテゴリを整備。
+  { slug: "hachioji", prefectureSlug: "tokyo", name: "八王子市", nameKana: "はちおうじし", officialSiteUrl: "https://www.city.hachioji.tokyo.jp/", intro: "八王子市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
+  { slug: "yokosuka", prefectureSlug: "kanagawa", name: "横須賀市", nameKana: "よこすかし", officialSiteUrl: "https://www.city.yokosuka.kanagawa.jp/", intro: "横須賀市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
+  { slug: "higashiosaka", prefectureSlug: "osaka", name: "東大阪市", nameKana: "ひがしおおさかし", officialSiteUrl: "https://www.city.higashiosaka.lg.jp/", intro: "東大阪市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
+  { slug: "toyota", prefectureSlug: "aichi", name: "豊田市", nameKana: "とよたし", officialSiteUrl: "https://www.city.toyota.aichi.jp/", intro: "豊田市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
+  { slug: "asahikawa", prefectureSlug: "hokkaido", name: "旭川市", nameKana: "あさひかわし", officialSiteUrl: "https://www.city.asahikawa.hokkaido.jp/", intro: "旭川市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
+  { slug: "kurume", prefectureSlug: "fukuoka", name: "久留米市", nameKana: "くるめし", officialSiteUrl: "https://www.city.kurume.fukuoka.jp/", intro: "久留米市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
+  { slug: "himeji", prefectureSlug: "hyogo", name: "姫路市", nameKana: "ひめじし", officialSiteUrl: "https://www.city.himeji.lg.jp/", intro: "姫路市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
+  { slug: "funabashi", prefectureSlug: "chiba", name: "船橋市", nameKana: "ふなばしし", officialSiteUrl: "https://www.city.funabashi.lg.jp/", intro: "船橋市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
 ];
