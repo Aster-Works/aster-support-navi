@@ -22721,7 +22721,7 @@ const programs_3: SupportProgram[] = [
     lastOfficialCheckedAt: "2026-06-21",
     sourceConfidence: "high",
     disclaimerNote: "相談内容により適切な窓口が異なります。各相談の受付日時・予約要否は公式ページで確認してください。",
-    status: "published",
+    status: "draft",
     updatedAt: "2026-06-21",
   },
   {
@@ -22769,7 +22769,7 @@ const programs_3: SupportProgram[] = [
     sourceConfidence: "medium",
     uncertainFields: ["contactPhone", "officialUrl"],
     disclaimerNote: "相談窓口の所在地・電話番号・受付時間は変更される場合があるため、京都市の公式ページで最新情報を確認してください。",
-    status: "published",
+    status: "draft",
     updatedAt: "2026-06-21",
   },
   {
@@ -23077,7 +23077,7 @@ const programs_3: SupportProgram[] = [
     sourceConfidence: "medium",
     uncertainFields: ["contactPhone"],
     disclaimerNote: "相談窓口や担当係の名称・電話番号は区により異なる場合があります。最新の窓口は静岡市の公式ページで確認してください。",
-    status: "published",
+    status: "draft",
     updatedAt: "2026-06-21",
   },
   {
@@ -23103,7 +23103,7 @@ const programs_3: SupportProgram[] = [
     sourceConfidence: "medium",
     uncertainFields: ["benefitAmountText", "applicationDeadlineText", "requiredDocumentsText"],
     disclaimerNote: "助成内容（自己負担額・上限など）や所得制限は浜松市の公式ページ・各区役所社会福祉課でご確認ください。制度の詳細案内は浜松市子育て情報サイト「ぴっぴ」でも提供されています。",
-    status: "published",
+    status: "draft",
     updatedAt: "2026-06-21",
   },
   {
@@ -26703,7 +26703,7 @@ const programs_4: SupportProgram[] = [
     sourceConfidence: "medium",
     uncertainFields: ["benefitAmountText", "applicationDeadlineText", "requiredDocumentsText", "officialUrl"],
     disclaimerNote: "自立支援医療は更生医療・育成医療・精神通院医療の3種に分かれ、それぞれ対象・窓口・問い合わせ先が異なります。記載のURL・連絡先は精神通院医療のもので、更生医療・育成医療は別の公式ページを確認してください。自己負担は原則1割ですが、世帯の所得等により上限額が定まります。",
-    status: "published",
+    status: "draft",
     updatedAt: "2026-06-21",
   },
   {
@@ -26808,7 +26808,7 @@ const programs_4: SupportProgram[] = [
     sourceConfidence: "high",
     uncertainFields: ["benefitAmountText", "requiredDocumentsText", "applicationDeadlineText"],
     disclaimerNote: "自己負担の上限額は世帯の所得状況等に応じて設定されます。更生医療・育成医療・精神通院医療で窓口や対象が異なる場合があります。詳細は川崎市の公式ページでご確認ください。",
-    status: "published",
+    status: "draft",
     updatedAt: "2026-06-21",
   },
   {
@@ -26887,7 +26887,7 @@ const programs_4: SupportProgram[] = [
     sourceConfidence: "high",
     uncertainFields: ["requiredDocumentsText", "benefitAmountText", "applicationDeadlineText"],
     disclaimerNote: "手帳の種類により申請窓口の担当課・問い合わせ先が異なります（身体・療育＝障がい福祉課 06-6208-8071、精神＝こころの健康センター 06-6922-8520）。",
-    status: "published",
+    status: "draft",
     updatedAt: "2026-06-21",
   },
   {
@@ -26913,7 +26913,7 @@ const programs_4: SupportProgram[] = [
     sourceConfidence: "medium",
     uncertainFields: ["benefitAmountText", "requiredDocumentsText", "applicationDeadlineText"],
     disclaimerNote: "3種類で担当課・問い合わせ先が異なります（育成医療＝保健所管理課保健事業グループ 06-6647-0650、更生医療＝障がい福祉課 06-6208-7986・判定はリハビリセンター 06-6797-6561、精神通院医療＝こころの健康センター）。officialUrlは育成医療ページを代表として記載しています。",
-    status: "published",
+    status: "draft",
     updatedAt: "2026-06-21",
   },
   {
@@ -27221,7 +27221,7 @@ const programs_4: SupportProgram[] = [
     sourceConfidence: "medium",
     uncertainFields: ["benefitAmountText", "requiredDocumentsText"],
     disclaimerNote: "自立支援医療は更生医療・育成医療・精神通院医療で窓口・申請書類・手続きが異なります。本ページは精神通院医療の案内が中心です。更生医療・育成医療の詳細は福岡市の該当ページで確認してください。",
-    status: "published",
+    status: "draft",
     updatedAt: "2026-06-21",
   },
   {
@@ -27323,7 +27323,7 @@ const programs_4: SupportProgram[] = [
     sourceConfidence: "high",
     uncertainFields: ["benefitAmountText", "applicationDeadlineText", "requiredDocumentsText", "contactPhone"],
     disclaimerNote: "更生医療・育成医療・精神通院医療で要件・窓口・担当課が異なる場合があります。自己負担額や所得区分は個々の状況により異なるため、神戸市の公式ページで確認してください。",
-    status: "published",
+    status: "draft",
     updatedAt: "2026-06-21",
   },
   {
@@ -27481,7 +27481,7 @@ const programs_4: SupportProgram[] = [
     sourceConfidence: "high",
     uncertainFields: ["requiredDocumentsText"],
     disclaimerNote: "所得制限があります。施設入所中や3か月を超える入院中は支給対象外となる場合があります（有料老人ホーム・グループホーム等は在宅扱い）。",
-    status: "published",
+    status: "draft",
     updatedAt: "2026-06-21",
   },
   {
@@ -27532,7 +27532,7 @@ const programs_4: SupportProgram[] = [
     sourceConfidence: "medium",
     uncertainFields: ["contactPhone", "benefitAmountText", "requiredDocumentsText", "applicationDeadlineText"],
     disclaimerNote: "自立支援医療は更生医療・育成医療・精神通院医療の3種類があり、種類ごとに窓口や対象が異なります。自己負担は原則1割で、世帯の所得等に応じて負担上限額が設けられます（一定以上の所得で対象外となる場合あり）。",
-    status: "published",
+    status: "draft",
     updatedAt: "2026-06-21",
   },
   {
@@ -27558,7 +27558,7 @@ const programs_4: SupportProgram[] = [
     sourceConfidence: "medium",
     uncertainFields: ["requiredDocumentsText", "applicationDeadlineText", "benefitAmountText"],
     disclaimerNote: "利用者負担は原則として所得等に応じた負担上限が設けられます。具体的なサービス種類（居宅介護・生活介護・就労支援等）や支給量は支給決定の内容によります。",
-    status: "published",
+    status: "draft",
     updatedAt: "2026-06-21",
   },
   {
@@ -27639,7 +27639,7 @@ const programs_4: SupportProgram[] = [
     sourceConfidence: "high",
     uncertainFields: ["benefitAmountText"],
     disclaimerNote: "更生医療・育成医療と精神通院医療では窓口・担当課が異なります。詳細は千葉市の公式ページで確認してください。",
-    status: "published",
+    status: "draft",
     updatedAt: "2026-06-21",
   },
   {
@@ -27718,7 +27718,7 @@ const programs_4: SupportProgram[] = [
     sourceConfidence: "high",
     uncertainFields: ["requiredDocumentsText", "benefitAmountText", "applicationDeadlineText"],
     disclaimerNote: "手帳の種類（身体・療育・精神）によって申請窓口・必要書類・診断書の様式が異なります。精神障害者保健福祉手帳は障害者更生相談所ではなく精神保健福祉課（042-769-9813）が窓口です。",
-    status: "published",
+    status: "draft",
     updatedAt: "2026-06-21",
   },
   {
@@ -27744,7 +27744,7 @@ const programs_4: SupportProgram[] = [
     sourceConfidence: "high",
     uncertainFields: ["requiredDocumentsText", "benefitAmountText", "applicationDeadlineText"],
     disclaimerNote: "更生医療・育成医療・精神通院医療で対象者・窓口・必要書類が異なります。精神通院医療は精神保健福祉課、育成医療は健康関連部署が案内する場合があります。所得に応じた自己負担上限額が設定される場合があります。",
-    status: "published",
+    status: "draft",
     updatedAt: "2026-06-21",
   },
   {
@@ -27850,7 +27850,7 @@ const programs_4: SupportProgram[] = [
     sourceConfidence: "high",
     uncertainFields: ["requiredDocumentsText"],
     disclaimerNote: "育成医療・精神通院医療は更生医療と申請先や必要書類が一部異なります。指定自立支援医療機関での受診が条件となります。",
-    status: "published",
+    status: "draft",
     updatedAt: "2026-06-21",
   },
   {
@@ -28000,7 +28000,7 @@ const programs_4: SupportProgram[] = [
     sourceConfidence: "high",
     uncertainFields: ["requiredDocumentsText", "applicationDeadlineText"],
     disclaimerNote: "所得制限があります。施設入所者や3か月を超える入院者は対象外となる場合があります。手当額は改定されることがあります。",
-    status: "published",
+    status: "draft",
     updatedAt: "2026-06-21",
   },
   {
@@ -28052,7 +28052,7 @@ const programs_4: SupportProgram[] = [
     sourceConfidence: "medium",
     uncertainFields: ["benefitAmountText", "requiredDocumentsText", "officialUrl"],
     disclaimerNote: "自己負担上限額は世帯の所得や障がいの状況により異なります。指定自立支援医療機関での受診が必要です。",
-    status: "published",
+    status: "draft",
     updatedAt: "2026-06-21",
   },
   {
@@ -28234,7 +28234,7 @@ const programs_4: SupportProgram[] = [
     sourceConfidence: "high",
     uncertainFields: ["requiredDocumentsText", "applicationDeadlineText"],
     disclaimerNote: "手帳の種類（身体・療育・精神）によって申請窓口・必要書類・認定基準が異なります。",
-    status: "published",
+    status: "draft",
     updatedAt: "2026-06-21",
   },
   {
@@ -28260,7 +28260,7 @@ const programs_4: SupportProgram[] = [
     sourceConfidence: "high",
     uncertainFields: ["benefitAmountText", "requiredDocumentsText", "applicationDeadlineText"],
     disclaimerNote: "更生・育成・精神通院の3種類で窓口・必要書類が異なります。自己負担上限額は世帯の所得状況により異なります。",
-    status: "published",
+    status: "draft",
     updatedAt: "2026-06-21",
   },
   {
@@ -28338,7 +28338,7 @@ const programs_4: SupportProgram[] = [
     sourceConfidence: "medium",
     uncertainFields: ["requiredDocumentsText"],
     disclaimerNote: "手帳の交付基準や判定は障害の種類・程度により異なります。受給の可否は窓口・公式ページでご確認ください。",
-    status: "published",
+    status: "draft",
     updatedAt: "2026-06-21",
   },
   {
@@ -28364,7 +28364,7 @@ const programs_4: SupportProgram[] = [
     sourceConfidence: "medium",
     uncertainFields: ["benefitAmountText", "requiredDocumentsText"],
     disclaimerNote: "自己負担額や所得に応じた上限は世帯の所得等により異なります。受給の可否・負担額は窓口・公式ページでご確認ください。",
-    status: "published",
+    status: "draft",
     updatedAt: "2026-06-21",
   },
   {
@@ -29116,7 +29116,7 @@ const programs_4: SupportProgram[] = [
     sourceConfidence: "high",
     uncertainFields: ["requiredDocumentsText", "applicationDeadlineText"],
     disclaimerNote: "対象となるかどうかや必要書類は手帳の種類・障害の状況により異なります。最新の内容は仙台市の公式ページで確認してください。",
-    status: "published",
+    status: "draft",
     updatedAt: "2026-06-21",
   },
   {

@@ -58,7 +58,18 @@
 - **lastOfficialCheckedAt = 2026-06-21**。redirect 14件は同一ホストの正規URLへ置換済み。社協3ホスト（csw-kawasaki/with-kobe/kumamoto-city-csw）を検証して `EXTRA_ALLOWED_HOSTS` に追加。
 - **TS2590 対応**: programs.ts が 1099件で「union 型が複雑すぎる」型エラー→ 5チャンク（programs_0..4）に分割し `.concat()` で結合（巨大 seed 配列の定番回避策。今後の拡充でも分割を維持）。
 - **独立検証**: 私（メインループ）の WebFetch 抜き取り 17サンプル（全20市・全4カテゴリ）→ 16完全一致＋1（福岡 障害者手帳が身体のみ）を是正。障害者手帳は15/16がハブページと確認。
-- **要追い（任意・品質向上）**: ①全 published の独立敵対検証パス（本体Workflowは session limit で検証段の大半が未了。福岡型 scope 過大の全件再点検）。②seed→Supabase 反映（現状は hybrid の seed 補完で公開中＝描画は正常だが admin 編集対象にするなら `export-seed-to-sql` 再生成＋投入）。
+- **要追い（任意・品質向上）**: seed→Supabase 反映（現状は hybrid の seed 補完で公開中＝描画は正常だが admin 編集対象にするなら `export-seed-to-sql` 再生成＋投入）。
+
+### 新データの敵対検証パス（2026-06-21・実施済）
+
+上記「要追い①」を実施。新規 published 265件を (市×カテゴリ)80グループで独立検証Workflow（各 officialUrl を独立WebFetch、scope/identity/到達/断定を再審査。`scripts/gen-verify-workflow.ts` が現データから生成）。
+
+- **結果**: 265件中 **24件 flagged**（scope 22 / identity 2、unreachable 0・assertion 0＝URL健全・禁止語ゼロを再確認）。全件 `scripts/apply-verify-fixes.ts` で **published→draft 降格**。**published 1094→1070 / draft 5→29**。
+- **2大パターン**（いずれも本文＝3種記載だがリンク先ページは1種のみ＝title↔body↔page不一致のため半端な是正をせず降格）:
+  - **自立支援医療**（12市）: title「更生・育成・精神通院」だが各市ページは1種のみ（所管課が別＝別ページ）。
+  - **障害者手帳**（4市: 広島/仙台/岡山/大阪）: title「身体・療育・精神」だがページは身体のみ等。※さいたま/札幌等15/16はハブページで適合＝flaggedされず。
+  - ほか: 特別障害者手当・ひとり親相談で「単一制度title↔総合インデックスpage」不一致、identity 2件（相模原 手帳=カード化お知らせpage／さいたま 障害福祉サービス=地域生活支援事業page）。
+- **再キュレーション backlog**: `docs/verify-flagged-2026-06-21.json`（24件・各 note＋suggestedTitle 付き）。次回、自立支援医療を type別に再モデル化／手帳はハブURL採用／インデックスpageはtitle整合、で published へ戻す。
 
 ## ルート
 

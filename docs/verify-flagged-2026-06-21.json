@@ -1,0 +1,170 @@
+[
+ {
+  "slug": "chiba-chiba-self-reliance-medical",
+  "ok": false,
+  "issue": "scope",
+  "note": "city.chiba.jp公式（精神保健福祉課）だが、URL(seishintsuin.html)は『自立支援医療（精神通院医療）』のみを案内。更生医療・育成医療は扱っていない。title「自立支援医療（更生医療・育成医療・精神通院医療）」は3種すべてを称しており範囲が過大。精神通院に限定すべき。YMYLとして保守的に不一致と判定。",
+  "suggestedTitle": "自立支援医療（精神通院医療）（千葉市）"
+ },
+ {
+  "slug": "fukuoka-fukuoka-self-reliance-medical",
+  "ok": false,
+  "issue": "scope",
+  "note": "ページは自立支援医療のうち『精神通院医療』のみ＋精神障害者保健福祉手帳を扱い、更生医療・育成医療は扱っていない(URLもhofuku/seishinhoken配下=精神保健福祉センター所管)。titleは『更生医療・育成医療・精神通院医療』と3種を称しており範囲が過大。更生・育成医療は別所管ページのため、titleを精神通院に限定すべき。",
+  "suggestedTitle": "自立支援医療（精神通院医療）（福岡市）"
+ },
+ {
+  "slug": "hiroshima-hiroshima-disability-certificate",
+  "ok": false,
+  "issue": "scope",
+  "suggestedTitle": "身体障害者手帳（広島市）",
+  "note": "公式 city.hiroshima.lg.jp（健康福祉局障害福祉課）の正常なページで到達可能。ただしtitleは「障害者手帳（身体・療育・精神）」と3種すべてを称するが、ページは身体障害者手帳（身体障害者手帳）のみを扱う個別案内で、療育手帳・精神障害者保健福祉手帳は扱っていない。範囲が過大なためscope。"
+ },
+ {
+  "slug": "hiroshima-hiroshima-self-reliance-medical",
+  "ok": false,
+  "issue": "scope",
+  "suggestedTitle": "自立支援医療（更生医療）（広島市）",
+  "note": "公式 city.hiroshima.lg.jp（健康福祉局障害福祉部）の正常なページで到達可能。ただしH1は「自立支援医療（更生医療）」で、自立支援医療3種（更生医療・育成医療・精神通院医療）のうち更生医療のみを扱う個別ページ。育成医療・精神通院医療は別ページへのリンクのみ。bare『自立支援医療』のtitleは範囲が過大なためscope。"
+ },
+ {
+  "slug": "hyogo-kobe-self-reliance-medical",
+  "ok": false,
+  "issue": "scope",
+  "note": "このページ本体のH1は「自立支援医療（更生医療）の支給」で、更生医療のみを扱う案内ページ。育成医療・精神通院医療は別ページへのリンク／制度改正の文脈で言及されるだけで本ページの説明対象ではない。title「自立支援医療（更生医療・育成医療・精神通院医療）」は3種すべてを称しており過大。host=city.kobe.lg.jp（神戸市公式）で識別自体は正しいが、範囲がページ実体より広い。",
+  "suggestedTitle": "自立支援医療（更生医療）（神戸市）"
+ },
+ {
+  "slug": "hyogo-kobe-single-parent-consultation",
+  "ok": false,
+  "issue": "scope",
+  "note": "WebFetch確認: URL=family/index.html は神戸市ひとり親家庭支援の総合インデックス（目次）ページであり、児童扶養手当・医療費助成・住宅/就業支援・貸付など多数制度へのリンク集。相談窓口（区役所/ひとり親家庭支援センター）は冒頭の一セクションに過ぎない。host=city.kobe.lg.jp公式・到達OK・断定なしだが、titleが『母子・父子自立支援（ひとり親相談・…支援センター）』と相談支援特化を称するのに対しページは全支援の包括ハブで範囲が不一致。YMYL保守判断でok=false。",
+  "suggestedTitle": "ひとり親家庭への支援（総合案内・相談窓口／神戸市）"
+ },
+ {
+  "slug": "kanagawa-kawasaki-self-reliance-medical",
+  "ok": false,
+  "issue": "scope",
+  "note": "ページH1は「自立支援医療（精神通院医療）」で本文は精神通院医療のみを説明。更生医療・育成医療はサイドバーの参照リンクのみで本文に申請方法・対象者・内容の記載なし。title が3種（更生医療・育成医療・精神通院医療）を称するのに範囲が過大。officialUrl は精神通院医療専用ページ。",
+  "suggestedTitle": "自立支援医療（精神通院医療）（川崎市）"
+ },
+ {
+  "slug": "kanagawa-sagamihara-disability-certificate",
+  "ok": false,
+  "issue": "identity",
+  "note": "officialUrlのH1は『カード様式の障害者手帳の申請ができるようになります！』で、カード化のお知らせ専用ページ。手帳の交付要件・診断基準・一般的な申請方法は説明しておらず、それらは別ページ（下部リンク）。titleが称する『障害者手帳（身体・療育・精神）』の総合案内ページではなく、別目的のお知らせページにリンクしている。host=city.sagamihara.kanagawa.jpで公式ではあるが、制度案内の本体ページではないためidentity不一致。総合案内の正しいURLへの差し替えを推奨。",
+  "suggestedTitle": "カード様式の障害者手帳の申請（相模原市）"
+ },
+ {
+  "slug": "kanagawa-sagamihara-self-reliance-medical",
+  "ok": false,
+  "issue": "scope",
+  "note": "H1は『自立支援医療（更生医療）』で、本文は更生医療のみを扱う。育成医療・精神通院医療は別ページへのリンクのみで本文では説明されていない。titleは『更生医療・育成医療・精神通院医療』の3種すべてを称しており範囲が過大。host=city.sagamihara.kanagawa.jpで公式。",
+  "suggestedTitle": "自立支援医療（更生医療）（相模原市）"
+ },
+ {
+  "slug": "kanagawa-yokohama-self-reliance-medical",
+  "ok": false,
+  "issue": "scope",
+  "note": "ページタイトルは「横浜市自立支援医療（精神通院医療）」で、本文も精神通院医療のみを扱う。更生医療・育成医療への言及は一切なし。titleは3種すべて（更生・育成・精神通院）を称しており範囲が過大。URLパスもjiritusieniryou1=精神通院医療単独ページ。横浜市公式・正常ページだが、titleとページ範囲が不一致。",
+  "suggestedTitle": "自立支援医療（精神通院医療）（横浜市）"
+ },
+ {
+  "slug": "kyoto-kyoto-special-disability-allowance",
+  "ok": false,
+  "issue": "scope",
+  "note": "officialUrl(181040)は京都市の「障害福祉施策情報 - 手当、年金等」という複数制度の総合インデックスページで、特別障害者手当はその中の一項目にすぎない（障害児福祉手当・特別児童扶養手当・児童扶養手当・障害基礎年金など約9制度を併載）。特別障害者手当自体は『20歳以上の在宅の重度障害のある方/所得制限あり』と正確に記載されており誤りはないが、title「特別障害者手当（京都市）」が単一制度を称するのに対しリンク先は手当・年金全般の節ページであり、titleが指す範囲より広い。利用者が単一制度ページを期待してインデックスに着地する点でYMYL上保守的にscopeとして要確認。host=city.kyoto.lg.jpで公式・断定表現なし。",
+  "suggestedTitle": "手当・年金等（特別障害者手当ほか）（京都市）"
+ },
+ {
+  "slug": "kyoto-kyoto-single-parent-consultation",
+  "ok": false,
+  "issue": "scope",
+  "note": "ページのH1は『子どもに関する相談窓口』で、児童虐待・発達・健康医療・心理・人権・DV等を網羅する子ども全般の相談窓口総合ポータル。ひとり親（ひとり親家庭支援センター『ゆめあす』）は『その他の子どもの相談窓口』内の一項目に過ぎず、title中核の『母子・父子自立支援員』という語はページ上に存在しない。titleはひとり親専用の相談窓口（母子・父子自立支援）を称するが、実際の範囲はそれより広く中核主題も異なる→scope不一致。host=city.kyoto.lg.jp（京都市公式・はぐくみ局育成推進課）でidentity自体は公的。YMYLにつき保守的にok=false。",
+  "suggestedTitle": "子どもに関する相談窓口（ひとり親家庭支援センター ゆめあす を含む／京都市）"
+ },
+ {
+  "slug": "miyagi-sendai-disability-certificate",
+  "ok": false,
+  "issue": "scope",
+  "note": "officialUrl(shogaisha.html)のページタイトルは「身体障害者手帳｜仙台市」で、身体障害者手帳のみを扱う。療育手帳・精神障害者保健福祉手帳は別ページ（サイドメニューに別リンク）。titleは3種類すべてを称しており範囲が過大。host=city.sendai.jpで公式・到達可・断定表現なし。範囲不一致のためYMYL保守でok=false。",
+  "suggestedTitle": "身体障害者手帳（仙台市）"
+ },
+ {
+  "slug": "niigata-niigata-self-reliance-medical",
+  "ok": false,
+  "issue": "scope",
+  "note": "URL kosei1.html(=更生)は『更生医療』専用ページで、本文は18歳以上向け更生医療が主。育成医療・精神通院医療はサイドバーのリンクで触れるのみで実質扱っていない。titleは『更生医療・育成医療・精神通院医療』の3種を称しており範囲が過大。city.niigata.lg.jp公式である点は問題なし。",
+  "suggestedTitle": "自立支援医療（更生医療）（新潟市）"
+ },
+ {
+  "slug": "okayama-okayama-disability-certificate",
+  "ok": false,
+  "issue": "scope",
+  "note": "公式ページ(ID4699・city.okayama.jp)は『身体障害者手帳』のみを扱い、療育手帳・精神障害者保健福祉手帳は別ページ。titleは(身体・療育・精神)と3種を称しており範囲が過大。identity自体は障害者手帳系で公式・到達OK。",
+  "suggestedTitle": "身体障害者手帳（岡山市）"
+ },
+ {
+  "slug": "okayama-okayama-self-reliance-medical",
+  "ok": false,
+  "issue": "scope",
+  "note": "公式ページ(ID4624・city.okayama.jp)は『自立支援医療（育成医療・更生医療）』のみで精神通院医療を含まない。さらに内容は主に指定医療機関の指定申請・判定手続き(障害者更生相談所 身体障害係所管)寄り。titleは(更生医療・育成医療・精神通院医療)と3種を称しており範囲が過大。",
+  "suggestedTitle": "自立支援医療（更生医療・育成医療）（岡山市）"
+ },
+ {
+  "slug": "osaka-osaka-disability-certificate",
+  "ok": false,
+  "issue": "scope",
+  "note": "officialUrlは大阪市公式(city.osaka.lg.jp)の「各種手帳の交付」カテゴリページで運営主体は正当。ただしtitleは「障害者手帳（身体・療育・精神）」と3種を称するのに、ページ記事一覧のリンクは身体障がい者手帳と療育手帳の2種のみで、精神障害者保健福祉手帳へのリンクが存在しない（2回の独立フェッチで確認）。範囲が過大。",
+  "suggestedTitle": "障害者手帳（身体・療育）（大阪市）"
+ },
+ {
+  "slug": "osaka-osaka-self-reliance-medical",
+  "ok": false,
+  "issue": "scope",
+  "note": "officialUrlは大阪市公式(city.osaka.lg.jp)で運営主体は正当だが、ページタイトルは「自立支援医療(育成医療)」で本文も育成医療のみを説明。更生医療・精神通院医療は記載なく案内リンクもない。titleが「更生医療・育成医療・精神通院医療」と3種を称するのは範囲が過大。",
+  "suggestedTitle": "自立支援医療（育成医療）（大阪市）"
+ },
+ {
+  "slug": "saitama-saitama-self-reliance-medical",
+  "ok": false,
+  "issue": "scope",
+  "note": "title は3類型「更生医療・育成医療・精神通院医療」を称するが、officialUrl(p103543)のH1は「自立支援医療費（精神通院医療）」で精神通院医療のみを案内。更生医療・育成医療は別ページ。title の範囲が過大なため scope。公式ホスト・到達自体は正常。",
+  "suggestedTitle": "自立支援医療（精神通院医療）（さいたま市）"
+ },
+ {
+  "slug": "saitama-saitama-disability-welfare-service",
+  "ok": false,
+  "issue": "identity",
+  "note": "title は「障害福祉サービス（介護給付・訓練等給付）」だが、officialUrl(p005129)のH1は「障害者総合支援法に基づく障害福祉サービス・地域生活支援事業（移動支援、日中一時支援）について」で、実態は地域生活支援事業（移動支援・日中一時支援）の案内。介護給付・訓練等給付の申請窓口・支給決定手続きは本文になく厚労省HPへ外部リンクするのみ。地域生活支援事業は介護給付・訓練等給付とは別制度区分であり、title が指す制度の案内ページとして適切でないため identity。公式ホストではある。",
+  "suggestedTitle": "地域生活支援事業（移動支援・日中一時支援）（さいたま市）"
+ },
+ {
+  "slug": "shizuoka-hamamatsu-self-reliance-medical",
+  "ok": false,
+  "issue": "scope",
+  "note": "titleは『自立支援医療（更生医療・育成医療・精神通院医療）』と3種を称するが、ページは『自立支援医療（更生医療）／浜松市』で更生医療のみを扱い、育成医療・精神通院医療は対象外。範囲が過大。officialUrlは更生医療専用ページのため、titleを更生医療に限定すべき。",
+  "suggestedTitle": "自立支援医療（更生医療）（浜松市）"
+ },
+ {
+  "slug": "shizuoka-hamamatsu-single-parent-medical-aid",
+  "ok": false,
+  "issue": "scope",
+  "suggestedTitle": "ひとり親家庭等医療費助成（マル親）転入・転出・転居手続き（マイナポータル申請者向け）（浜松市）",
+  "note": "officialUrlのページ実体は『マイナポータルで申請した方へのご案内（ひとり親家庭等医療費助成）』で、引越し時の届出（転出=受給資格喪失届/転居=変更届/転入=再申請）に限定。制度の対象者・助成内容・所得制限・申請方法の総合案内は一切なし。titleが称する制度全般の案内ページとは範囲が一致せず過大。host=city.hamamatsu.shizuoka.jpで公式・到達可だが、制度概要ページに差し替えるか、titleを手続き案内である旨に限定すべき。YMYLにつき保守的にok=false。"
+ },
+ {
+  "slug": "shizuoka-shizuoka-special-disability-allowance",
+  "ok": false,
+  "issue": "scope",
+  "note": "titleは「特別障害者手当」単独の制度を称するが、officialUrlのページは「障害に関する各種手当のご案内」という複数手当のハブページ。特別障害者手当のほか障害児福祉手当・経過的福祉手当・特別児童扶養手当・静岡市重度心身障害児扶養手当も併載。特別障害者手当自体は確実に案内されておりidentity・hostは問題なし（city.shizuoka.lg.jp 障害者支援推進課在宅支援係）だが、専用ページではなく一覧ページのため範囲がtitleと不一致。YMYL保守判定でok=false。断定表現なし。",
+  "suggestedTitle": "障害に関する各種手当（特別障害者手当ほか）（静岡市）"
+ },
+ {
+  "slug": "shizuoka-shizuoka-single-parent-consultation",
+  "ok": false,
+  "issue": "scope",
+  "note": "officialUrl(p008916.html)のH1は「ひとり親家庭の支援」で、母子・父子自立支援員による相談窓口を案内する個別ページではなく、児童扶養手当/母子父子寡婦福祉資金貸付金/高等職業訓練促進給付金/養育費の無料弁護士相談等13項目以上へのリンクを並べる総合ポータル(目次)ページ。本文に「母子・父子自立支援員」「相談窓口」「相談員」の語は一切登場しない。当方タイトル「母子・父子自立支援（ひとり親家庭の相談）」が指す相談支援制度より範囲が過大・性質も異なる。host=city.shizuoka.lg.jpで公式・到達は可だが、titleとページ実体が不一致。suggestedTitleの通り実体に合わせるべき。",
+  "suggestedTitle": "ひとり親家庭の支援（静岡市）"
+ }
+]
