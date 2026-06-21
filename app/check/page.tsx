@@ -47,6 +47,7 @@ export default async function CheckPage() {
           municipalities={munis.map((m) => ({
             slug: m.slug,
             name: m.name,
+            nameKana: m.nameKana,
             prefectureSlug: m.prefectureSlug,
             prefectureName: prefectureName.get(m.prefectureSlug) ?? "",
           }))}
