@@ -67,7 +67,7 @@ export default async function AreaPage() {
 
           <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
             <section className="aw-card">
-              <h2 className="flex items-center gap-2 text-base font-bold text-navy">
+              <h2 className="aw-card-heading">
                 <MapPinned className="h-5 w-5 text-ok" aria-hidden="true" />
                 自治体名で探す
               </h2>

@@ -73,7 +73,7 @@ function Field({
 }) {
   return (
     <section className="border-t border-soft-gray pt-6">
-      <h2 className="flex items-center gap-2 text-base font-bold text-navy">
+      <h2 className="aw-card-heading">
         <Icon className="h-5 w-5 text-gold" aria-hidden="true" />
         {label}
       </h2>
@@ -286,7 +286,7 @@ export default async function SupportDetailPage({
               {/* 公式で確認する項目 */}
               {program.uncertainFields && program.uncertainFields.length > 0 && (
                 <section className="border-t border-soft-gray pt-6">
-                  <h2 className="flex items-center gap-2 text-base font-bold text-navy">
+                  <h2 className="aw-card-heading">
                     <HelpCircle className="h-5 w-5 text-info" aria-hidden="true" />
                     公式ページで確認したい項目
                   </h2>

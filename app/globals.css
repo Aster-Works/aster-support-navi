@@ -187,6 +187,12 @@
     @apply text-sm font-semibold tracking-wide text-charcoal/70;
   }
 
+  /* カード／囲み内の見出し（アイコン＋ラベル）。見出し階層の最下層。
+     各ページで text-base/text-[15px] に揺れていたものを text-base に統一。 */
+  .aw-card-heading {
+    @apply flex items-center gap-2 text-base font-bold text-navy;
+  }
+
   /* 入力フィールド */
   .aw-input {
     @apply w-full rounded-xl border border-soft-gray bg-white px-4 py-3 text-[15px] text-navy placeholder:text-charcoal/70 focus:border-navy/40 focus:outline-none focus-visible:outline-2 focus-visible:outline-gold;

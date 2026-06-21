@@ -239,7 +239,7 @@ export default async function CheckResultPage({
       {nextChecks.length > 0 && (
         <section className="mt-12">
           <div className="aw-card">
-            <h2 className="flex items-center gap-2 text-base font-bold text-navy">
+            <h2 className="aw-card-heading">
               <ListChecks className="h-5 w-5 text-gold" aria-hidden="true" />
               次に確認すること
             </h2>
@@ -264,7 +264,7 @@ export default async function CheckResultPage({
       {/* 別ルート（対象外・見つからないときの迂回路） */}
       <section className="mt-12">
         <div className="aw-callout">
-          <h2 className="flex items-center gap-2 text-[15px] font-bold text-navy">
+          <h2 className="aw-card-heading">
             <HeartHandshake className="h-5 w-5 text-aster" aria-hidden="true" />
             対象に当てはまらないと感じたら
           </h2>

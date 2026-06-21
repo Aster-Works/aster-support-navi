@@ -11,10 +11,7 @@ export function TrustSignal({ program }: { program: SupportProgram }) {
       aria-labelledby="official-heading"
       className="aw-card border-ok/30 bg-ok-soft/40"
     >
-      <h2
-        id="official-heading"
-        className="flex items-center gap-2 text-base font-bold text-navy"
-      >
+      <h2 id="official-heading" className="aw-card-heading">
         <ShieldCheck className="h-5 w-5 text-ok" aria-hidden="true" />
         公式情報
       </h2>

@@ -226,7 +226,7 @@ export default async function MunicipalityPage({
         <div className="mt-12 grid gap-6 lg:grid-cols-2">
           {withDeadline.length > 0 && (
             <section className="aw-card">
-              <h2 className="flex items-center gap-2 text-base font-bold text-navy">
+              <h2 className="aw-card-heading">
                 <CalendarClock className="h-5 w-5 text-deadline" aria-hidden="true" />
                 申請期限がある制度
               </h2>
@@ -251,7 +251,7 @@ export default async function MunicipalityPage({
           )}
           {online.length > 0 && (
             <section className="aw-card">
-              <h2 className="flex items-center gap-2 text-base font-bold text-navy">
+              <h2 className="aw-card-heading">
                 <Globe className="h-5 w-5 text-online" aria-hidden="true" />
                 オンライン申請できる制度
               </h2>

@@ -155,7 +155,7 @@ export default async function LifeEventPage({
         {le.commonChecks && le.commonChecks.length > 0 && (
           <section className="mt-12">
             <div className="aw-card">
-              <h2 className="flex items-center gap-2 text-base font-bold text-navy">
+              <h2 className="aw-card-heading">
                 <ListChecks className="h-5 w-5 text-gold" aria-hidden="true" />
                 申請前に共通で確認すること
               </h2>
@@ -184,7 +184,7 @@ export default async function LifeEventPage({
         <section className="mt-8">
           <div className="aw-card flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="flex items-center gap-2 text-[15px] font-bold text-navy">
+              <h2 className="aw-card-heading">
                 <ClipboardCheck className="h-5 w-5 text-gold" aria-hidden="true" />
                 自分の状況に合う制度を確認する
               </h2>

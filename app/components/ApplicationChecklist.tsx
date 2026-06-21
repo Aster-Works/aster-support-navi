@@ -102,7 +102,7 @@ export function ApplicationChecklist({
       <div className="flex items-center justify-between gap-3">
         <h2
           id="checklist-heading"
-          className="flex items-center gap-2 text-base font-bold text-navy"
+          className="aw-card-heading"
         >
           <ListChecks className="h-5 w-5 text-gold" aria-hidden="true" />
           申請前チェックリスト
