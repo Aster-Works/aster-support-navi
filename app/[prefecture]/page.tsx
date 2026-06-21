@@ -56,6 +56,8 @@ export default async function PrefecturePage({
     getPrefectures(),
   ]);
   const activeSlugs = new Set(active.map((m) => m.slug));
+  // 「すべての自治体」は制度ありカードと重複するため、未整備（準備中）の自治体だけを別枠で出す。
+  const inactive = all.filter((m) => !activeSlugs.has(m.slug));
   const otherGroups = buildRegionGroups(allActive, prefectures, {
     exclude: pref.slug,
   });
@@ -99,38 +101,31 @@ export default async function PrefecturePage({
           </section>
         )}
 
-        <section className="mt-10">
-          <h2 className="text-sm font-semibold tracking-wide text-charcoal/70">
-            すべての自治体（準備中を含む）
-          </h2>
-          <ul className="mt-4 flex flex-wrap gap-2">
-            {all.map((m) => {
-              const isActive = activeSlugs.has(m.slug);
-              return (
+        {inactive.length > 0 && (
+          <section className="mt-10">
+            <h2 className="text-sm font-semibold tracking-wide text-charcoal/70">
+              準備中の自治体
+            </h2>
+            <p className="mt-1 text-[13px] text-charcoal/70">
+              次の自治体は、公式情報を確認でき次第、順次公開します。
+            </p>
+            <ul className="mt-4 flex flex-wrap gap-2">
+              {inactive.map((m) => (
                 <li key={m.slug}>
-                  {isActive ? (
-                    <Link
-                      href={`/${m.prefectureSlug}/${m.slug}`}
-                      className="aw-chip"
-                    >
-                      {m.name}
-                    </Link>
-                  ) : (
-                    <span
-                      className="aw-chip cursor-default border-soft-gray bg-soft-gray/40 text-charcoal/70"
-                      aria-disabled="true"
-                    >
-                      {m.name}
-                      <span className="aw-badge aw-badge--neutral text-[11px]">
-                        準備中
-                      </span>
+                  <span
+                    className="aw-chip cursor-default border-soft-gray bg-soft-gray/40 text-charcoal/70"
+                    aria-disabled="true"
+                  >
+                    {m.name}
+                    <span className="aw-badge aw-badge--neutral text-[11px]">
+                      準備中
                     </span>
-                  )}
+                  </span>
                 </li>
-              );
-            })}
-          </ul>
-        </section>
+              ))}
+            </ul>
+          </section>
+        )}
 
         {otherGroups.length > 0 && (
           <section className="mt-12 border-t border-soft-gray pt-8">
