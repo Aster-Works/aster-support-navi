@@ -49,7 +49,7 @@ export function HomeSearch({ municipalities }: { municipalities: MuniOption[] })
       <label htmlFor={inputId} className="sr-only">
         自治体名で探す
       </label>
-      <div className="relative flex-1">
+      <div className="relative min-w-0 flex-1">
         <MapPin
           className="pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-charcoal/40"
           aria-hidden="true"
@@ -59,7 +59,7 @@ export function HomeSearch({ municipalities }: { municipalities: MuniOption[] })
           list={listId}
           value={value}
           onChange={(e) => setValue(e.target.value)}
-          placeholder="お住まいの区を入力（例：世田谷区）"
+          placeholder="自治体名を入力（例：世田谷区・大阪市）"
           className="aw-input pl-11"
           autoComplete="off"
           enterKeyHint="search"

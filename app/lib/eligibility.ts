@@ -4,6 +4,7 @@ import type { SupportProgram } from "@/app/lib/data/types";
 export type ChildAgeBand = "0-2" | "3-5" | "6-12" | "13-18";
 
 export interface DiagnosisAnswers {
+  prefecture?: string; // 都道府県 slug
   municipality?: string; // 自治体 slug
   pregnant?: boolean;
   childAgeBands?: ChildAgeBand[];
@@ -26,9 +27,15 @@ export function matchPrograms(
   answers: DiagnosisAnswers,
   programs: SupportProgram[],
 ): Candidate[] {
-  const pool = answers.municipality
-    ? programs.filter((p) => p.municipalitySlug === answers.municipality)
-    : programs;
+  const pool = programs.filter((p) => {
+    if (answers.prefecture && p.prefectureSlug !== answers.prefecture) {
+      return false;
+    }
+    if (answers.municipality && p.municipalitySlug !== answers.municipality) {
+      return false;
+    }
+    return true;
+  });
 
   const hasSmall = !!answers.childAgeBands?.some(
     (b) => b === "0-2" || b === "3-5",
@@ -90,6 +97,7 @@ export function matchPrograms(
 /** 回答が「何かしら入力された」と言えるか（結果ページのガード）。 */
 export function hasAnyAnswer(a: DiagnosisAnswers): boolean {
   return (
+    !!a.prefecture ||
     !!a.municipality ||
     !!a.pregnant ||
     (a.childAgeBands?.length ?? 0) > 0 ||
@@ -104,6 +112,7 @@ const AGE_VALUES: ChildAgeBand[] = ["0-2", "3-5", "6-12", "13-18"];
 
 export function encodeAnswers(a: DiagnosisAnswers): string {
   const sp = new URLSearchParams();
+  if (a.prefecture) sp.set("p", a.prefecture);
   if (a.municipality) sp.set("m", a.municipality);
   if (a.pregnant) sp.set("preg", "1");
   if (a.childAgeBands?.length) sp.set("ages", a.childAgeBands.join(","));
@@ -125,6 +134,7 @@ export function decodeAnswers(
     .filter((x): x is ChildAgeBand => (AGE_VALUES as string[]).includes(x));
   const interests = (get("i") ?? "").split(",").filter(Boolean);
   return {
+    prefecture: get("p") || undefined,
     municipality: get("m") || undefined,
     pregnant: get("preg") === "1",
     childAgeBands: ages.length ? ages : undefined,

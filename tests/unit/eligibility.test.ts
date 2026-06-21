@@ -45,6 +45,23 @@ describe("matchPrograms", () => {
     expect(r.every((c) => c.program.municipalitySlug === "setagaya")).toBe(true);
   });
 
+  it("都道府県がある場合は自治体 slug が同じでも都道府県で絞り込む", () => {
+    const r = matchPrograms(
+      { prefecture: "tokyo", municipality: "setagaya", childAgeBands: ["0-2"] },
+      [
+        ...POOL,
+        prog({
+          slug: "osaka-same-city-slug",
+          prefectureSlug: "osaka",
+          municipalitySlug: "setagaya",
+          categorySlugs: ["childcare"],
+          lifeEventSlugs: ["childcare"],
+        }),
+      ],
+    );
+    expect(r.every((c) => c.program.prefectureSlug === "tokyo")).toBe(true);
+  });
+
   it("妊娠中は birth カテゴリ/イベントを候補に出し理由を付ける", () => {
     const r = matchPrograms({ municipality: "setagaya", pregnant: true }, POOL);
     const allowance = r.find((c) => c.program.slug === "allowance");
@@ -84,6 +101,7 @@ describe("matchPrograms", () => {
 describe("encode/decode answers", () => {
   it("往復で一致する", () => {
     const a: DiagnosisAnswers = {
+      prefecture: "tokyo",
       municipality: "setagaya",
       pregnant: true,
       childAgeBands: ["0-2", "6-12"],

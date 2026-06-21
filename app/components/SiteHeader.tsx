@@ -4,7 +4,7 @@ import { SITE } from "@/app/lib/site";
 
 const NAV = [
   { href: "/search", label: "制度を探す" },
-  { href: "/tokyo", label: "自治体から探す" },
+  { href: "/area", label: "エリアから探す" },
   { href: "/about", label: "このサイトについて" },
 ];
 

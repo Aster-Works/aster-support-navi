@@ -1,11 +1,11 @@
 import { describe, it, expect } from "vitest";
-import { buildRegionGroups } from "@/app/lib/region";
+import { buildAreaGroups, buildRegionGroups } from "@/app/lib/region";
 import type { Municipality, Prefecture } from "@/app/lib/data/types";
 
 const prefectures: Prefecture[] = [
-  { slug: "tokyo", name: "東京都" },
-  { slug: "kanagawa", name: "神奈川県" },
-  { slug: "osaka", name: "大阪府" },
+  { slug: "tokyo", name: "東京都", region: "関東" },
+  { slug: "kanagawa", name: "神奈川県", region: "関東" },
+  { slug: "osaka", name: "大阪府", region: "近畿" },
 ];
 
 const muni = (
@@ -45,5 +45,18 @@ describe("buildRegionGroups", () => {
     expect(new Set(g.map((x) => x.slug))).toEqual(
       new Set(["kanagawa", "osaka"]),
     );
+  });
+});
+
+describe("buildAreaGroups", () => {
+  it("地方ごとに都道府県をまとめ、標準的な地域順で返す", () => {
+    const g = buildAreaGroups(active, prefectures);
+
+    expect(g.map((x) => x.name)).toEqual(["関東", "近畿"]);
+    expect(g[0].prefectures.map((p) => p.slug)).toEqual([
+      "tokyo",
+      "kanagawa",
+    ]);
+    expect(g[0].municipalityCount).toBe(3);
   });
 });

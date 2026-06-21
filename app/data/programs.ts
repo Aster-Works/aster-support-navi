@@ -1,7 +1,7 @@
 import type { SupportProgram } from "@/app/lib/data/types";
 
 /**
- * 制度 seed（東京23区 × 出産子育て ＋ 生活困窮・低所得[6区先行]）。
+ * 制度 seed（主要自治体の公開確認済み制度）。
  * 出典: 各自治体公式サイトをWebFetchでURL到達と内容を確認（2026-06-17、Workflowで検証）。
  * 【YMYL】対象可否・金額・期限・必要書類は年度/世帯で変わる。本文は断定せず、
  * 具体値は uncertainFields に未確認を明示しつつ公式ページ確認へ誘導する。

@@ -10,7 +10,6 @@ import {
 } from "lucide-react";
 import {
   getAllPublishedPrograms,
-  getMunicipality,
   getMunicipalities,
   getCategories,
   getLifeEvents,
@@ -82,8 +81,13 @@ export default async function CheckResultPage({
     });
   }
   const muni = answers.municipality
-    ? await getMunicipality("tokyo", answers.municipality)
+    ? allMunis.find(
+        (m) =>
+          m.slug === answers.municipality &&
+          (!answers.prefecture || m.prefectureSlug === answers.prefecture),
+      )
     : undefined;
+  const muniHref = muni ? `/${muni.prefectureSlug}/${muni.slug}` : undefined;
   const catName = (s: string) => categories.find((c) => c.slug === s)?.name;
 
   // 「次に確認すること」：回答に関係する生活イベントの共通チェックを集約。
@@ -147,8 +151,8 @@ export default async function CheckResultPage({
               <RefreshCw className="h-4 w-4" aria-hidden="true" />
               もう一度診断する
             </Link>
-            {muni && (
-              <Link href={`/tokyo/${muni.slug}`} className="btn-secondary">
+            {muni && muniHref && (
+              <Link href={muniHref} className="btn-secondary">
                 {muni.name}のページへ
               </Link>
             )}
@@ -272,8 +276,8 @@ export default async function CheckResultPage({
               <RefreshCw className="h-4 w-4" aria-hidden="true" />
               条件を変えて診断する
             </Link>
-            {muni && (
-              <Link href={`/tokyo/${muni.slug}`} className="btn-secondary">
+            {muni && muniHref && (
+              <Link href={muniHref} className="btn-secondary">
                 {muni.name}の制度一覧へ
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </Link>

@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import { ClipboardCheck } from "lucide-react";
-import { getActiveMunicipalities, getCategories } from "@/app/lib/data";
+import {
+  getActiveMunicipalities,
+  getCategories,
+  getPrefectures,
+} from "@/app/lib/data";
 import { buildMetadata } from "@/app/lib/seo";
 import { COPY } from "@/app/lib/copy";
 import { DiagnosisFlow } from "@/app/components/DiagnosisFlow";
@@ -15,10 +19,12 @@ export const metadata: Metadata = buildMetadata({
 });
 
 export default async function CheckPage() {
-  const [munis, categories] = await Promise.all([
-    getActiveMunicipalities("tokyo"),
+  const [munis, categories, prefectures] = await Promise.all([
+    getActiveMunicipalities(),
     getCategories(),
+    getPrefectures(),
   ]);
+  const prefectureName = new Map(prefectures.map((p) => [p.slug, p.name]));
 
   return (
     <div className="aw-prose-container py-12">
@@ -38,7 +44,12 @@ export default async function CheckPage() {
 
       <div className="mt-8">
         <DiagnosisFlow
-          municipalities={munis.map((m) => ({ slug: m.slug, name: m.name }))}
+          municipalities={munis.map((m) => ({
+            slug: m.slug,
+            name: m.name,
+            prefectureSlug: m.prefectureSlug,
+            prefectureName: prefectureName.get(m.prefectureSlug) ?? "",
+          }))}
           categories={categories.map((c) => ({ slug: c.slug, name: c.name }))}
         />
       </div>

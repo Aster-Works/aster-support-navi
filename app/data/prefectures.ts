@@ -1,6 +1,6 @@
 import type { Prefecture } from "@/app/lib/data/types";
 
-/** MVP は東京都のみ。Phase 4 で政令指定都市へ拡張。 */
+/** 掲載対象の都道府県。公式確認済みの自治体がある地域から順次追加する。 */
 export const prefectures: Prefecture[] = [
   { slug: "tokyo", name: "東京都", nameKana: "とうきょうと", region: "関東" },
   { slug: "kanagawa", name: "神奈川県", nameKana: "かながわけん", region: "関東" },

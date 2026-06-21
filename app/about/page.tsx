@@ -14,7 +14,7 @@ export const metadata: Metadata = buildMetadata({
 
 export default function AboutPage() {
   return (
-    <LegalPage title="このサイトについて" path="/about" updated="2026-06-18">
+    <LegalPage title="このサイトについて" path="/about" updated="2026-06-22">
       <p>
         {SITE.name} は、自治体ごとに散らばる個人・世帯向けの支援制度（給付・助成・減免・相談窓口）を、
         住所と生活状況から探し、申請前に確認すべきことまで整理する生活支援ナビです。
@@ -51,7 +51,8 @@ export default function AboutPage() {
 
       <h2>対応している範囲</h2>
       <p>
-        現在は東京23区を中心に、出産・子育て、生活困窮・住まい、介護・高齢、障害・医療などのカテゴリを順次整備しています。
+        現在は東京23区に加え、政令指定都市・中核市などの主要自治体を順次整備しています。
+        出産・子育て、生活困窮・住まい、介護・高齢、障害・医療などのカテゴリを扱います。
         対応状況は自治体・カテゴリによって異なり、公式ページと最終確認日を確認できた制度から公開しています。
       </p>
 

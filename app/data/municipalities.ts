@@ -1,7 +1,7 @@
 import type { Municipality } from "@/app/lib/data/types";
 
-/** 東京23区。officialSiteUrl は各区公式サイトをWebFetchで確認したルート。
- *  intro は自治体ページ冒頭の紹介（断定しない）。制度を持つ区が active。 */
+/** 掲載自治体。officialSiteUrl は各自治体公式サイトを確認したルート。
+ *  intro は自治体ページ冒頭の紹介（断定しない）。公開制度を持つ自治体が active。 */
 export const municipalities: Municipality[] = [
   { slug: "chiyoda", prefectureSlug: "tokyo", name: "千代田区", nameKana: "ちよだく", officialSiteUrl: "https://www.city.chiyoda.lg.jp/", intro: "千代田区に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
   { slug: "chuo", prefectureSlug: "tokyo", name: "中央区", nameKana: "ちゅうおうく", officialSiteUrl: "https://www.city.chuo.lg.jp/", intro: "中央区に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },

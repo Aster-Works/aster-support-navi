@@ -10,7 +10,14 @@ import {
 } from "@/app/lib/eligibility";
 import { track } from "@/app/lib/track";
 
-interface Opt {
+interface MunicipalityOpt {
+  slug: string;
+  name: string;
+  prefectureSlug: string;
+  prefectureName: string;
+}
+
+interface CategoryOpt {
   slug: string;
   name: string;
 }
@@ -26,8 +33,8 @@ export function DiagnosisFlow({
   municipalities,
   categories,
 }: {
-  municipalities: Opt[];
-  categories: Opt[];
+  municipalities: MunicipalityOpt[];
+  categories: CategoryOpt[];
 }) {
   const router = useRouter();
   const [step, setStep] = useState(0);
@@ -100,19 +107,30 @@ export function DiagnosisFlow({
       <div className="mt-6 min-h-[180px]">
         {step === 0 && (
           <Question title="お住まい（または転入予定）の自治体はどこですか？">
-            <div className="flex flex-wrap gap-2">
-              {municipalities.map((m) => (
-                <ChipButton
-                  key={m.slug}
-                  active={a.municipality === m.slug}
-                  onClick={() => setA({ ...a, municipality: m.slug })}
-                >
-                  {m.name}
-                </ChipButton>
-              ))}
+            <div className="max-h-80 overflow-auto rounded-xl border border-soft-gray bg-white/70 p-3">
+              <div className="flex flex-wrap gap-2">
+                {municipalities.map((m) => (
+                  <ChipButton
+                    key={`${m.prefectureSlug}-${m.slug}`}
+                    active={
+                      a.prefecture === m.prefectureSlug &&
+                      a.municipality === m.slug
+                    }
+                    onClick={() =>
+                      setA({
+                        ...a,
+                        prefecture: m.prefectureSlug,
+                        municipality: m.slug,
+                      })
+                    }
+                  >
+                    {m.prefectureName} {m.name}
+                  </ChipButton>
+                ))}
+              </div>
             </div>
             <p className="mt-3 text-[12px] text-charcoal/70">
-              東京23区で公開中の制度候補に対応しています。
+              公式情報を確認できた自治体から順次対応しています。
             </p>
           </Question>
         )}

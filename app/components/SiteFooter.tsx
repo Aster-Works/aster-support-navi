@@ -13,7 +13,7 @@ const COLUMNS: { heading: string; links: { href: string; label: string }[] }[] =
         { href: "/compare", label: "自治体で制度を比べる" },
         { href: "/guides", label: "ガイド（制度のしくみ）" },
         { href: "/saved", label: "保存した制度" },
-        { href: "/tokyo", label: "東京都の自治体から探す" },
+        { href: "/area", label: "エリアから探す" },
         { href: "/help", label: "相談窓口（ひとりで抱え込まないために）" },
       ],
     },

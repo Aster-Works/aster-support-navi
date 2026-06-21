@@ -11,7 +11,7 @@ test("トップ→自治体→制度詳細→チェックリストが通る", as
   ).toBeVisible();
 
   // 自治体名で検索 → 自治体ページへ
-  await page.getByPlaceholder("お住まいの区を入力（例：世田谷区）").fill("世田谷区");
+  await page.getByPlaceholder("自治体名を入力（例：世田谷区・大阪市）").fill("世田谷区");
   await page.getByRole("button", { name: "探す" }).click();
   await expect(page).toHaveURL(/\/tokyo\/setagaya/);
   await expect(
@@ -37,7 +37,7 @@ test("トップ→自治体→制度詳細→チェックリストが通る", as
 
 test("かんたん診断が候補制度を返す", async ({ page }) => {
   await page.goto("/check");
-  await page.getByRole("button", { name: "世田谷区" }).click();
+  await page.getByRole("button", { name: /世田谷区/ }).click();
   await page.getByRole("button", { name: "次へ" }).click(); // 自治体→妊娠
   await page.getByRole("button", { name: "はい" }).click(); // 妊娠中
   // 残りは未選択のまま、結果ページに着くまで進める
@@ -77,6 +77,7 @@ test("a11y: トップと制度詳細に重大な違反がない", async ({ page 
     "/supports/tokyo-setagaya-child-allowance",
     "/help",
     "/guides/child-allowance-basics",
+    "/area",
     "/saved",
     "/compare/medical",
   ]) {

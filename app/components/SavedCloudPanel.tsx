@@ -81,10 +81,10 @@ export function SavedCloudPanel() {
         Google アカウントでログイン
       </button>
 
-      <div className="mt-3 flex items-center gap-3 text-[12px] text-charcoal/60">
-        <span className="h-px flex-1 bg-charcoal/15" />
+      <div className="mt-3 flex items-center gap-3 text-[12px] text-charcoal/75">
+        <span className="h-px flex-1 bg-charcoal/20" />
         または メール（ID）とパスワード
-        <span className="h-px flex-1 bg-charcoal/15" />
+        <span className="h-px flex-1 bg-charcoal/20" />
       </div>
 
       <div className="mt-3 inline-flex rounded-xl bg-white p-1 text-[13px]">

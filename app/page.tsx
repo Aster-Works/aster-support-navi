@@ -20,14 +20,14 @@ import {
   getRecentlyUpdatedPrograms,
 } from "@/app/lib/data";
 import { SITE } from "@/app/lib/site";
-import { buildRegionGroups } from "@/app/lib/region";
-import { RegionBrowse } from "@/app/components/RegionBrowse";
+import { buildAreaGroups } from "@/app/lib/region";
 import { buildMetadata } from "@/app/lib/seo";
 import { COPY } from "@/app/lib/copy";
 import { HomeSearch, type MuniOption } from "@/app/components/HomeSearch";
 import { LifeEventIcon } from "@/app/components/Icon";
 import { SupportCard } from "@/app/components/SupportCard";
 import { SectionHeading } from "@/app/components/SectionHeading";
+import { AreaExplorer } from "@/app/components/AreaExplorer";
 
 export const metadata: Metadata = buildMetadata({
   title: SITE.tagline,
@@ -70,8 +70,7 @@ export default async function HomePage() {
   const catName = (slug: string) =>
     categories.find((c) => c.slug === slug)?.name;
 
-  // 制度あり自治体を都道府県ごとにまとめる（東京を先頭、以降は名前順）。
-  const regionGroups = buildRegionGroups(active, prefectures);
+  const areaGroups = buildAreaGroups(active, prefectures);
 
   return (
     <>
@@ -85,7 +84,7 @@ export default async function HomePage() {
           <div className="max-w-2xl">
             <p className="aw-eyebrow">
               <Compass className="h-3.5 w-3.5" aria-hidden="true" />
-              支援制度ナビ・東京23区＋政令指定都市（順次整備中）
+              支援制度ナビ・全国の主要自治体を順次整備中
             </p>
             <h1 className="mt-4 text-3xl font-bold leading-tight tracking-tight text-navy sm:text-[42px] sm:leading-[1.2]">
               {COPY.brandPromise}
@@ -121,12 +120,21 @@ export default async function HomePage() {
       {/* 地域から探す */}
       <section className="aw-container py-12">
         <SectionHeading
-          eyebrow="地域から探す"
-          title="お住まいの自治体から探す"
-          description="東京23区と政令指定都市などを順次整備しています。自治体名から、確認すべき制度へ進めます。"
+          eyebrow="エリアから探す"
+          title="地方・都道府県から支援制度を探す"
+          description="整備済みの都道府県と自治体を一覧できます。まずエリアを選び、お住まいの自治体ページへ進んでください。"
         />
+        <div className="mt-8">
+          <AreaExplorer groups={areaGroups} compact />
+        </div>
         <div className="mt-6">
-          <RegionBrowse groups={regionGroups} />
+          <Link
+            href="/area"
+            className="inline-flex items-center gap-1 text-[14px] font-semibold text-navy hover:underline"
+          >
+            対応エリアをすべて見る
+            <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          </Link>
         </div>
       </section>
 
