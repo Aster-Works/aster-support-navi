@@ -13,6 +13,13 @@ const seriousIds = (
     .filter((v) => v.impact === "serious" || v.impact === "critical")
     .map((v) => v.id);
 
+test.beforeEach(async ({ page }) => {
+  await page.route(
+    /https:\/\/(www\.googletagmanager\.com|www\.google\.com|www\.googleadservices\.com|ad\.doubleclick\.net)\//,
+    (route) => route.abort(),
+  );
+});
+
 test.describe("ヘッダー・ナビ", () => {
   test("モバイル: ハンバーガーメニューの開閉・リンク・Escape・a11y", async ({
     page,

@@ -4,6 +4,13 @@ import AxeBuilder from "@axe-core/playwright";
 /** クリティカルジャーニーのスモーク + a11y。
  *  実行には `npx playwright install` が必要。`npm run test:e2e` で起動（build→start を webServer が行う）。 */
 
+test.beforeEach(async ({ page }) => {
+  await page.route(
+    /https:\/\/(www\.googletagmanager\.com|www\.google\.com|www\.googleadservices\.com|ad\.doubleclick\.net)\//,
+    (route) => route.abort(),
+  );
+});
+
 test("トップ→自治体→制度詳細→チェックリストが通る", async ({ page }) => {
   await page.goto("/");
   await expect(

@@ -5,6 +5,8 @@ type GtagCall = unknown[];
 
 afterEach(() => {
   delete (window as unknown as { gtag?: unknown }).gtag;
+  delete (window as unknown as { __asterGaDestinationId?: unknown })
+    .__asterGaDestinationId;
 });
 
 describe("track（YMYL 安全）", () => {
@@ -12,10 +14,22 @@ describe("track（YMYL 安全）", () => {
     expect(() => track("diagnosis_started", { count: 1 })).not.toThrow();
   });
 
+  it("Google Ads タグだけの状態ではカスタムイベントを送らない", () => {
+    const calls: GtagCall[] = [];
+    (window as unknown as { gtag: (...a: unknown[]) => void }).gtag = (...a) =>
+      calls.push(a);
+
+    track("diagnosis_started", { count: 1 });
+
+    expect(calls).toHaveLength(0);
+  });
+
   it("許可キーのみ送信し、機微キー・自由記述は捨てる", () => {
     const calls: GtagCall[] = [];
     (window as unknown as { gtag: (...a: unknown[]) => void }).gtag = (...a) =>
       calls.push(a);
+    (window as unknown as { __asterGaDestinationId: string })
+      .__asterGaDestinationId = "G-TEST";
     track("diagnosis_completed", {
       count: 5,
       context: "diagnosis",
@@ -29,16 +43,27 @@ describe("track（YMYL 安全）", () => {
     const [type, name, params] = calls[0] as [string, string, object];
     expect(type).toBe("event");
     expect(name).toBe("diagnosis_completed");
-    expect(params).toEqual({ count: 5, context: "diagnosis" });
+    expect(params).toEqual({
+      send_to: "G-TEST",
+      count: 5,
+      context: "diagnosis",
+    });
   });
 
   it("string は40字に切り詰める", () => {
     const calls: GtagCall[] = [];
     (window as unknown as { gtag: (...a: unknown[]) => void }).gtag = (...a) =>
       calls.push(a);
+    (window as unknown as { __asterGaDestinationId: string })
+      .__asterGaDestinationId = "G-TEST";
     track("checklist_viewed", { context: "x".repeat(100) });
-    const params = (calls[0] as [string, string, { context: string }])[2];
+    const params = (calls[0] as [
+      string,
+      string,
+      { context: string; send_to: string },
+    ])[2];
     expect(params.context.length).toBe(40);
+    expect(params.send_to).toBe("G-TEST");
   });
 });
 

@@ -4,17 +4,31 @@
  * 不変条件: 診断回答・検索語・自由記述などの機微情報を解析へ送らない。
  * - 送れるのは許可キー（context/host/count/category）の短い値のみ。それ以外は捨てる。
  * - free-text・クエリ文字列・氏名・住所・症状などは一切送らない。
- * - GA 未設定（window.gtag 不在）なら何もしない。
+ * - GA4 宛先未設定（window.__asterGaDestinationId 不在）なら何もしない。
+ *   Google Ads のベースタグだけがある状態では、診断イベント等を広告宛先へ送らない。
  *
  * 使い方: track("diagnosis_completed", { count: 5 })
  */
 const ALLOWED_KEYS = new Set(["context", "host", "count", "category"]);
 
+declare global {
+  interface Window {
+    __asterGaDestinationId?: string;
+    gtag?: (...args: unknown[]) => void;
+  }
+}
+
 export function track(
   event: string,
   params: Record<string, string | number> = {},
 ): void {
-  if (typeof window === "undefined" || typeof window.gtag !== "function") return;
+  if (
+    typeof window === "undefined" ||
+    typeof window.gtag !== "function" ||
+    !window.__asterGaDestinationId
+  ) {
+    return;
+  }
   const safe: Record<string, string | number> = {};
   for (const [k, v] of Object.entries(params)) {
     if (!ALLOWED_KEYS.has(k)) continue;
@@ -22,7 +36,10 @@ export function track(
     else if (typeof v === "string") safe[k] = v.slice(0, 40); // 念のため短く切る
   }
   try {
-    window.gtag("event", event, safe);
+    window.gtag("event", event, {
+      send_to: window.__asterGaDestinationId,
+      ...safe,
+    });
   } catch {
     /* 計測失敗は無視 */
   }

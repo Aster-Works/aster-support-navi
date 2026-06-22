@@ -4,6 +4,7 @@ import {
   ADSENSE_PUBLISHER_ID,
   isGuideAdExcluded,
 } from "@/app/lib/ads";
+import { GOOGLE_ADS_ID } from "@/app/lib/googleTag";
 import { GET as getAdsTxt } from "@/app/ads.txt/route";
 
 describe("AdSense configuration", () => {
@@ -24,5 +25,9 @@ describe("AdSense configuration", () => {
   it("機微性が高いガイドは広告対象から除外する", () => {
     expect(isGuideAdExcluded("single-parent-support")).toBe(true);
     expect(isGuideAdExcluded("child-allowance-basics")).toBe(false);
+  });
+
+  it("Google Ads のタグIDを固定する", () => {
+    expect(GOOGLE_ADS_ID).toBe("AW-18260421733");
   });
 });
