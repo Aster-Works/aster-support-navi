@@ -1,6 +1,6 @@
 # Aster Support Navi — 実装ノート
 
-作成: 2026-06-18 / 最終更新: 2026-06-23 / ステータス: Phase 1–2 + Slice A–F 実装完了。Phase 4（コンテンツ拡充）と Supabase DB 移行が進行中。
+作成: 2026-06-18 / 最終更新: 2026-06-23 / ステータス: Phase 1–2 + Slice A–F 実装完了。Phase 4（コンテンツ拡充）進行中。本番公開データソースは Supabase へ移行済み。
 
 引き継ぎ仕様の原典は `/Users/james/aster-support-navi-handoff/`（PRODUCT_SPEC / TECHNICAL_ARCHITECTURE / DATA_AND_CONTENT_OPS / ROADMAP / RESEARCH_AND_POSITIONING）。本ノートは実装の地図。
 
@@ -30,7 +30,7 @@
 - `scripts/export-seed-to-sql.ts` … seed→冪等 SQL を生成（`npx tsx`、DB へは書かない）。出力は gitignore。
 - 移行手順: ① migration 適用 → ② 生成 SQL を service_role で投入 → ③ `DATA_SOURCE=hybrid` で検証 → ④ `supabase`。
 - 検証: typecheck / Vitest 74件 / lint / build すべて green。多面的レビュー（parity・往復整合・RLS・RSC境界・SQL）＋敵対的検証済み。
-- 本番Supabase（ref atdhkmniczfxowfkzwjr）へ migration 適用＋1372制度投入済（published 1364 / draft 8）。2026-06-23 時点で production `DATA_SOURCE=hybrid` へ移行。
+- 本番Supabase（ref atdhkmniczfxowfkzwjr）へ migration 適用＋1372制度投入済（published 1364 / draft 8）。2026-06-23 時点で production `DATA_SOURCE=supabase` へ移行。
 
 ### Slice B: 管理画面・運用基盤（2026-06-20 実装・本番Supabase適用済）
 
