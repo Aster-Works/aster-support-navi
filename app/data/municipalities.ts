@@ -65,4 +65,7 @@ export const municipalities: Municipality[] = [
   { slug: "nagasaki", prefectureSlug: "nagasaki", name: "長崎市", nameKana: "ながさきし", officialSiteUrl: "https://www.city.nagasaki.lg.jp/", intro: "長崎市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
   { slug: "oita", prefectureSlug: "oita", name: "大分市", nameKana: "おおいたし", officialSiteUrl: "https://www.city.oita.oita.jp/", intro: "大分市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
   { slug: "kagoshima", prefectureSlug: "kagoshima", name: "鹿児島市", nameKana: "かごしまし", officialSiteUrl: "https://www.city.kagoshima.lg.jp/", intro: "鹿児島市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
+  { slug: "toyama", prefectureSlug: "toyama", name: "富山市", nameKana: "とやまし", officialSiteUrl: "https://www.city.toyama.lg.jp/", intro: "富山市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
+  { slug: "takamatsu", prefectureSlug: "kagawa", name: "高松市", nameKana: "たかまつし", officialSiteUrl: "https://www.city.takamatsu.kagawa.jp/", intro: "高松市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
+  { slug: "wakayama", prefectureSlug: "wakayama", name: "和歌山市", nameKana: "わかやまし", officialSiteUrl: "https://www.city.wakayama.wakayama.jp/", intro: "和歌山市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
 ];

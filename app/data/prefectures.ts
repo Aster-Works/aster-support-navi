@@ -27,4 +27,7 @@ export const prefectures: Prefecture[] = [
   { slug: "nagasaki", name: "長崎県", nameKana: "ながさきけん", region: "九州" },
   { slug: "oita", name: "大分県", nameKana: "おおいたけん", region: "九州" },
   { slug: "kagoshima", name: "鹿児島県", nameKana: "かごしまけん", region: "九州" },
+  { slug: "toyama", name: "富山県", nameKana: "とやまけん", region: "中部" },
+  { slug: "kagawa", name: "香川県", nameKana: "かがわけん", region: "四国" },
+  { slug: "wakayama", name: "和歌山県", nameKana: "わかやまけん", region: "近畿" },
 ];
