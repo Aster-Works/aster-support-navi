@@ -36,7 +36,7 @@ export function ProGate({ children }: { children: React.ReactNode }) {
     if (!supabase) return;
     void supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: `${window.location.origin}/pro` },
+      options: { redirectTo: `${window.location.origin}/pro/dashboard` },
     });
   }, [supabase]);
 

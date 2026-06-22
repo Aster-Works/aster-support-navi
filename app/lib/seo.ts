@@ -81,7 +81,7 @@ export interface FaqItem {
   answer: string;
 }
 
-export function faqJsonLd(items: FaqItem[]) {
+export function faqJsonLd(items: readonly FaqItem[]) {
   return {
     "@context": "https://schema.org",
     "@type": "FAQPage",

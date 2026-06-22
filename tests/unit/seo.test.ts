@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { buildMetadata, websiteJsonLd, breadcrumbJsonLd } from "@/app/lib/seo";
+import robots from "@/app/robots";
 
 describe("buildMetadata", () => {
   const meta = buildMetadata({
@@ -29,6 +30,18 @@ describe("buildMetadata", () => {
       noindex: true,
     });
     expect(m.robots).toMatchObject({ index: false, follow: false });
+  });
+});
+
+describe("robots", () => {
+  it("/pro は公開し、ログイン後のPro画面だけクロール対象外にする", () => {
+    const config = robots();
+    const rule = Array.isArray(config.rules) ? config.rules[0] : config.rules;
+    const disallow = rule.disallow as string[];
+
+    expect(disallow).not.toContain("/pro");
+    expect(disallow).toContain("/pro/dashboard");
+    expect(disallow).toContain("/pro/consultations");
   });
 });
 

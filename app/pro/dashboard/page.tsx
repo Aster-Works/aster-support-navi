@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
 import { ProShell } from "@/app/pro/ProShell";
-import PacketPage from "./PacketPage";
+import ProDashboard from "./ProDashboard";
 
 export const metadata: Metadata = {
-  title: "相談パック | Aster Support Navi Pro",
+  title: "Pro ダッシュボード | Aster Support Navi",
   robots: { index: false, follow: false },
 };
 
-export default function ProConsultationPage() {
+export default function ProDashboardPage() {
   return (
     <ProShell>
-      <PacketPage />
+      <ProDashboard />
     </ProShell>
   );
 }

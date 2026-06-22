@@ -70,6 +70,33 @@ test.describe("ヘッダー・ナビ", () => {
   });
 });
 
+test.describe("Proランディング", () => {
+  test("公開ページとして価値説明と問い合わせフォームを表示し、ログインは別導線にする", async ({
+    page,
+  }) => {
+    await page.goto("/pro");
+
+    await expect(
+      page.getByRole("heading", {
+        name: "相談者に渡せる制度確認パックを、数分で整える。",
+      }),
+    ).toBeVisible();
+    await expect(page.getByText("確認しています…")).toHaveCount(0);
+    await expect(
+      page.getByRole("link", { name: "ログイン" }),
+    ).toHaveAttribute("href", "/pro/dashboard");
+    await expect(page.getByRole("textbox", { name: /お名前/ })).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "メールを作成する" }),
+    ).toBeVisible();
+
+    await page.goto("/pro/dashboard");
+    await expect(
+      page.getByRole("heading", { name: "Pro（相談支援現場向け）" }),
+    ).toBeVisible();
+  });
+});
+
 test.describe("かんたん診断の自治体フィルタ", () => {
   test("絞り込み・件数表示・空状態", async ({ page }) => {
     await page.goto("/check");

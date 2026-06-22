@@ -69,6 +69,7 @@ test("禁止表現が公開ページに出ない（YMYL）", async ({ page }) =>
     "/supports/tokyo-setagaya-child-allowance",
     "/help",
     "/guides/child-allowance-basics",
+    "/pro",
   ]) {
     await page.goto(path);
     const body = await page.locator("body").innerText();
@@ -85,6 +86,7 @@ test("a11y: トップと制度詳細に重大な違反がない", async ({ page 
     "/supports/tokyo-setagaya-child-allowance",
     "/help",
     "/guides/child-allowance-basics",
+    "/pro",
     "/area",
     "/saved",
     "/compare/medical",
