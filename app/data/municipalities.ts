@@ -72,4 +72,8 @@ export const municipalities: Municipality[] = [
   { slug: "fukushima", prefectureSlug: "fukushima", name: "福島市", nameKana: "ふくしまし", officialSiteUrl: "https://www.city.fukushima.fukushima.jp/", intro: "福島市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
   { slug: "maebashi", prefectureSlug: "gunma", name: "前橋市", nameKana: "まえばしし", officialSiteUrl: "https://www.city.maebashi.gunma.jp/", intro: "前橋市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
   { slug: "otsu", prefectureSlug: "shiga", name: "大津市", nameKana: "おおつし", officialSiteUrl: "https://www.city.otsu.lg.jp/", intro: "大津市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
+  { slug: "morioka", prefectureSlug: "iwate", name: "盛岡市", nameKana: "もりおかし", officialSiteUrl: "https://www.city.morioka.iwate.jp/", intro: "盛岡市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
+  { slug: "akita", prefectureSlug: "akita", name: "秋田市", nameKana: "あきたし", officialSiteUrl: "https://www.city.akita.lg.jp/", intro: "秋田市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
+  { slug: "yamagata", prefectureSlug: "yamagata", name: "山形市", nameKana: "やまがたし", officialSiteUrl: "https://www.city.yamagata-yamagata.lg.jp/", intro: "山形市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
+  { slug: "mito", prefectureSlug: "ibaraki", name: "水戸市", nameKana: "みとし", officialSiteUrl: "https://www.city.mito.lg.jp/", intro: "水戸市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
 ];

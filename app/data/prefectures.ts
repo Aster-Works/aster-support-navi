@@ -34,4 +34,8 @@ export const prefectures: Prefecture[] = [
   { slug: "fukushima", name: "福島県", nameKana: "ふくしまけん", region: "東北" },
   { slug: "gunma", name: "群馬県", nameKana: "ぐんまけん", region: "関東" },
   { slug: "shiga", name: "滋賀県", nameKana: "しがけん", region: "近畿" },
+  { slug: "iwate", name: "岩手県", nameKana: "いわてけん", region: "東北" },
+  { slug: "akita", name: "秋田県", nameKana: "あきたけん", region: "東北" },
+  { slug: "yamagata", name: "山形県", nameKana: "やまがたけん", region: "東北" },
+  { slug: "ibaraki", name: "茨城県", nameKana: "いばらきけん", region: "関東" },
 ];
