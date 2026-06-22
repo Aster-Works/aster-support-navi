@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { Loader2, Check, Inbox } from "lucide-react";
+import { Loader2, Check, Inbox, ExternalLink } from "lucide-react";
 import {
   fetchReviewQueue,
   resolveReviewItem,
@@ -66,23 +66,34 @@ export default function AdminReviewQueuePage() {
       ) : (
         <div className="mt-4 divide-y divide-soft-gray rounded-xl border border-soft-gray">
           {items.map((it) => (
-            <div key={it.id} className="flex items-center gap-3 px-4 py-3">
+            <div key={it.id} className="flex items-start gap-3 px-4 py-3">
               <span className="min-w-0 flex-1">
-                {it.programSlug ? (
+                {it.programId ? (
                   <Link
-                    href={`/admin/supports?status=all&q=${encodeURIComponent(it.programTitle ?? "")}`}
-                    className="block truncate font-medium text-navy hover:underline"
+                    href={`/admin/supports/${it.programId}`}
+                    className="inline-flex max-w-full items-center gap-1 font-medium text-navy hover:underline"
                   >
-                    {it.programTitle ?? it.programSlug}
+                    <span className="truncate">
+                      {it.programTitle ?? it.programSlug ?? "制度を開く"}
+                    </span>
+                    <ExternalLink className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
                   </Link>
                 ) : (
                   <span className="block truncate font-medium text-navy">
                     （制度未指定）
                   </span>
                 )}
-                <span className="block truncate text-xs text-charcoal/60">
-                  {it.reason} ・ 優先度 {it.priority}
+                <span className="mt-1 block text-xs text-charcoal/60">
+                  {it.reason} ・ 優先度 {it.priority} ・ {it.severity}
+                  {it.issueCode ? ` ・ ${it.issueCode}` : ""}
+                  {it.detectedBy ? ` ・ ${it.detectedBy}` : ""}
                   {it.dueOn ? ` ・ 期限 ${it.dueOn}` : ""}
+                </span>
+                <span className="mt-1 block text-xs text-charcoal/50">
+                  作成 {it.createdAt.slice(0, 10)}
+                  {it.sourceLastCheckedAt
+                    ? ` ・ 出典確認 ${it.sourceLastCheckedAt}`
+                    : ""}
                 </span>
               </span>
               <button

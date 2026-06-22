@@ -553,6 +553,7 @@ export interface AdminStats {
   byStatus: Record<PublishStatus, number>;
   total: number;
   reviewQueueOpen: number;
+  sourcesNeedReview: number;
 }
 
 export async function fetchStats(): Promise<AdminStats> {
@@ -573,50 +574,257 @@ export async function fetchStats(): Promise<AdminStats> {
     .from("review_queue_items")
     .select("*", { count: "exact", head: true })
     .eq("status", "open");
+  const { count: sourcesNeedReview } = await sb
+    .from("support_sources")
+    .select("*", { count: "exact", head: true })
+    .eq("quality_state", "needs_review");
   return {
     byStatus,
     total: total ?? 0,
     reviewQueueOpen: rq ?? 0,
+    sourcesNeedReview: sourcesNeedReview ?? 0,
   };
+}
+
+// ---- 出典・改訂履歴 --------------------------------------------------------
+export type SourceKind = "official" | "related" | "archive" | "manual";
+export type SourceQualityState =
+  | "ok"
+  | "unchecked"
+  | "needs_review"
+  | "broken"
+  | "low_confidence";
+
+export interface SupportSource {
+  id: string;
+  supportProgramId: string;
+  url: string;
+  title: string | null;
+  publisher: string | null;
+  retrievedAt: string | null;
+  officialCheckedAt: string | null;
+  contentHash: string | null;
+  lastChangedAt: string | null;
+  notes: string | null;
+  createdAt: string;
+  sourceKind: SourceKind | string;
+  qualityState: SourceQualityState | string;
+  detectedIssueCodes: string[];
+  reviewIntervalDays: number;
+}
+
+export interface SupportSourceInput {
+  id?: string;
+  supportProgramId: string;
+  url: string;
+  title?: string | null;
+  publisher?: string | null;
+  officialCheckedAt?: string | null;
+  notes?: string | null;
+  sourceKind?: SourceKind | string;
+  qualityState?: SourceQualityState | string;
+  detectedIssueCodes?: string[];
+  reviewIntervalDays?: number | null;
+}
+
+export interface SupportRevision {
+  id: string;
+  supportProgramId: string;
+  changedBy: string | null;
+  changeType: string;
+  changeSummary: string | null;
+  externalKey: string | null;
+  beforeJson: unknown;
+  afterJson: unknown;
+  createdAt: string;
+}
+
+const SOURCE_SELECT = `
+  id, support_program_id, url, title, publisher, retrieved_at, official_checked_at,
+  content_hash, last_changed_at, notes, created_at, source_kind, quality_state,
+  detected_issue_codes, review_interval_days
+`;
+
+function nullableTrim(v: string | null | undefined): string | null {
+  const trimmed = typeof v === "string" ? v.trim() : "";
+  return trimmed.length > 0 ? trimmed : null;
+}
+
+function mapSource(r: Record<string, unknown>): SupportSource {
+  return {
+    id: String(r.id),
+    supportProgramId: String(r.support_program_id),
+    url: String(r.url ?? ""),
+    title: nullableTrim(r.title as string | null | undefined),
+    publisher: nullableTrim(r.publisher as string | null | undefined),
+    retrievedAt: (r.retrieved_at as string | null) ?? null,
+    officialCheckedAt: (r.official_checked_at as string | null) ?? null,
+    contentHash: (r.content_hash as string | null) ?? null,
+    lastChangedAt: (r.last_changed_at as string | null) ?? null,
+    notes: nullableTrim(r.notes as string | null | undefined),
+    createdAt: String(r.created_at),
+    sourceKind: String(r.source_kind ?? "official"),
+    qualityState: String(r.quality_state ?? "unchecked"),
+    detectedIssueCodes: (r.detected_issue_codes as string[] | null) ?? [],
+    reviewIntervalDays: Number(r.review_interval_days ?? 90),
+  };
+}
+
+export async function fetchSupportSources(
+  programId: string,
+): Promise<SupportSource[]> {
+  const { data, error } = await client()
+    .from("support_sources")
+    .select(SOURCE_SELECT)
+    .eq("support_program_id", programId)
+    .order("created_at", { ascending: false });
+  if (error) throw new Error(error.message);
+  return ((data ?? []) as Record<string, unknown>[]).map(mapSource);
+}
+
+export async function saveSupportSource(
+  input: SupportSourceInput,
+): Promise<string> {
+  const url = input.url.trim();
+  if (!url) throw new Error("出典URLは必須です");
+  const rawReviewIntervalDays = Number.isFinite(input.reviewIntervalDays)
+    ? input.reviewIntervalDays
+    : 90;
+  const reviewIntervalDays = Math.max(
+    1,
+    Math.floor(rawReviewIntervalDays ?? 90),
+  );
+  const payload = {
+    support_program_id: input.supportProgramId,
+    url,
+    title: nullableTrim(input.title),
+    publisher: nullableTrim(input.publisher),
+    official_checked_at: nullableTrim(input.officialCheckedAt),
+    notes: nullableTrim(input.notes),
+    source_kind: input.sourceKind ?? "official",
+    quality_state: input.qualityState ?? "unchecked",
+    detected_issue_codes: input.detectedIssueCodes ?? [],
+    review_interval_days: reviewIntervalDays,
+  };
+  const query = input.id
+    ? client()
+        .from("support_sources")
+        .update(payload)
+        .eq("id", input.id)
+        .eq("support_program_id", input.supportProgramId)
+        .select("id")
+        .single()
+    : client().from("support_sources").insert(payload).select("id").single();
+  const { data, error } = await query;
+  if (error) throw new Error(error.message);
+  return (data as { id: string }).id;
+}
+
+export async function fetchSupportRevisions(
+  programId: string,
+  limit = 20,
+): Promise<SupportRevision[]> {
+  const { data, error } = await client()
+    .from("support_revisions")
+    .select(
+      "id, support_program_id, changed_by, change_type, change_summary, external_key, before_json, after_json, created_at",
+    )
+    .eq("support_program_id", programId)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  if (error) throw new Error(error.message);
+  type RevisionRow = {
+    id: string;
+    support_program_id: string;
+    changed_by: string | null;
+    change_type: string;
+    change_summary: string | null;
+    external_key: string | null;
+    before_json: unknown;
+    after_json: unknown;
+    created_at: string;
+  };
+  return ((data ?? []) as RevisionRow[]).map((r) => ({
+    id: r.id,
+    supportProgramId: r.support_program_id,
+    changedBy: r.changed_by,
+    changeType: r.change_type,
+    changeSummary: r.change_summary,
+    externalKey: r.external_key,
+    beforeJson: r.before_json,
+    afterJson: r.after_json,
+    createdAt: r.created_at,
+  }));
 }
 
 // ---- レビューキュー --------------------------------------------------------
 export interface ReviewItem {
   id: string;
+  programId: string | null;
+  sourceId: string | null;
   reason: string;
   priority: string;
   status: string;
   dueOn: string | null;
+  issueCode: string | null;
+  severity: string;
+  detectedBy: string;
+  sourceLastCheckedAt: string | null;
+  diffJson: unknown;
   createdAt: string;
   programSlug: string | null;
   programTitle: string | null;
 }
 
-export async function fetchReviewQueue(): Promise<ReviewItem[]> {
-  const { data, error } = await client()
+export interface ReviewQueueFilter {
+  programId?: string;
+  status?: "open" | "resolved" | "all";
+  limit?: number;
+}
+
+export async function fetchReviewQueue(
+  f: ReviewQueueFilter = {},
+): Promise<ReviewItem[]> {
+  let query = client()
     .from("review_queue_items")
     .select(
-      "id, reason, priority, status, due_on, created_at, support_programs ( slug, title )",
+      "id, support_program_id, source_id, reason, priority, status, due_on, diff_json, created_at, issue_code, severity, detected_by, source_last_checked_at, support_programs ( id, slug, title )",
     )
-    .eq("status", "open")
     .order("created_at", { ascending: true })
-    .limit(200);
+    .limit(f.limit ?? 200);
+  if ((f.status ?? "open") !== "all") query = query.eq("status", f.status ?? "open");
+  if (f.programId) query = query.eq("support_program_id", f.programId);
+  const { data, error } = await query;
   if (error) throw new Error(error.message);
   type RQ = {
     id: string;
+    support_program_id: string | null;
+    source_id: string | null;
     reason: string;
     priority: string;
     status: string;
     due_on: string | null;
+    diff_json: unknown;
     created_at: string;
-    support_programs?: { slug: string; title: string } | null;
+    issue_code: string | null;
+    severity: string;
+    detected_by: string;
+    source_last_checked_at: string | null;
+    support_programs?: { id: string; slug: string; title: string } | null;
   };
   return (data as unknown as RQ[]).map((r) => ({
     id: r.id,
+    programId: r.support_program_id ?? r.support_programs?.id ?? null,
+    sourceId: r.source_id,
     reason: r.reason,
     priority: r.priority,
     status: r.status,
     dueOn: r.due_on,
+    issueCode: r.issue_code,
+    severity: r.severity,
+    detectedBy: r.detected_by,
+    sourceLastCheckedAt: r.source_last_checked_at,
+    diffJson: r.diff_json,
     createdAt: r.created_at,
     programSlug: r.support_programs?.slug ?? null,
     programTitle: r.support_programs?.title ?? null,

@@ -41,10 +41,11 @@
   DB レベルで強制＝必須項目を欠いたまま published にできない）。app_roles は self-read のみ。
 - UI（`app/admin/*`・`app/lib/admin/client.ts`）: ブラウザ anon クライアント＋管理者RLSのみ（service_role 不使用）。
   AdminGate（ログイン）/ ダッシュボード / 制度一覧（status filter・品質フラグ）/ 編集（18項目＋
-  draft→review→published→archived＋品質ゲート enforcement）/ 品質（未達・stale）/ レビューキュー。`/admin` は noindex + robots disallow。
+  draft→review→published→archived＋品質ゲート enforcement＋出典管理＋制度別レビュー項目＋変更履歴）/
+  品質（未達・stale）/ レビューキュー。`/admin` は noindex + robots disallow。
 - 認可の最終境界は DB の RLS。AdminGate はUX用。多層防御＝①クライアント品質ゲート ②DBトリガ強制 ③公開側 isPublishable 再フィルタ。
 - 検証: 実認証 admin JWT で end-to-end（非admin→draft不可視 / admin→draft可視・編集・revision記録 / incomplete publish 拒否 / valid publish 成功）。匿名 gate・admin walkthrough をブラウザ実地検証。build 1251 / Vitest 74 green。セキュリティレビュー（RLS認可・client安全性・監査・整合性 ×敵対的検証）対応済。
-- 残: source 管理 UI・差分検知の自動巡回・最初の本番 admin 付与（Jimi のログインユーザーを app_roles に登録）。
+- 残: 差分検知の自動巡回・最初の本番 admin 付与（Jimi のログインユーザーを app_roles に登録）。
 
 ### Slice F: 品質ゲート・出典/revision/review queue 移行開始（2026-06-22 実装・本番Supabase適用済）
 

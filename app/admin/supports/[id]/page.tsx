@@ -3,12 +3,28 @@
 import { useCallback, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { Loader2, ExternalLink, ArrowLeft, Save, AlertTriangle } from "lucide-react";
+import {
+  Loader2,
+  ExternalLink,
+  ArrowLeft,
+  Save,
+  AlertTriangle,
+  Check,
+  History,
+  LinkIcon,
+  Plus,
+  Inbox,
+} from "lucide-react";
 import {
   fetchSupport,
   updateSupport,
   setStatus,
   setProgramTags,
+  fetchSupportSources,
+  saveSupportSource,
+  fetchSupportRevisions,
+  fetchReviewQueue,
+  resolveReviewItem,
   fetchCategoryOptions,
   fetchLifeEventOptions,
   qualityIssues,
@@ -18,6 +34,9 @@ import {
   type AdminProgram,
   type SupportPatch,
   type MasterOption,
+  type SupportSource,
+  type SupportRevision,
+  type ReviewItem,
 } from "@/app/lib/admin/client";
 import { TagPicker } from "@/app/admin/TagPicker";
 import type { BenefitType, PublishStatus, SourceConfidence } from "@/app/lib/data/types";
@@ -52,6 +71,34 @@ const NEXT_STATUS: Record<PublishStatus, { to: PublishStatus; label: string }[]>
   archived: [{ to: "draft", label: "下書きに戻す" }],
 };
 
+const SOURCE_KINDS = [
+  { value: "official", label: "公式" },
+  { value: "related", label: "関連" },
+  { value: "archive", label: "アーカイブ" },
+  { value: "manual", label: "手動確認" },
+];
+
+const SOURCE_QUALITY_STATES = [
+  { value: "ok", label: "OK" },
+  { value: "unchecked", label: "未確認" },
+  { value: "needs_review", label: "要確認" },
+  { value: "broken", label: "リンク切れ" },
+  { value: "low_confidence", label: "低信頼" },
+];
+
+interface SourceForm {
+  id?: string;
+  url: string;
+  title: string;
+  publisher: string;
+  officialCheckedAt: string;
+  sourceKind: string;
+  qualityState: string;
+  detectedIssueCodesText: string;
+  reviewIntervalDays: string;
+  notes: string;
+}
+
 function toForm(p: AdminProgram): SupportPatch {
   return {
     title: p.title,
@@ -75,27 +122,96 @@ function toForm(p: AdminProgram): SupportPatch {
   };
 }
 
+function toSourceForm(
+  source: SupportSource | undefined,
+  program: AdminProgram | null,
+): SourceForm {
+  return {
+    id: source?.id,
+    url: source?.url ?? program?.officialUrl ?? "",
+    title: source?.title ?? program?.officialSourceTitle ?? "",
+    publisher: source?.publisher ?? program?.municipalityName ?? "",
+    officialCheckedAt:
+      source?.officialCheckedAt ?? program?.lastOfficialCheckedAt ?? "",
+    sourceKind: source?.sourceKind ?? "official",
+    qualityState: source?.qualityState ?? "unchecked",
+    detectedIssueCodesText: (source?.detectedIssueCodes ?? []).join("\n"),
+    reviewIntervalDays: String(source?.reviewIntervalDays ?? 90),
+    notes: source?.notes ?? "",
+  };
+}
+
+function parseIssueCodes(text: string): string[] {
+  return text
+    .split(/[\n,]/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+function shortDateTime(value: string | null | undefined): string {
+  if (!value) return "未設定";
+  return value.replace("T", " ").slice(0, 16);
+}
+
+function changedFieldNames(rev: SupportRevision): string[] {
+  if (
+    !rev.beforeJson ||
+    !rev.afterJson ||
+    typeof rev.beforeJson !== "object" ||
+    typeof rev.afterJson !== "object" ||
+    Array.isArray(rev.beforeJson) ||
+    Array.isArray(rev.afterJson)
+  ) {
+    return [];
+  }
+  const before = rev.beforeJson as Record<string, unknown>;
+  const after = rev.afterJson as Record<string, unknown>;
+  return [...new Set([...Object.keys(before), ...Object.keys(after)])]
+    .filter((key) => JSON.stringify(before[key]) !== JSON.stringify(after[key]))
+    .slice(0, 8);
+}
+
 export default function AdminSupportEditPage() {
   const params = useParams<{ id: string }>();
   const id = params.id;
   const [program, setProgram] = useState<AdminProgram | null>(null);
   const [form, setForm] = useState<SupportPatch>({});
+  const [sources, setSources] = useState<SupportSource[]>([]);
+  const [sourceForm, setSourceForm] = useState<SourceForm>(() =>
+    toSourceForm(undefined, null),
+  );
+  const [revisions, setRevisions] = useState<SupportRevision[]>([]);
+  const [reviewItems, setReviewItems] = useState<ReviewItem[]>([]);
   const [catOptions, setCatOptions] = useState<MasterOption[]>([]);
   const [eventOptions, setEventOptions] = useState<MasterOption[]>([]);
   const [selectedCats, setSelectedCats] = useState<string[]>([]);
   const [selectedEvents, setSelectedEvents] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [sourceSaving, setSourceSaving] = useState(false);
+  const [reviewBusy, setReviewBusy] = useState<string | null>(null);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
   const load = useCallback(() => {
-    return fetchSupport(id)
-      .then((p) => {
+    return Promise.all([
+      fetchSupport(id),
+      fetchSupportSources(id),
+      fetchSupportRevisions(id),
+      fetchReviewQueue({ programId: id, limit: 20 }),
+    ])
+      .then(([p, sourceRows, revisionRows, queueRows]) => {
         setProgram(p);
+        setSources(sourceRows);
+        setRevisions(revisionRows);
+        setReviewItems(queueRows);
         if (p) {
           setForm(toForm(p));
           setSelectedCats(p.categorySlugs);
           setSelectedEvents(p.lifeEventSlugs);
+          setSourceForm((current) => {
+            const selected = sourceRows.find((s) => s.id === current.id);
+            return toSourceForm(selected ?? sourceRows[0], p);
+          });
         }
       })
       .catch((e) =>
@@ -171,6 +287,57 @@ export default function AdminSupportEditPage() {
     [program, load],
   );
 
+  const onSaveSource = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!program) return;
+      setSourceSaving(true);
+      setMsg(null);
+      try {
+        const reviewIntervalDays = Number.parseInt(
+          sourceForm.reviewIntervalDays,
+          10,
+        );
+        await saveSupportSource({
+          id: sourceForm.id,
+          supportProgramId: program.id,
+          url: sourceForm.url,
+          title: sourceForm.title,
+          publisher: sourceForm.publisher,
+          officialCheckedAt: sourceForm.officialCheckedAt,
+          sourceKind: sourceForm.sourceKind,
+          qualityState: sourceForm.qualityState,
+          detectedIssueCodes: parseIssueCodes(sourceForm.detectedIssueCodesText),
+          reviewIntervalDays: Number.isFinite(reviewIntervalDays)
+            ? reviewIntervalDays
+            : 90,
+          notes: sourceForm.notes,
+        });
+        await load();
+        setMsg({ ok: true, text: "出典を保存しました。" });
+      } catch (err) {
+        setMsg({ ok: false, text: String((err as Error).message ?? err) });
+      } finally {
+        setSourceSaving(false);
+      }
+    },
+    [load, program, sourceForm],
+  );
+
+  const onResolveReview = useCallback(async (reviewId: string) => {
+    setReviewBusy(reviewId);
+    setMsg(null);
+    try {
+      await resolveReviewItem(reviewId);
+      setReviewItems((current) => current.filter((i) => i.id !== reviewId));
+      setMsg({ ok: true, text: "レビュー項目を解決しました。" });
+    } catch (err) {
+      setMsg({ ok: false, text: String((err as Error).message ?? err) });
+    } finally {
+      setReviewBusy(null);
+    }
+  }, []);
+
   if (loading)
     return (
       <p className="flex items-center gap-2 text-sm text-charcoal/70">
@@ -184,6 +351,8 @@ export default function AdminSupportEditPage() {
   const blockingIssues = publishBlockingIssues(program);
   const set = (k: keyof SupportPatch, v: unknown) =>
     setForm((f) => ({ ...f, [k]: v }));
+  const setSource = (k: keyof SourceForm, v: string) =>
+    setSourceForm((f) => ({ ...f, [k]: v }));
 
   return (
     <div className="max-w-3xl">
@@ -357,6 +526,233 @@ export default function AdminSupportEditPage() {
           保存
         </button>
       </form>
+
+      <section className="mt-10">
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="flex items-center gap-2 text-base font-semibold text-navy">
+            <LinkIcon className="h-4 w-4" aria-hidden="true" />
+            出典
+          </h2>
+          <button
+            type="button"
+            className="btn-secondary"
+            onClick={() => setSourceForm(toSourceForm(undefined, program))}
+          >
+            <Plus className="h-4 w-4" aria-hidden="true" />
+            新規
+          </button>
+        </div>
+
+        <div className="mt-3 divide-y divide-soft-gray rounded-xl border border-soft-gray">
+          {sources.map((source) => (
+            <button
+              key={source.id}
+              type="button"
+              onClick={() => setSourceForm(toSourceForm(source, program))}
+              className="block w-full px-4 py-3 text-left hover:bg-aster-soft/40"
+            >
+              <span className="flex items-center justify-between gap-3">
+                <span className="min-w-0">
+                  <span className="block truncate font-medium text-navy">
+                    {source.title ?? source.url}
+                  </span>
+                  <span className="block truncate text-xs text-charcoal/60">
+                    {source.publisher ?? "publisher 未設定"} ・ {source.sourceKind} ・
+                    {source.qualityState}
+                  </span>
+                </span>
+                <span className="shrink-0 text-xs text-charcoal/50">
+                  {source.officialCheckedAt ?? "未確認"}
+                </span>
+              </span>
+            </button>
+          ))}
+          {sources.length === 0 && (
+            <p className="px-4 py-6 text-sm text-charcoal/60">
+              出典はまだ登録されていません。
+            </p>
+          )}
+        </div>
+
+        <form onSubmit={onSaveSource} className="mt-4 space-y-4 rounded-xl border border-soft-gray p-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <label className="block text-sm sm:col-span-2">
+              <span className="mb-1 block text-charcoal/80">URL</span>
+              <input
+                className="aw-input w-full"
+                value={sourceForm.url}
+                onChange={(e) => setSource("url", e.target.value)}
+              />
+            </label>
+            <label className="block text-sm">
+              <span className="mb-1 block text-charcoal/80">タイトル</span>
+              <input
+                className="aw-input w-full"
+                value={sourceForm.title}
+                onChange={(e) => setSource("title", e.target.value)}
+              />
+            </label>
+            <label className="block text-sm">
+              <span className="mb-1 block text-charcoal/80">発行元</span>
+              <input
+                className="aw-input w-full"
+                value={sourceForm.publisher}
+                onChange={(e) => setSource("publisher", e.target.value)}
+              />
+            </label>
+            <label className="block text-sm">
+              <span className="mb-1 block text-charcoal/80">公式確認日</span>
+              <input
+                type="date"
+                className="aw-input w-full"
+                value={sourceForm.officialCheckedAt}
+                onChange={(e) => setSource("officialCheckedAt", e.target.value)}
+              />
+            </label>
+            <label className="block text-sm">
+              <span className="mb-1 block text-charcoal/80">再確認間隔（日）</span>
+              <input
+                inputMode="numeric"
+                className="aw-input w-full"
+                value={sourceForm.reviewIntervalDays}
+                onChange={(e) => setSource("reviewIntervalDays", e.target.value)}
+              />
+            </label>
+            <label className="block text-sm">
+              <span className="mb-1 block text-charcoal/80">種別</span>
+              <select
+                className="aw-select w-full"
+                value={sourceForm.sourceKind}
+                onChange={(e) => setSource("sourceKind", e.target.value)}
+              >
+                {SOURCE_KINDS.map((k) => (
+                  <option key={k.value} value={k.value}>
+                    {k.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="block text-sm">
+              <span className="mb-1 block text-charcoal/80">品質状態</span>
+              <select
+                className="aw-select w-full"
+                value={sourceForm.qualityState}
+                onChange={(e) => setSource("qualityState", e.target.value)}
+              >
+                {SOURCE_QUALITY_STATES.map((s) => (
+                  <option key={s.value} value={s.value}>
+                    {s.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="block text-sm sm:col-span-2">
+              <span className="mb-1 block text-charcoal/80">検出issue code</span>
+              <textarea
+                className="aw-input w-full"
+                rows={2}
+                value={sourceForm.detectedIssueCodesText}
+                onChange={(e) =>
+                  setSource("detectedIssueCodesText", e.target.value)
+                }
+              />
+            </label>
+            <label className="block text-sm sm:col-span-2">
+              <span className="mb-1 block text-charcoal/80">メモ</span>
+              <textarea
+                className="aw-input w-full"
+                rows={3}
+                value={sourceForm.notes}
+                onChange={(e) => setSource("notes", e.target.value)}
+              />
+            </label>
+          </div>
+          <button type="submit" disabled={sourceSaving} className="btn-primary">
+            {sourceSaving ? (
+              <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+            ) : (
+              <Save className="h-4 w-4" aria-hidden="true" />
+            )}
+            {sourceForm.id ? "出典を保存" : "出典を作成"}
+          </button>
+        </form>
+      </section>
+
+      <section className="mt-10">
+        <h2 className="flex items-center gap-2 text-base font-semibold text-navy">
+          <Inbox className="h-4 w-4" aria-hidden="true" />
+          この制度のレビュー項目
+        </h2>
+        <div className="mt-3 divide-y divide-soft-gray rounded-xl border border-soft-gray">
+          {reviewItems.map((it) => (
+            <div key={it.id} className="flex items-start gap-3 px-4 py-3">
+              <span className="min-w-0 flex-1">
+                <span className="block font-medium text-navy">{it.reason}</span>
+                <span className="mt-1 block text-xs text-charcoal/60">
+                  優先度 {it.priority} ・ {it.severity}
+                  {it.issueCode ? ` ・ ${it.issueCode}` : ""}
+                  {it.sourceLastCheckedAt
+                    ? ` ・ 出典確認 ${it.sourceLastCheckedAt}`
+                    : ""}
+                </span>
+              </span>
+              <button
+                type="button"
+                disabled={reviewBusy === it.id}
+                onClick={() => onResolveReview(it.id)}
+                className="btn-secondary shrink-0"
+              >
+                {reviewBusy === it.id ? (
+                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                ) : (
+                  <Check className="h-4 w-4" aria-hidden="true" />
+                )}
+                解決
+              </button>
+            </div>
+          ))}
+          {reviewItems.length === 0 && (
+            <p className="px-4 py-6 text-sm text-charcoal/60">
+              未対応のレビュー項目はありません。
+            </p>
+          )}
+        </div>
+      </section>
+
+      <section className="mt-10">
+        <h2 className="flex items-center gap-2 text-base font-semibold text-navy">
+          <History className="h-4 w-4" aria-hidden="true" />
+          変更履歴
+        </h2>
+        <div className="mt-3 divide-y divide-soft-gray rounded-xl border border-soft-gray">
+          {revisions.map((rev) => {
+            const fields = changedFieldNames(rev);
+            return (
+              <div key={rev.id} className="px-4 py-3">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="font-medium text-navy">{rev.changeType}</span>
+                  <span className="shrink-0 text-xs text-charcoal/50">
+                    {shortDateTime(rev.createdAt)}
+                  </span>
+                </div>
+                <p className="mt-1 text-xs text-charcoal/60">
+                  {rev.changeSummary ?? rev.externalKey ?? "自動記録"}
+                </p>
+                {fields.length > 0 && (
+                  <p className="mt-1 text-xs text-charcoal/50">
+                    {fields.join(" / ")}
+                  </p>
+                )}
+              </div>
+            );
+          })}
+          {revisions.length === 0 && (
+            <p className="px-4 py-6 text-sm text-charcoal/60">
+              変更履歴はまだありません。
+            </p>
+          )}
+        </div>
+      </section>
     </div>
   );
 }

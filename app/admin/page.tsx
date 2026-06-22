@@ -29,6 +29,7 @@ export default function AdminDashboard() {
     { label: "アーカイブ", value: stats.byStatus.archived, href: "/admin/supports?status=archived", tone: "neutral" },
     { label: "制度 合計", value: stats.total, href: "/admin/supports?status=all", tone: "neutral" },
     { label: "レビューキュー(open)", value: stats.reviewQueueOpen, href: "/admin/review-queue", tone: "info" },
+    { label: "出典 要確認", value: stats.sourcesNeedReview, href: "/admin/review-queue", tone: "info" },
   ];
 
   return (
