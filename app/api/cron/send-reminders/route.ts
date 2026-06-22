@@ -15,6 +15,20 @@ import { absoluteUrl } from "@/app/lib/site";
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
+function escapeHtml(s: string): string {
+  return s.replace(
+    /[&<>"']/g,
+    (c) =>
+      ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+      })[c]!,
+  );
+}
+
 export async function GET(req: Request): Promise<Response> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -35,7 +49,11 @@ export async function GET(req: Request): Promise<Response> {
   const sb = createClient(url, serviceKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
-  const today = new Date().toISOString().slice(0, 10);
+  // 「今日」は日本時間で判定する（cron は 23:00 UTC＝08:00 JST 起動。UTC日付だと
+  // JST基準で設定された reminder_date が1日遅れるため）。
+  const today = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Tokyo",
+  }).format(new Date());
 
   const { data: due, error } = await sb
     .from("reminders")
@@ -76,12 +94,24 @@ export async function GET(req: Request): Promise<Response> {
     }
 
     const programUrl = absoluteUrl(`/supports/${r.program_slug}`);
+    const manageUrl = absoluteUrl(`/saved`);
     const title = r.program_title ?? "支援制度";
+    const safeTitle = escapeHtml(title);
+    const text = [
+      `${title} の申請期限が近づいています。`,
+      ``,
+      `対象可否・金額・期限・必要書類は、必ず自治体の公式ページで確認してください。`,
+      ``,
+      `詳細: ${programUrl}`,
+      ``,
+      `このメールは保存リストの期限通知です。通知の停止・変更は ${manageUrl} から行えます。`,
+      `Aster Support Navi`,
+    ].join("\n");
     const html = `
-      <p>${title} の申請期限が近づいています。</p>
+      <p>${safeTitle} の申請期限が近づいています。</p>
       <p>対象可否・金額・期限・必要書類は、必ず自治体の公式ページで確認してください。</p>
-      <p><a href="${programUrl}">${title} の詳細を確認する</a></p>
-      <p style="color:#888;font-size:12px">Aster Support Navi（このメールは保存リストからの期限通知です）</p>
+      <p><a href="${programUrl}">${safeTitle} の詳細を確認する</a></p>
+      <p style="color:#888;font-size:12px">このメールは保存リストの期限通知です。<a href="${manageUrl}">通知の停止・変更</a>はこちらから。<br/>Aster Support Navi</p>
     `;
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -94,6 +124,7 @@ export async function GET(req: Request): Promise<Response> {
         to: email,
         subject: `【期限のお知らせ】${title}`,
         html,
+        text,
       }),
     });
     if (res.ok) {

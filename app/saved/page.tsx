@@ -4,6 +4,7 @@ import { buildMetadata } from "@/app/lib/seo";
 import { SectionHeading } from "@/app/components/SectionHeading";
 import { SavedList } from "@/app/components/SavedList";
 import { SavedCloudPanel } from "@/app/components/SavedCloudPanel";
+import { RemindersPanel } from "@/app/components/RemindersPanel";
 import { Disclaimer } from "@/app/components/Disclaimer";
 
 export const metadata: Metadata = buildMetadata({
@@ -31,6 +32,8 @@ export default function SavedPage() {
       <SavedCloudPanel />
 
       <SavedList />
+
+      <RemindersPanel />
 
       <div className="mt-10">
         <Disclaimer variant="short" />
