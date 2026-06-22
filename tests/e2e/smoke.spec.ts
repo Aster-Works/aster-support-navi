@@ -72,6 +72,7 @@ test("禁止表現が公開ページに出ない（YMYL）", async ({ page }) =>
 });
 
 test("a11y: トップと制度詳細に重大な違反がない", async ({ page }) => {
+  test.slow(); // 9ページ × axe スキャン。dev では初回コンパイル分も含め時間がかかる。
   for (const path of [
     "/",
     "/supports/tokyo-setagaya-child-allowance",
@@ -80,6 +81,8 @@ test("a11y: トップと制度詳細に重大な違反がない", async ({ page 
     "/area",
     "/saved",
     "/compare/medical",
+    "/search",
+    "/check",
   ]) {
     await page.goto(path);
     const results = await new AxeBuilder({ page })
