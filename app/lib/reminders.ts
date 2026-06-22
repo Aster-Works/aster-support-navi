@@ -66,3 +66,25 @@ export async function cancelReminder(id: string): Promise<void> {
   const { error } = await sb.from("reminders").delete().eq("id", id);
   if (error) throw new Error(error.message);
 }
+
+/** 通知日を変更する（本人のみ・RLS）。status は scheduled に戻して再送対象にする。 */
+export async function rescheduleReminder(
+  id: string,
+  reminderDate: string,
+): Promise<void> {
+  const sb = getSupabase();
+  if (!sb) throw new Error("クラウド同期は未設定です");
+  const { error } = await sb
+    .from("reminders")
+    .update({ reminder_date: reminderDate, status: "scheduled" })
+    .eq("id", id);
+  if (error) throw new Error(error.message);
+}
+
+/** ログイン中かどうか（管理UIの表示判定用）。 */
+export async function isSignedIn(): Promise<boolean> {
+  const sb = getSupabase();
+  if (!sb) return false;
+  const { data } = await sb.auth.getUser();
+  return !!data.user;
+}

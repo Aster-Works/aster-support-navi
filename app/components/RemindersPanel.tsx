@@ -7,41 +7,52 @@ import {
   REMINDERS_ENABLED,
   listMyReminders,
   cancelReminder,
+  rescheduleReminder,
+  isSignedIn,
   type Reminder,
 } from "@/app/lib/reminders";
-import { formatJaDate } from "@/app/lib/dates";
 
-/** 予約中の期限通知の一覧（本人のみ・ログイン時）。
- *  メールを受け取るユーザーが自分で停止できるようにするための管理UI。
+/** 予約中の期限通知の管理（本人のみ・ログイン時）。
+ *  メールを受け取るユーザーが自分で「停止」「日付の変更」をできるようにする。
  *  送信基盤が整い NEXT_PUBLIC_REMINDERS_ENABLED=true のときだけ表示する。 */
 export function RemindersPanel() {
-  const [items, setItems] = useState<Reminder[] | null>(null);
+  const [state, setState] = useState<"loading" | "anon" | "ready">("loading");
+  const [items, setItems] = useState<Reminder[]>([]);
 
   useEffect(() => {
     if (!REMINDERS_ENABLED) return;
     let active = true;
-    listMyReminders()
-      .then((r) => {
-        if (active) setItems(r);
-      })
-      .catch(() => {
-        if (active) setItems([]);
-      });
+    (async () => {
+      if (!(await isSignedIn())) {
+        if (active) setState("anon");
+        return;
+      }
+      const r = await listMyReminders().catch(() => []);
+      if (!active) return;
+      setItems(r);
+      setState("ready");
+    })();
     return () => {
       active = false;
     };
   }, []);
 
-  if (!REMINDERS_ENABLED) return null;
-  if (!items || items.length === 0) return null;
+  // 未ログイン時は出さない（/saved の同期パネルがログインを促す）。
+  if (!REMINDERS_ENABLED || state !== "ready") return null;
 
   async function remove(id: string) {
     try {
       await cancelReminder(id);
     } catch {
-      /* 失敗時はそのまま（次回読込で整合） */
+      /* 失敗時は次回読込で整合 */
     }
-    setItems((prev) => (prev ? prev.filter((x) => x.id !== id) : prev));
+    setItems((prev) => prev.filter((x) => x.id !== id));
+  }
+
+  function applyDate(id: string, date: string) {
+    setItems((prev) =>
+      prev.map((x) => (x.id === id ? { ...x, reminderDate: date } : x)),
+    );
   }
 
   return (
@@ -51,37 +62,100 @@ export function RemindersPanel() {
         予約中の期限通知
       </h2>
       <p className="mt-2 text-[13px] leading-7 text-charcoal/70">
-        設定した日に、登録メールアドレスへお知らせします。いつでも停止できます。
+        設定した日に、登録メールアドレスへお知らせします。日付の変更・停止はここから行えます。
       </p>
-      <ul className="mt-4 divide-y divide-soft-gray">
-        {items.map((r) => (
-          <li
-            key={r.id}
-            className="flex items-center justify-between gap-3 py-3"
-          >
-            <div className="min-w-0">
-              <Link
-                href={`/supports/${r.programSlug}`}
-                className="text-[14px] font-medium text-navy hover:underline"
-              >
-                {r.programTitle ?? r.programSlug}
-              </Link>
-              <p className="mt-0.5 text-[12px] text-charcoal/70">
-                {formatJaDate(r.reminderDate)} に通知
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={() => remove(r.id)}
-              className="aw-chip shrink-0"
-              aria-label={`${r.programTitle ?? "この制度"}の通知を停止`}
-            >
-              <X className="h-4 w-4" aria-hidden="true" />
-              停止
-            </button>
-          </li>
-        ))}
-      </ul>
+
+      {items.length === 0 ? (
+        <p className="mt-4 text-[13px] leading-7 text-charcoal/70">
+          予約中の通知はありません。各制度の詳細ページの「申請期限をメールで通知」から設定できます。
+        </p>
+      ) : (
+        <ul className="mt-4 space-y-3">
+          {items.map((r) => (
+            <ReminderRow
+              key={r.id}
+              reminder={r}
+              onRemove={() => remove(r.id)}
+              onRescheduled={(date) => applyDate(r.id, date)}
+            />
+          ))}
+        </ul>
+      )}
     </section>
+  );
+}
+
+function ReminderRow({
+  reminder,
+  onRemove,
+  onRescheduled,
+}: {
+  reminder: Reminder;
+  onRemove: () => void;
+  onRescheduled: (date: string) => void;
+}) {
+  const [date, setDate] = useState(reminder.reminderDate);
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState<string | null>(null);
+
+  async function save() {
+    if (!date || date === reminder.reminderDate) return;
+    setBusy(true);
+    setMsg(null);
+    try {
+      await rescheduleReminder(reminder.id, date);
+      onRescheduled(date);
+      setMsg("変更しました");
+    } catch {
+      setMsg("変更できませんでした");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <li className="rounded-xl border border-soft-gray p-3">
+      <div className="flex items-start justify-between gap-3">
+        <Link
+          href={`/supports/${reminder.programSlug}`}
+          className="text-[14px] font-medium text-navy hover:underline"
+        >
+          {reminder.programTitle ?? reminder.programSlug}
+        </Link>
+        <button
+          type="button"
+          onClick={onRemove}
+          className="aw-chip shrink-0"
+          aria-label={`${reminder.programTitle ?? "この制度"}の通知を停止`}
+        >
+          <X className="h-4 w-4" aria-hidden="true" />
+          停止
+        </button>
+      </div>
+      <div className="mt-2.5 flex flex-wrap items-center gap-2">
+        <label htmlFor={`reminder-date-${reminder.id}`} className="sr-only">
+          通知日
+        </label>
+        <input
+          id={`reminder-date-${reminder.id}`}
+          type="date"
+          value={date}
+          onChange={(e) => {
+            setDate(e.target.value);
+            setMsg(null);
+          }}
+          className="aw-input max-w-[180px]"
+        />
+        <button
+          type="button"
+          onClick={save}
+          disabled={busy || !date || date === reminder.reminderDate}
+          className="btn-secondary disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          変更
+        </button>
+        {msg && <span className="text-[12px] text-charcoal/70">{msg}</span>}
+      </div>
+    </li>
   );
 }
