@@ -58,8 +58,14 @@ test("かんたん診断が候補制度を返す", async ({ page }) => {
     }
   }
   await expect(page).toHaveURL(/\/check\/result/);
-  await expect(page.getByText(/件の候補が見つかりました/)).toBeVisible();
-  await expect(page.getByText("この制度が候補に出た理由").first()).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: /世田谷区の支援ルート/ }),
+  ).toBeVisible();
+  await expect(page.getByText(/件を順番に確認します/)).toBeVisible();
+  await expect(page.getByText("この制度をルートに入れた理由").first()).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "複数制度をまとめて、印刷・PDF保存できます" }),
+  ).toBeVisible();
 });
 
 test("禁止表現が公開ページに出ない（YMYL）", async ({ page }) => {

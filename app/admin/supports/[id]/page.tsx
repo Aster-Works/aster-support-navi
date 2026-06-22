@@ -12,6 +12,7 @@ import {
   fetchCategoryOptions,
   fetchLifeEventOptions,
   qualityIssues,
+  publishBlockingIssues,
   affectedPaths,
   revalidatePublic,
   type AdminProgram,
@@ -180,6 +181,7 @@ export default function AdminSupportEditPage() {
   if (!program) return <p className="text-sm text-red-600">制度が見つかりません。</p>;
 
   const issues = qualityIssues(program);
+  const blockingIssues = publishBlockingIssues(program);
   const set = (k: keyof SupportPatch, v: unknown) =>
     setForm((f) => ({ ...f, [k]: v }));
 
@@ -199,7 +201,7 @@ export default function AdminSupportEditPage() {
         <div className="mt-4 flex items-start gap-2 rounded-lg bg-amber-50 p-3 text-sm text-amber-800">
           <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
           <div>
-            <p className="font-medium">公開品質ゲート未達（{issues.length}）</p>
+            <p className="font-medium">品質ゲート検出（{issues.length}）</p>
             <ul className="mt-1 list-disc pl-4">
               {issues.map((i) => (
                 <li key={i}>{i}</li>
@@ -219,11 +221,11 @@ export default function AdminSupportEditPage() {
           <button
             key={a.to}
             type="button"
-            disabled={saving || (a.to === "published" && issues.length > 0)}
+            disabled={saving || (a.to === "published" && blockingIssues.length > 0)}
             onClick={() => onStatus(a.to)}
             className={a.to === "published" ? "btn-primary" : "btn-secondary"}
             title={
-              a.to === "published" && issues.length > 0
+              a.to === "published" && blockingIssues.length > 0
                 ? "品質ゲート未達のため公開できません"
                 : undefined
             }

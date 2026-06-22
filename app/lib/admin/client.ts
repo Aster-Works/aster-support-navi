@@ -13,6 +13,13 @@ import type {
   PublishStatus,
   SourceConfidence,
 } from "@/app/lib/data/types";
+import { escapeLike } from "@/app/lib/sanitize";
+import {
+  evaluateProgramQuality,
+  getPublishBlockingIssues,
+  qualityIssueLabels,
+  sourceFreshness,
+} from "@/app/lib/data/quality";
 import type { ImportRow } from "./csv";
 
 export interface AdminProgram {
@@ -119,29 +126,20 @@ function mapRow(r: Row): AdminProgram | null {
 // ---- 品質ゲート（公開可能か）---------------------------------------------
 /** index/公開の最低品質を満たさない理由（空配列なら公開可能）。 */
 export function qualityIssues(p: AdminProgram): string[] {
-  const issues: string[] = [];
-  if (!p.officialUrl) issues.push("公式URLがない");
-  if (!p.lastOfficialCheckedAt) issues.push("最終確認日がない");
-  if (!p.targetPeople) issues.push("対象者の説明がない");
-  if (!p.applicationMethodText && !p.contactName && !p.contactUrl)
-    issues.push("申請方法・問い合わせ先がない");
-  if (p.categorySlugs.length === 0) issues.push("カテゴリ未設定");
-  if (p.lifeEventSlugs.length === 0) issues.push("生活イベント未設定");
-  return issues;
+  return qualityIssueLabels(evaluateProgramQuality(p));
+}
+
+/** published へ進める前に必ず解消する問題。 */
+export function publishBlockingIssues(p: AdminProgram): string[] {
+  return qualityIssueLabels(getPublishBlockingIssues(p));
 }
 
 /** 最終確認日からの鮮度。 */
 export function freshness(
   p: AdminProgram,
   todayIso: string,
-): "fresh" | "watch" | "stale" | "unknown" {
-  if (!p.lastOfficialCheckedAt) return "unknown";
-  const days =
-    (Date.parse(todayIso) - Date.parse(p.lastOfficialCheckedAt)) / 86_400_000;
-  if (Number.isNaN(days)) return "unknown";
-  if (days <= 30) return "fresh";
-  if (days <= 90) return "watch";
-  return "stale";
+): "fresh" | "watch" | "stale" | "future" | "unknown" {
+  return sourceFreshness(p.lastOfficialCheckedAt, todayIso);
 }
 
 // ---- クエリ ----------------------------------------------------------------
@@ -172,7 +170,7 @@ export interface SupportFilter {
 }
 
 /** 一覧の取得上限（超えたら UI が「上限まで表示」と明示する）。 */
-export const SUPPORTS_LIST_LIMIT = 1000;
+export const SUPPORTS_LIST_LIMIT = 2500;
 
 export async function fetchSupports(
   f: SupportFilter = {},
@@ -183,7 +181,7 @@ export async function fetchSupports(
     .order("updated_at", { ascending: false })
     .limit(SUPPORTS_LIST_LIMIT);
   if (f.status && f.status !== "all") query = query.eq("status", f.status);
-  if (f.q && f.q.trim()) query = query.ilike("title", `%${f.q.trim()}%`);
+  if (f.q && f.q.trim()) query = query.ilike("title", `%${escapeLike(f.q.trim())}%`);
   const { data, error } = await query;
   if (error) throw new Error(error.message);
   return (data as unknown as Row[]).map(mapRow).filter(Boolean) as AdminProgram[];
@@ -257,10 +255,11 @@ export async function setStatus(
   program: AdminProgram,
   status: PublishStatus,
 ): Promise<void> {
-  if (status === "published" && qualityIssues(program).length > 0) {
+  const blocking = publishBlockingIssues(program);
+  if (status === "published" && blocking.length > 0) {
     throw new Error(
       "公開品質ゲートを満たしていません: " +
-        qualityIssues(program).join(" / "),
+        blocking.join(" / "),
     );
   }
   const patch: Record<string, unknown> = { status };

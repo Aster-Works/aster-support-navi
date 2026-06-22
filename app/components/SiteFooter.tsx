@@ -1,5 +1,5 @@
+import Image from "next/image";
 import Link from "next/link";
-import { Flower2 } from "lucide-react";
 import { SITE } from "@/app/lib/site";
 import { DISCLAIMER_SHORT } from "@/app/lib/copy";
 
@@ -36,14 +36,13 @@ export function SiteFooter() {
       <div className="aw-container py-12">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr]">
           <div>
-            <div className="flex items-center gap-2.5">
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-navy">
-                <Flower2 className="h-5 w-5 text-gold" aria-hidden="true" />
-              </span>
-              <span className="text-[15px] font-bold tracking-tight text-navy">
-                Aster Support Navi
-              </span>
-            </div>
+            <Image
+              src="/brand/aster-support-navi-raster-horizontal.png"
+              alt="Aster Support Navi"
+              width={1607}
+              height={363}
+              className="h-auto w-[250px] max-w-full object-contain"
+            />
             <p className="mt-4 max-w-sm text-[13px] leading-7 text-charcoal">
               {SITE.tagline}
               <br />

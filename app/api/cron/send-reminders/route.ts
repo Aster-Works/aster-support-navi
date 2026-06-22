@@ -11,6 +11,9 @@
  */
 import { createClient } from "@supabase/supabase-js";
 import { absoluteUrl } from "@/app/lib/site";
+import { createRateLimiter } from "@/app/lib/rate-limit";
+
+const rateLimiter = createRateLimiter({ interval: 300_000, maxTokens: 1 });
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -46,6 +49,10 @@ export async function GET(req: Request): Promise<Response> {
     return Response.json({ error: "unauthorized" }, { status: 401 });
   }
 
+  if (!rateLimiter.check("cron-send-reminders")) {
+    return Response.json({ error: "too many requests" }, { status: 429 });
+  }
+
   const sb = createClient(url, serviceKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
@@ -62,7 +69,8 @@ export async function GET(req: Request): Promise<Response> {
     .lte("reminder_date", today)
     .limit(200);
   if (error) {
-    return Response.json({ error: error.message }, { status: 500 });
+    console.error("Cron Database Error:", error.message);
+    return Response.json({ error: "internal error" }, { status: 500 });
   }
 
   let sent = 0;
@@ -107,11 +115,19 @@ export async function GET(req: Request): Promise<Response> {
       `このメールは保存リストの期限通知です。通知の停止・変更は ${manageUrl} から行えます。`,
       `Aster Support Navi`,
     ].join("\n");
+    const safeUrl = encodeURI(programUrl);
+    const safeManageUrl = encodeURI(manageUrl);
+    
+    if (!safeUrl.startsWith("http") || !safeManageUrl.startsWith("http")) {
+      failed.push(r.id);
+      continue;
+    }
+
     const html = `
       <p>${safeTitle} の申請期限が近づいています。</p>
       <p>対象可否・金額・期限・必要書類は、必ず自治体の公式ページで確認してください。</p>
-      <p><a href="${programUrl}">${safeTitle} の詳細を確認する</a></p>
-      <p style="color:#888;font-size:12px">このメールは保存リストの期限通知です。<a href="${manageUrl}">通知の停止・変更</a>はこちらから。<br/>Aster Support Navi</p>
+      <p><a href="${safeUrl}">${safeTitle} の詳細を確認する</a></p>
+      <p style="color:#888;font-size:12px">このメールは保存リストの期限通知です。<a href="${safeManageUrl}">通知の停止・変更</a>はこちらから。<br/>Aster Support Navi</p>
     `;
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",

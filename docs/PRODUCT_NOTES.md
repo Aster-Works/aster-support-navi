@@ -1,6 +1,6 @@
 # Aster Support Navi — 実装ノート
 
-作成: 2026-06-18 / 最終更新: 2026-06-21 / ステータス: Phase 1–2 + Slice A–E 実装完了・本番デプロイ済。Phase 4（コンテンツ拡充）進行中。
+作成: 2026-06-18 / 最終更新: 2026-06-22 / ステータス: Phase 1–2 + Slice A–F 実装完了。Phase 4（コンテンツ拡充）進行中。
 
 引き継ぎ仕様の原典は `/Users/james/aster-support-navi-handoff/`（PRODUCT_SPEC / TECHNICAL_ARCHITECTURE / DATA_AND_CONTENT_OPS / ROADMAP / RESEARCH_AND_POSITIONING）。本ノートは実装の地図。
 
@@ -43,7 +43,21 @@
   draft→review→published→archived＋品質ゲート enforcement）/ 品質（未達・stale）/ レビューキュー。`/admin` は noindex + robots disallow。
 - 認可の最終境界は DB の RLS。AdminGate はUX用。多層防御＝①クライアント品質ゲート ②DBトリガ強制 ③公開側 isPublishable 再フィルタ。
 - 検証: 実認証 admin JWT で end-to-end（非admin→draft不可視 / admin→draft可視・編集・revision記録 / incomplete publish 拒否 / valid publish 成功）。匿名 gate・admin walkthrough をブラウザ実地検証。build 1251 / Vitest 74 green。セキュリティレビュー（RLS認可・client安全性・監査・整合性 ×敵対的検証）対応済。
-- 残: 制度の新規作成フォーム・タグ（カテゴリ/生活イベント）編集・source 管理 UI・CSV import（仕様§16）・差分検知→review_queue 自動投入。最初の本番 admin 付与（Jimi のログインユーザーを app_roles に登録）。
+- 残: source 管理 UI・差分検知の自動巡回・最初の本番 admin 付与（Jimi のログインユーザーを app_roles に登録）。
+
+### Slice F: 品質ゲート・出典/revision/review queue 移行開始（2026-06-22 実装・DB適用は未実行）
+
+- `app/lib/data/quality.ts` … 低品質/古い/公式URL不明/非公式ホスト/低信頼度/下書きレビュー対象を共通判定。
+  `blocksPublish` と `shouldQueue` を分け、古い確認日は即公開停止ではなく review queue 対象にする。
+- 管理画面: `qualityIssues()` を共通品質ゲートへ接続。`/admin/quality` は全ステータスを検出対象に拡大。
+  CSV取込も同じゲートを使い、非HTTPS・非公式ホスト・未来日などを検証段階で弾く。
+- `supabase/migrations/20260622120048_content_quality_ops.sql` … 既存テーブルを破壊せず、
+  `support_sources` の品質メタ、`support_revisions.external_key`、`review_queue_items.issue_code/severity/detected_by` を追加。
+  `private.refresh_content_quality_queue()` は private schema の運用SQL用で、Data API には公開しない。
+- `scripts/export-seed-to-sql.ts` … seed の全 status を Supabase へ載せられるように拡張。
+  制度本体、公式出典、seed baseline revision、review queue 候補を冪等SQLとして生成する。DBへは書かない。
+- `scripts/audit-content-quality.ts` / `npm run data:audit` … seedの読み取り専用監査。2026-06-22時点:
+  1372制度（published 1364 / draft 8）、品質issueあり11、公開ブロッカー6、review queue候補11。
 
 ### 政令市データ拡充 — 4カテゴリ深掘り（Phase 4・2026-06-21）
 

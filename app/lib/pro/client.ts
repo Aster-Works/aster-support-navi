@@ -4,6 +4,7 @@
  * 相談パックには相談者の機微情報を入れない運用（UI 文言で明示）。
  */
 import { getSupabase } from "@/app/lib/supabase";
+import { escapeLike } from "@/app/lib/sanitize";
 
 function client() {
   const sb = getSupabase();
@@ -231,7 +232,7 @@ export async function searchPublished(
     .select(PROGRAM_SELECT)
     .eq("status", "published")
     .limit(limit);
-  if (q.trim()) query = query.ilike("title", `%${q.trim()}%`);
+  if (q.trim()) query = query.ilike("title", `%${escapeLike(q.trim())}%`);
   const { data, error } = await query;
   if (error) throw new Error(error.message);
   return (data as unknown as ProgramRow[])

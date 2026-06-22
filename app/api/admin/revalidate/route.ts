@@ -9,6 +9,10 @@
  */
 import { revalidatePath } from "next/cache";
 import { createClient } from "@supabase/supabase-js";
+import { isAllowedRevalidatePath } from "@/app/lib/sanitize";
+import { createRateLimiter } from "@/app/lib/rate-limit";
+
+const rateLimiter = createRateLimiter({ interval: 60_000, maxTokens: 10 });
 
 export const dynamic = "force-dynamic";
 
@@ -25,6 +29,10 @@ export async function POST(req: Request): Promise<Response> {
   );
   if (!token) {
     return Response.json({ error: "missing token" }, { status: 401 });
+  }
+
+  if (!rateLimiter.check(token)) {
+    return Response.json({ error: "too many requests" }, { status: 429 });
   }
 
   // ユーザーの JWT でクライアントを作り、本人の admin ロールを RLS 経由で確認。
@@ -49,7 +57,7 @@ export async function POST(req: Request): Promise<Response> {
   }
   const paths = Array.isArray(body.paths)
     ? body.paths
-        .filter((p): p is string => typeof p === "string" && p.startsWith("/"))
+        .filter((p): p is string => typeof p === "string" && isAllowedRevalidatePath(p))
         .slice(0, 100)
     : [];
 

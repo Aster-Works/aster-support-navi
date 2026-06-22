@@ -16,7 +16,7 @@ export default function AdminQualityPage() {
   const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
 
   useEffect(() => {
-    fetchSupports({ status: "published" })
+    fetchSupports({ status: "all" })
       .then(setRows)
       .catch((e) => setError(String(e.message ?? e)));
   }, []);
@@ -39,13 +39,13 @@ export default function AdminQualityPage() {
     <div>
       <h1 className="text-xl font-semibold text-navy">品質チェック</h1>
       <p className="mt-1 text-sm text-charcoal/70">
-        公開中なのに品質ゲートを満たさない制度と、最終確認から91日以上経った制度。
+        低品質・公式URL不明・公式ソース不明・確認日が古い制度を全ステータスから検出します。
       </p>
 
       <section className="mt-6">
         <h2 className="flex items-center gap-2 text-sm font-semibold text-amber-800">
           <AlertTriangle className="h-4 w-4" aria-hidden="true" />
-          品質ゲート未達（公開中）: {failing.length}
+          品質ゲート検出: {failing.length}
         </h2>
         <div className="mt-2 divide-y divide-soft-gray rounded-xl border border-soft-gray">
           {failing.map(({ p, issues }) => (

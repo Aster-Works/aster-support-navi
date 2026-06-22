@@ -10,6 +10,8 @@
  * category_slugs / life_event_slugs はセル内で `|`（パイプ）区切り。
  */
 
+import { evaluateProgramQuality } from "@/app/lib/data/quality";
+
 export const REQUIRED_COLUMNS = [
   "prefecture_slug",
   "municipality_slug",
@@ -37,6 +39,15 @@ const BENEFIT_TYPES = new Set([
   "other",
 ]);
 const CONFIDENCES = new Set(["high", "medium", "low"]);
+const ALWAYS_REJECT_ISSUES = new Set([
+  "missing_official_url",
+  "invalid_official_url",
+  "non_https_official_url",
+  "unofficial_source_host",
+  "missing_last_official_checked_at",
+  "invalid_last_official_checked_at",
+  "future_last_official_checked_at",
+]);
 
 /** 上限（管理者の手元でも巨大入力でブラウザを固めないため）。 */
 export const MAX_CSV_BYTES = 5_000_000;
@@ -241,6 +252,25 @@ export function validateImport(
       if (cats.length === 0) msgs.push("published にはカテゴリが必要です");
       if (events.length === 0)
         msgs.push("published には生活イベントが必要です");
+    }
+
+    const quality = evaluateProgramQuality(
+      {
+        slug,
+        status,
+        officialUrl: get("official_url"),
+        lastOfficialCheckedAt: get("last_official_checked_at"),
+        sourceConfidence: get("source_confidence"),
+        targetPeople: get("target_people"),
+        applicationMethodText: get("application_method_text"),
+        categorySlugs: cats,
+        lifeEventSlugs: events,
+      },
+      { includeUnpublishedReview: false },
+    );
+    for (const q of quality) {
+      if (ALWAYS_REJECT_ISSUES.has(q.code)) msgs.push(q.label);
+      else if (status === "published" && q.blocksPublish) msgs.push(q.label);
     }
 
     if (slug) seenSlugs.add(slug);

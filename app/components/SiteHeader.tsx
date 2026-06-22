@@ -1,5 +1,5 @@
+import Image from "next/image";
 import Link from "next/link";
-import { Flower2 } from "lucide-react";
 import { SITE } from "@/app/lib/site";
 import { PrimaryNav } from "@/app/components/PrimaryNav";
 
@@ -9,20 +9,25 @@ export function SiteHeader() {
       <div className="aw-container flex h-16 items-center justify-between gap-4">
         <Link
           href="/"
-          className="flex items-center gap-2.5 rounded-lg"
+          className="flex min-w-0 items-center rounded-lg"
           aria-label={`${SITE.name} ホーム`}
         >
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-navy">
-            <Flower2 className="h-5 w-5 text-gold" aria-hidden="true" />
-          </span>
-          <span className="flex flex-col leading-none">
-            <span className="text-[15px] font-bold tracking-tight text-navy">
-              Aster Support Navi
-            </span>
-            <span className="mt-0.5 text-[11px] font-medium tracking-wide text-charcoal/70">
-              くらしの支援制度ナビ
-            </span>
-          </span>
+          <Image
+            src="/brand/aster-support-navi-raster-mark-512.png"
+            alt=""
+            width={512}
+            height={512}
+            priority
+            className="h-10 w-10 object-contain sm:hidden"
+          />
+          <Image
+            src="/brand/aster-support-navi-raster-horizontal.png"
+            alt=""
+            width={1607}
+            height={363}
+            priority
+            className="hidden h-11 w-auto max-w-[260px] object-contain sm:block"
+          />
         </Link>
 
         <PrimaryNav />

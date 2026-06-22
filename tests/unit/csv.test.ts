@@ -155,4 +155,19 @@ describe("validateImport", () => {
       /published にはカテゴリが必要/,
     );
   });
+
+  it("公式URLがHTTPSで公的ソースと確認できない行を弾く", () => {
+    const http = row({
+      slug: "tokyo-setagaya-http",
+      official_url: "http://www.city.setagaya.lg.jp/x",
+    });
+    const privateHost = row({
+      slug: "tokyo-setagaya-private-host",
+      official_url: "https://example.com/x",
+    });
+    const res = validateImport(parseCsv(`${HEADER}\n${http}\n${privateHost}`), ctx);
+    const msgs = res.errors.flatMap((e) => e.messages).join(" ");
+    expect(msgs).toMatch(/HTTPSではない/);
+    expect(msgs).toMatch(/公的ソースと確認できない/);
+  });
 });

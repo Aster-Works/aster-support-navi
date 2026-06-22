@@ -7,6 +7,9 @@ import {
   Lightbulb,
   ListChecks,
   HeartHandshake,
+  FileDown,
+  Map,
+  ShieldCheck,
 } from "lucide-react";
 import {
   getAllPublishedPrograms,
@@ -27,8 +30,8 @@ import { Disclaimer } from "@/app/components/Disclaimer";
 import { SectionHeading } from "@/app/components/SectionHeading";
 
 export const metadata: Metadata = buildMetadata({
-  title: "診断結果",
-  description: "確認するとよい支援制度の候補です。",
+  title: "支援ルート",
+  description: "診断内容から、次に確認する支援ルートと申請前パックを整理します。",
   path: "/check/result",
   noindex: true,
 });
@@ -46,7 +49,9 @@ export default async function CheckResultPage({
   if (!hasAnyAnswer(answers)) {
     return (
       <div className="aw-prose-container py-16 text-center">
-        <h1 className="text-2xl font-bold text-navy">診断結果がありません</h1>
+        <h1 className="text-2xl font-bold text-navy">
+          支援ルートがありません
+        </h1>
         <p className="mt-3 text-[15px] text-charcoal">
           先にかんたん診断にお答えください。
         </p>
@@ -120,116 +125,176 @@ export default async function CheckResultPage({
     phone: program.contactPhone,
     officialUrl: program.officialUrl,
   }));
+  const routeTitle = muni ? `${muni.name}の支援ルート` : "あなたの支援ルート";
+  const routeSummary = [
+    {
+      label: "1. 制度を確認",
+      body: `${candidates.length}件の制度を、生活状況に近い順に確認します。`,
+      icon: Map,
+    },
+    {
+      label: "2. 公式情報へ進む",
+      body: "対象条件・期限・必要書類は、公式ページや窓口で最終確認します。",
+      icon: ShieldCheck,
+    },
+    {
+      label: "3. 申請前パックを作る",
+      body: "複数制度を1つにまとめ、印刷・PDF保存して相談や申請準備に使えます。",
+      icon: FileDown,
+    },
+  ];
 
   return (
     <div className="aw-container py-10">
-      <SectionHeading
-        as="h1"
-        eyebrow="診断結果"
-        title={
-          muni
-            ? `${muni.name}で確認するとよい制度の候補`
-            : "確認するとよい制度の候補"
-        }
-        description="入力内容から、確認するとよい制度を機械的に並べました。受給できることを保証する判定ではありません。"
-      />
+      <div className="print:hidden">
+        <SectionHeading
+          as="h1"
+          eyebrow="支援ルート"
+          title={routeTitle}
+          description="制度名を並べるだけではなく、公式確認、必要書類の準備、相談・申請前に持っていく資料までを1つの道筋として整理します。受給できることを保証する判定ではありません。"
+        />
 
-      <div className="mt-6">
-        <Disclaimer variant="diagnosis" />
+        <div className="mt-6">
+          <Disclaimer variant="diagnosis" />
+        </div>
+
+        {candidates.length === 0 ? (
+          <div className="aw-card mt-8">
+            <p className="text-[15px] font-bold text-navy">
+              支援ルートを作れませんでした
+            </p>
+            <p className="mt-2 text-[14px] leading-7 text-charcoal">
+              選んだ条件では、次に確認する制度を絞り込めませんでした。自治体ページから直接さがすか、条件を変えて診断し直してください。
+            </p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <Link href="/check" className="btn-primary">
+                <RefreshCw className="h-4 w-4" aria-hidden="true" />
+                もう一度診断する
+              </Link>
+              {muni && muniHref && (
+                <Link href={muniHref} className="btn-secondary">
+                  {muni.name}のページへ
+                </Link>
+              )}
+              <Link href="/help" className="btn-secondary">
+                <HeartHandshake className="h-4 w-4" aria-hidden="true" />
+                相談窓口を見る
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <>
+            <section className="mt-8 grid gap-3 md:grid-cols-3">
+              {routeSummary.map((step) => {
+                const Icon = step.icon;
+                return (
+                  <article
+                    key={step.label}
+                    className="rounded-2xl border border-soft-gray bg-white p-5"
+                  >
+                    <Icon className="h-5 w-5 text-gold" aria-hidden="true" />
+                    <h2 className="mt-3 text-[15px] font-bold text-navy">
+                      {step.label}
+                    </h2>
+                    <p className="mt-2 text-[13px] leading-7 text-charcoal/80">
+                      {step.body}
+                    </p>
+                  </article>
+                );
+              })}
+            </section>
+
+            <section className="mt-10">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <p className="aw-eyebrow">
+                    <Map className="h-3.5 w-3.5" aria-hidden="true" />
+                    ルート上で確認する制度
+                  </p>
+                  <h2 className="mt-2 text-xl font-bold tracking-tight text-navy">
+                    {candidates.length}件を順番に確認します
+                  </h2>
+                </div>
+                <p className="text-[13px] leading-6 text-charcoal/70">
+                  上から順に、生活状況と関係が強い可能性があります。
+                </p>
+              </div>
+              <ol className="mt-4 space-y-4">
+                {candidates.map(({ program, reasons }, index) => (
+                  <li key={program.slug}>
+                    <article className="aw-card">
+                      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                        <div className="flex-1">
+                          <div className="mb-3 flex items-center gap-2">
+                            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-navy text-[13px] font-bold text-white">
+                              {index + 1}
+                            </span>
+                            <span className="text-[12px] font-semibold tracking-wide text-charcoal/70">
+                              支援ルートの確認先
+                            </span>
+                          </div>
+                          <ProgramBadges
+                            program={program}
+                            categoryName={catName(program.categorySlugs[0])}
+                          />
+                          <h2 className="mt-2 text-[17px] font-bold text-navy">
+                            <Link
+                              href={`/supports/${program.slug}`}
+                              className="hover:underline"
+                            >
+                              {program.title}
+                            </Link>
+                          </h2>
+                          <p className="mt-1.5 text-[14px] leading-7 text-charcoal">
+                            {program.summary}
+                          </p>
+
+                          <div className="mt-3 rounded-xl bg-aster-soft/60 px-3.5 py-2.5">
+                            <p className="flex items-center gap-1.5 text-[12px] font-semibold text-aster">
+                              <Lightbulb
+                                className="h-3.5 w-3.5"
+                                aria-hidden="true"
+                              />
+                              この制度をルートに入れた理由
+                            </p>
+                            <ul className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-[12px] text-charcoal">
+                              {reasons.map((r) => (
+                                <li key={r}>・{r}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
+
+                        <div className="flex shrink-0 flex-col gap-2 sm:w-44">
+                          <Link
+                            href={`/supports/${program.slug}`}
+                            className="btn-primary"
+                          >
+                            詳しく見る
+                            <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                          </Link>
+                          <OfficialLink
+                            url={program.officialUrl}
+                            className="btn-secondary"
+                          />
+                        </div>
+                      </div>
+                    </article>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          </>
+        )}
       </div>
 
-      {candidates.length === 0 ? (
-        <div className="aw-card mt-8">
-          <p className="text-[15px] font-bold text-navy">
-            候補となる制度が見つかりませんでした
-          </p>
-          <p className="mt-2 text-[14px] leading-7 text-charcoal">
-            選んだ条件では候補が出ませんでした。自治体ページから直接さがすか、条件を変えて診断し直してください。
-          </p>
-          <div className="mt-4 flex flex-wrap gap-2">
-            <Link href="/check" className="btn-primary">
-              <RefreshCw className="h-4 w-4" aria-hidden="true" />
-              もう一度診断する
-            </Link>
-            {muni && muniHref && (
-              <Link href={muniHref} className="btn-secondary">
-                {muni.name}のページへ
-              </Link>
-            )}
-            <Link href="/help" className="btn-secondary">
-              <HeartHandshake className="h-4 w-4" aria-hidden="true" />
-              相談窓口を見る
-            </Link>
-          </div>
-        </div>
-      ) : (
-        <>
-          <p className="mt-8 text-[14px] font-semibold text-charcoal">
-            {candidates.length} 件の候補が見つかりました
-          </p>
-          <ul className="mt-4 space-y-4">
-            {candidates.map(({ program, reasons }) => (
-              <li key={program.slug}>
-                <article className="aw-card">
-                  <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                    <div className="flex-1">
-                      <ProgramBadges
-                        program={program}
-                        categoryName={catName(program.categorySlugs[0])}
-                      />
-                      <h2 className="mt-2 text-[17px] font-bold text-navy">
-                        <Link
-                          href={`/supports/${program.slug}`}
-                          className="hover:underline"
-                        >
-                          {program.title}
-                        </Link>
-                      </h2>
-                      <p className="mt-1.5 text-[14px] leading-7 text-charcoal">
-                        {program.summary}
-                      </p>
-
-                      <div className="mt-3 rounded-xl bg-aster-soft/60 px-3.5 py-2.5">
-                        <p className="flex items-center gap-1.5 text-[12px] font-semibold text-aster">
-                          <Lightbulb className="h-3.5 w-3.5" aria-hidden="true" />
-                          この制度が候補に出た理由
-                        </p>
-                        <ul className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-[12px] text-charcoal">
-                          {reasons.map((r) => (
-                            <li key={r}>・{r}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-
-                    <div className="flex shrink-0 flex-col gap-2 sm:w-44">
-                      <Link
-                        href={`/supports/${program.slug}`}
-                        className="btn-primary"
-                      >
-                        詳しく見る
-                        <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                      </Link>
-                      <OfficialLink
-                        url={program.officialUrl}
-                        className="btn-secondary"
-                      />
-                    </div>
-                  </div>
-                </article>
-              </li>
-            ))}
-          </ul>
-        </>
-      )}
-
-      {/* 複数制度をまとめた申請準備リスト（印刷・PDF保存。diagnosis_completed も計測） */}
+      {/* 複数制度をまとめた申請前パック（印刷・PDF保存。diagnosis_completed も計測） */}
       <PrepPacket
         programs={prepPrograms}
         heading={
           muni
-            ? `${muni.name}で確認するとよい制度の申請準備リスト`
-            : "確認するとよい制度の申請準備リスト"
+            ? `${muni.name}の支援ルート申請前パック`
+            : "支援ルート申請前パック"
         }
         nextChecks={nextChecks}
         context="diagnosis"
@@ -237,7 +302,7 @@ export default async function CheckResultPage({
 
       {/* 次に確認すること */}
       {nextChecks.length > 0 && (
-        <section className="mt-12">
+        <section className="mt-12 print:hidden">
           <div className="aw-card">
             <h2 className="aw-card-heading">
               <ListChecks className="h-5 w-5 text-gold" aria-hidden="true" />
@@ -262,7 +327,7 @@ export default async function CheckResultPage({
       )}
 
       {/* 別ルート（対象外・見つからないときの迂回路） */}
-      <section className="mt-12">
+      <section className="mt-12 print:hidden">
         <div className="aw-callout">
           <h2 className="aw-card-heading">
             <HeartHandshake className="h-5 w-5 text-aster" aria-hidden="true" />
