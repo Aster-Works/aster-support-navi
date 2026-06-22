@@ -353,6 +353,9 @@ export default function AdminSupportEditPage() {
     setForm((f) => ({ ...f, [k]: v }));
   const setSource = (k: keyof SourceForm, v: string) =>
     setSourceForm((f) => ({ ...f, [k]: v }));
+  const selectedSource = sourceForm.id
+    ? sources.find((source) => source.id === sourceForm.id)
+    : undefined;
 
   return (
     <div className="max-w-3xl">
@@ -560,6 +563,11 @@ export default function AdminSupportEditPage() {
                     {source.publisher ?? "publisher 未設定"} ・ {source.sourceKind} ・
                     {source.qualityState}
                   </span>
+                  <span className="block truncate text-xs text-charcoal/50">
+                    自動取得 {shortDateTime(source.lastFetchedAt)}
+                    {source.lastFetchStatus ? ` ・ HTTP ${source.lastFetchStatus}` : ""}
+                    {source.lastFetchError ? ` ・ ${source.lastFetchError}` : ""}
+                  </span>
                 </span>
                 <span className="shrink-0 text-xs text-charcoal/50">
                   {source.officialCheckedAt ?? "未確認"}
@@ -667,6 +675,27 @@ export default function AdminSupportEditPage() {
               />
             </label>
           </div>
+          {selectedSource && (
+            <div className="rounded-lg bg-soft-gray/30 p-3 text-xs text-charcoal/70">
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                <p>最終自動取得: {shortDateTime(selectedSource.lastFetchedAt)}</p>
+                <p>
+                  HTTP status: {selectedSource.lastFetchStatus ?? "未取得"}
+                </p>
+                <p>
+                  変化検出: {shortDateTime(selectedSource.lastFetchChangedAt)}
+                </p>
+                <p>
+                  content-type: {selectedSource.fetchedContentType ?? "未取得"}
+                </p>
+              </div>
+              {selectedSource.lastFetchError && (
+                <p className="mt-2 text-amber-700">
+                  取得エラー: {selectedSource.lastFetchError}
+                </p>
+              )}
+            </div>
+          )}
           <button type="submit" disabled={sourceSaving} className="btn-primary">
             {sourceSaving ? (
               <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />

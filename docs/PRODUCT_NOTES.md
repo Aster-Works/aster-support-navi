@@ -45,7 +45,7 @@
   品質（未達・stale）/ レビューキュー。`/admin` は noindex + robots disallow。
 - 認可の最終境界は DB の RLS。AdminGate はUX用。多層防御＝①クライアント品質ゲート ②DBトリガ強制 ③公開側 isPublishable 再フィルタ。
 - 検証: 実認証 admin JWT で end-to-end（非admin→draft不可視 / admin→draft可視・編集・revision記録 / incomplete publish 拒否 / valid publish 成功）。匿名 gate・admin walkthrough をブラウザ実地検証。build 1251 / Vitest 74 green。セキュリティレビュー（RLS認可・client安全性・監査・整合性 ×敵対的検証）対応済。
-- 残: 差分検知の自動巡回・最初の本番 admin 付与（Jimi のログインユーザーを app_roles に登録）。
+- 残: 自動巡回結果の運用改善（変更検出後のレビュー完了フロー、通知、対象URLの優先度付け）。
 
 ### Slice F: 品質ゲート・出典/revision/review queue 移行開始（2026-06-22 実装・本番Supabase適用済）
 
@@ -61,6 +61,11 @@
 - `scripts/audit-content-quality.ts` / `npm run data:audit` … seedの読み取り専用監査。2026-06-22時点:
   1372制度（published 1364 / draft 8）、品質issueあり11、公開ブロッカー6、review queue候補11。
 - 本番DB確認（2026-06-23）: `support_programs` 1372、`support_sources` 1372、`support_revisions` 1372、`review_queue_items` 14、orphan source 0。
+- Slice F 続き（2026-06-23）: `support_sources` に自動巡回専用メタ（`fetched_content_hash` /
+  `last_fetched_at` / `last_fetch_status` / `last_fetch_error` / `last_fetch_changed_at`）を追加。
+  `/api/cron/check-sources` を Vercel Cron に登録し、公式URLを少量ずつ取得する。初回は取得hashの
+  baseline作成のみ、2回目以降に本文hash変化・取得失敗があれば `review_queue_items` へ積む。
+  制度本文・公開ステータス・人手確認日（`last_official_checked_at`）は自動変更しない。
 
 ### 政令市データ拡充 — 4カテゴリ深掘り（Phase 4・2026-06-21）
 

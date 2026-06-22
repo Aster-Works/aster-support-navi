@@ -605,6 +605,12 @@ export interface SupportSource {
   officialCheckedAt: string | null;
   contentHash: string | null;
   lastChangedAt: string | null;
+  fetchedContentHash: string | null;
+  fetchedContentType: string | null;
+  lastFetchedAt: string | null;
+  lastFetchStatus: number | null;
+  lastFetchError: string | null;
+  lastFetchChangedAt: string | null;
   notes: string | null;
   createdAt: string;
   sourceKind: SourceKind | string;
@@ -641,7 +647,9 @@ export interface SupportRevision {
 
 const SOURCE_SELECT = `
   id, support_program_id, url, title, publisher, retrieved_at, official_checked_at,
-  content_hash, last_changed_at, notes, created_at, source_kind, quality_state,
+  content_hash, last_changed_at, fetched_content_hash, fetched_content_type,
+  last_fetched_at, last_fetch_status, last_fetch_error, last_fetch_changed_at,
+  notes, created_at, source_kind, quality_state,
   detected_issue_codes, review_interval_days
 `;
 
@@ -661,6 +669,13 @@ function mapSource(r: Record<string, unknown>): SupportSource {
     officialCheckedAt: (r.official_checked_at as string | null) ?? null,
     contentHash: (r.content_hash as string | null) ?? null,
     lastChangedAt: (r.last_changed_at as string | null) ?? null,
+    fetchedContentHash: (r.fetched_content_hash as string | null) ?? null,
+    fetchedContentType: (r.fetched_content_type as string | null) ?? null,
+    lastFetchedAt: (r.last_fetched_at as string | null) ?? null,
+    lastFetchStatus:
+      typeof r.last_fetch_status === "number" ? r.last_fetch_status : null,
+    lastFetchError: (r.last_fetch_error as string | null) ?? null,
+    lastFetchChangedAt: (r.last_fetch_changed_at as string | null) ?? null,
     notes: nullableTrim(r.notes as string | null | undefined),
     createdAt: String(r.created_at),
     sourceKind: String(r.source_kind ?? "official"),
