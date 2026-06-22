@@ -1,12 +1,19 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Search, SlidersHorizontal, X, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Search,
+  SlidersHorizontal,
+  X,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import {
   getPrograms,
   getActiveMunicipalities,
   getCategories,
   getLifeEvents,
   getMunicipalities,
+  getPrefectures,
   type ProgramFilters,
 } from "@/app/lib/data";
 import { buildMetadata } from "@/app/lib/seo";
@@ -28,15 +35,45 @@ const one = (v: string | string[] | undefined) =>
 const PER_PAGE_OPTIONS = [25, 50, 75, 100] as const;
 const DEFAULT_PER_PAGE = 25;
 
-/** フィルター条件を保ったまま page / perPage を差し替えた /search URL を作る。 */
-function buildSearchHref(sp: SP, perPage: number, page: number): string {
+const SORT_OPTIONS = [
+  { key: "checked", label: "確認日順" },
+  { key: "municipality", label: "自治体順" },
+  { key: "category", label: "カテゴリ順" },
+] as const;
+const DEFAULT_SORT = "checked";
+
+// URL から引き継ぐパラメータ（フィルタ＋表示設定）。
+const KEEP_KEYS = [
+  "q",
+  "prefecture",
+  "municipality",
+  "category",
+  "event",
+  "online",
+  "deadline",
+  "sort",
+  "perPage",
+  "page",
+];
+
+/** 現在の検索条件を保ったまま、一部パラメータだけ差し替えた /search URL を作る。 */
+function buildSearchHref(
+  sp: SP,
+  patch: Record<string, string | number | undefined>,
+): string {
   const params = new URLSearchParams();
-  for (const k of ["q", "category", "event", "municipality", "online", "deadline"]) {
+  for (const k of KEEP_KEYS) {
     const v = one(sp[k]);
     if (v) params.set(k, v);
   }
-  if (perPage !== DEFAULT_PER_PAGE) params.set("perPage", String(perPage));
-  if (page > 1) params.set("page", String(page));
+  for (const [k, v] of Object.entries(patch)) {
+    if (v === undefined || v === "") params.delete(k);
+    else params.set(k, String(v));
+  }
+  // 既定値は URL から省いて短く保つ。
+  if (params.get("perPage") === String(DEFAULT_PER_PAGE)) params.delete("perPage");
+  if (params.get("sort") === DEFAULT_SORT) params.delete("sort");
+  if (params.get("page") === "1") params.delete("page");
   const qs = params.toString();
   return qs ? `/search?${qs}` : "/search";
 }
@@ -66,6 +103,7 @@ export default async function SearchPage({
   const sp = await searchParams;
   const filters: ProgramFilters = {
     keyword: one(sp.q) || undefined,
+    prefectureSlug: one(sp.prefecture) || undefined,
     categorySlug: one(sp.category) || undefined,
     lifeEventSlug: one(sp.event) || undefined,
     municipalitySlug: one(sp.municipality) || undefined,
@@ -73,30 +111,78 @@ export default async function SearchPage({
     hasDeadline: one(sp.deadline) === "1",
   };
 
-  const [results, munis, allMunis, categories, lifeEvents] = await Promise.all([
-    getPrograms(filters),
-    getActiveMunicipalities("tokyo"),
-    getMunicipalities("tokyo"),
-    getCategories(),
-    getLifeEvents(),
-  ]);
+  const [results, activeMunis, allMunis, categories, lifeEvents, prefectures] =
+    await Promise.all([
+      getPrograms(filters),
+      getActiveMunicipalities(), // 全国の制度あり自治体（絞り込み用）
+      getMunicipalities(), // 全自治体（名称解決用）
+      getCategories(),
+      getLifeEvents(),
+      getPrefectures(),
+    ]);
+
   const catName = (s: string) => categories.find((c) => c.slug === s)?.name;
-  const muniName = (s: string) => allMunis.find((m) => m.slug === s)?.name;
+  // 自治体名は 都道府県+slug で解決（slug 衝突を避ける）。
+  const muniNameMap = new Map(
+    allMunis.map((m) => [`${m.prefectureSlug}/${m.slug}`, m.name]),
+  );
+  const muniNameOf = (prefSlug: string, slug: string) =>
+    muniNameMap.get(`${prefSlug}/${slug}`);
+
+  // 都道府県ごとに active 自治体をグループ化（都道府県セレクト＋自治体 optgroup 用）。
+  const areaGroups = prefectures
+    .map((pref) => ({
+      pref,
+      munis: activeMunis.filter((m) => m.prefectureSlug === pref.slug),
+    }))
+    .filter((g) => g.munis.length > 0);
 
   const hasAnyFilter =
     !!filters.keyword ||
+    !!filters.prefectureSlug ||
     !!filters.categorySlug ||
     !!filters.lifeEventSlug ||
     !!filters.municipalitySlug ||
     filters.onlineOnly ||
     filters.hasDeadline;
 
-  // ページネーション（サーバー側・URLクエリ駆動。JS不要・共有可能）
+  // 並び替え（既定＝最終確認日が新しい順）。
+  const sortRaw = one(sp.sort);
+  const sort = SORT_OPTIONS.some((o) => o.key === sortRaw)
+    ? (sortRaw as string)
+    : DEFAULT_SORT;
+  const sorted = [...results];
+  if (sort === "municipality") {
+    sorted.sort(
+      (a, b) =>
+        (muniNameOf(a.prefectureSlug, a.municipalitySlug) ?? "").localeCompare(
+          muniNameOf(b.prefectureSlug, b.municipalitySlug) ?? "",
+          "ja",
+        ) || a.title.localeCompare(b.title, "ja"),
+    );
+  } else if (sort === "category") {
+    sorted.sort(
+      (a, b) =>
+        (catName(a.categorySlugs[0]) ?? "").localeCompare(
+          catName(b.categorySlugs[0]) ?? "",
+          "ja",
+        ) || a.title.localeCompare(b.title, "ja"),
+    );
+  } else {
+    sorted.sort(
+      (a, b) =>
+        (b.lastOfficialCheckedAt ?? "").localeCompare(
+          a.lastOfficialCheckedAt ?? "",
+        ) || a.title.localeCompare(b.title, "ja"),
+    );
+  }
+
+  // ページネーション（サーバー側・URLクエリ駆動。JS不要・共有可能）。
   const perPageRaw = Number(one(sp.perPage));
   const perPage = (PER_PAGE_OPTIONS as readonly number[]).includes(perPageRaw)
     ? perPageRaw
     : DEFAULT_PER_PAGE;
-  const total = results.length;
+  const total = sorted.length;
   const totalPages = Math.max(1, Math.ceil(total / perPage));
   const pageRaw = Math.floor(Number(one(sp.page)));
   const currentPage = Math.min(
@@ -104,7 +190,7 @@ export default async function SearchPage({
     totalPages,
   );
   const start = (currentPage - 1) * perPage;
-  const pageResults = results.slice(start, start + perPage);
+  const pageResults = sorted.slice(start, start + perPage);
 
   return (
     <div className="aw-container py-10">
@@ -148,6 +234,28 @@ export default async function SearchPage({
 
             <div>
               <label
+                htmlFor="prefecture"
+                className="text-[12px] font-semibold text-charcoal/70"
+              >
+                都道府県
+              </label>
+              <select
+                id="prefecture"
+                name="prefecture"
+                defaultValue={filters.prefectureSlug ?? ""}
+                className="aw-select mt-1.5"
+              >
+                <option value="">すべての都道府県</option>
+                {areaGroups.map((g) => (
+                  <option key={g.pref.slug} value={g.pref.slug}>
+                    {g.pref.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label
                 htmlFor="municipality"
                 className="text-[12px] font-semibold text-charcoal/70"
               >
@@ -160,10 +268,14 @@ export default async function SearchPage({
                 className="aw-select mt-1.5"
               >
                 <option value="">すべての自治体</option>
-                {munis.map((m) => (
-                  <option key={m.slug} value={m.slug}>
-                    {m.name}
-                  </option>
+                {areaGroups.map((g) => (
+                  <optgroup key={g.pref.slug} label={g.pref.name}>
+                    {g.munis.map((m) => (
+                      <option key={`${m.prefectureSlug}/${m.slug}`} value={m.slug}>
+                        {m.name}
+                      </option>
+                    ))}
+                  </optgroup>
                 ))}
               </select>
             </div>
@@ -239,6 +351,14 @@ export default async function SearchPage({
             </fieldset>
           </div>
 
+          {/* 並び替え・表示件数は絞り込み後も保持する。 */}
+          {sort !== DEFAULT_SORT && (
+            <input type="hidden" name="sort" value={sort} />
+          )}
+          {perPage !== DEFAULT_PER_PAGE && (
+            <input type="hidden" name="perPage" value={perPage} />
+          )}
+
           <div className="mt-5 flex gap-2">
             <button type="submit" className="btn-primary flex-1">
               <Search className="h-4 w-4" aria-hidden="true" />
@@ -258,7 +378,7 @@ export default async function SearchPage({
 
         {/* 結果 */}
         <div>
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <p className="text-[13px] text-charcoal/70" aria-live="polite">
               {total} 件の制度{hasAnyFilter ? "（絞り込み中）" : ""}
               {total > 0 && (
@@ -269,21 +389,40 @@ export default async function SearchPage({
               )}
             </p>
 
-            {total > PER_PAGE_OPTIONS[0] && (
-              <div className="flex items-center gap-1.5">
-                <span className="text-[12px] text-charcoal/70">表示件数</span>
-                {PER_PAGE_OPTIONS.map((n) => (
-                  <Link
-                    key={n}
-                    href={buildSearchHref(sp, n, 1)}
-                    data-active={n === perPage}
-                    aria-label={`${n}件ずつ表示`}
-                    aria-current={n === perPage ? "true" : undefined}
-                    className="aw-chip min-w-11 justify-center"
-                  >
-                    {n}
-                  </Link>
-                ))}
+            {total > 1 && (
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[12px] text-charcoal/70">並び替え</span>
+                  {SORT_OPTIONS.map((o) => (
+                    <Link
+                      key={o.key}
+                      href={buildSearchHref(sp, { sort: o.key, page: 1 })}
+                      data-active={o.key === sort}
+                      aria-current={o.key === sort ? "true" : undefined}
+                      className="aw-chip"
+                    >
+                      {o.label}
+                    </Link>
+                  ))}
+                </div>
+
+                {total > PER_PAGE_OPTIONS[0] && (
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[12px] text-charcoal/70">表示件数</span>
+                    {PER_PAGE_OPTIONS.map((n) => (
+                      <Link
+                        key={n}
+                        href={buildSearchHref(sp, { perPage: n, page: 1 })}
+                        data-active={n === perPage}
+                        aria-current={n === perPage ? "true" : undefined}
+                        aria-label={`${n}件ずつ表示`}
+                        className="aw-chip min-w-11 justify-center"
+                      >
+                        {n}
+                      </Link>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -309,7 +448,10 @@ export default async function SearchPage({
                     <SupportCard
                       program={p}
                       categoryName={catName(p.categorySlugs[0])}
-                      municipalityName={muniName(p.municipalitySlug)}
+                      municipalityName={muniNameOf(
+                        p.prefectureSlug,
+                        p.municipalitySlug,
+                      )}
                     />
                   </li>
                 ))}
@@ -323,7 +465,7 @@ export default async function SearchPage({
                   >
                     {currentPage > 1 && (
                       <Link
-                        href={buildSearchHref(sp, perPage, currentPage - 1)}
+                        href={buildSearchHref(sp, { page: currentPage - 1 })}
                         rel="prev"
                         aria-label="前のページ"
                         className="aw-chip"
@@ -345,7 +487,7 @@ export default async function SearchPage({
                       ) : (
                         <Link
                           key={p}
-                          href={buildSearchHref(sp, perPage, p)}
+                          href={buildSearchHref(sp, { page: p })}
                           aria-label={`${p}ページ目`}
                           aria-current={p === currentPage ? "page" : undefined}
                           data-active={p === currentPage}
@@ -358,7 +500,7 @@ export default async function SearchPage({
 
                     {currentPage < totalPages && (
                       <Link
-                        href={buildSearchHref(sp, perPage, currentPage + 1)}
+                        href={buildSearchHref(sp, { page: currentPage + 1 })}
                         rel="next"
                         aria-label="次のページ"
                         className="aw-chip"
