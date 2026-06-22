@@ -68,4 +68,8 @@ export const municipalities: Municipality[] = [
   { slug: "toyama", prefectureSlug: "toyama", name: "富山市", nameKana: "とやまし", officialSiteUrl: "https://www.city.toyama.lg.jp/", intro: "富山市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
   { slug: "takamatsu", prefectureSlug: "kagawa", name: "高松市", nameKana: "たかまつし", officialSiteUrl: "https://www.city.takamatsu.kagawa.jp/", intro: "高松市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
   { slug: "wakayama", prefectureSlug: "wakayama", name: "和歌山市", nameKana: "わかやまし", officialSiteUrl: "https://www.city.wakayama.wakayama.jp/", intro: "和歌山市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
+  { slug: "nagano", prefectureSlug: "nagano", name: "長野市", nameKana: "ながのし", officialSiteUrl: "https://www.city.nagano.nagano.jp/", intro: "長野市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
+  { slug: "fukushima", prefectureSlug: "fukushima", name: "福島市", nameKana: "ふくしまし", officialSiteUrl: "https://www.city.fukushima.fukushima.jp/", intro: "福島市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
+  { slug: "maebashi", prefectureSlug: "gunma", name: "前橋市", nameKana: "まえばしし", officialSiteUrl: "https://www.city.maebashi.gunma.jp/", intro: "前橋市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
+  { slug: "otsu", prefectureSlug: "shiga", name: "大津市", nameKana: "おおつし", officialSiteUrl: "https://www.city.otsu.lg.jp/", intro: "大津市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
 ];
