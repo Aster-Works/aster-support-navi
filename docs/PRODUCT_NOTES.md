@@ -1,12 +1,12 @@
 # Aster Support Navi — 実装ノート
 
-作成: 2026-06-18 / 最終更新: 2026-06-22 / ステータス: Phase 1–2 + Slice A–F 実装完了。Phase 4（コンテンツ拡充）進行中。
+作成: 2026-06-18 / 最終更新: 2026-06-23 / ステータス: Phase 1–2 + Slice A–F 実装完了。Phase 4（コンテンツ拡充）と Supabase DB 移行が進行中。
 
 引き継ぎ仕様の原典は `/Users/james/aster-support-navi-handoff/`（PRODUCT_SPEC / TECHNICAL_ARCHITECTURE / DATA_AND_CONTENT_OPS / ROADMAP / RESEARCH_AND_POSITIONING）。本ノートは実装の地図。
 
 ## 何を作ったか
 
-「支援制度版SUUMO」。自治体の個人・世帯向け支援制度を、住所×生活状況から探し、申請準備まで伴走する SEO-first Web Product。MVP は **東京23区 × 出産/子育て**、検証済み 161 制度（各区7制度・公式URLをWorkflowでWebFetch検証）。
+「支援制度版SUUMO」。自治体の個人・世帯向け支援制度を、住所×生活状況から探し、申請準備まで伴走する SEO-first Web Product。MVP は **東京23区 × 出産/子育て**から始め、現在は seed/DB ともに 1372 制度（published 1364 / draft 8）まで拡張済み。
 
 ## アーキテクチャ
 
@@ -22,6 +22,7 @@
 - `app/lib/data/seedRepository.ts` … 既定。型付き seed を読む（published は module scope で一度評価）。
 - `app/lib/data/supabaseRepository.ts` … Supabase 制度DB（published のみ）を読む `supabaseRepository` と、
   DB 優先＋seed 補完の `hybridRepository`。接続失敗・env 未設定時は seed へグレースフルフォールバック。
+  Data API の1リクエスト上限を避けるため、published 制度は 1000件単位でページング取得する。
   `mapProgram` / `unionBySlug` / `unionMunicipalities` は純関数として Vitest 網羅。
 - `app/lib/supabase-server.ts` … サーバー専用クライアント（遅延生成・anon 読取・service_role 不使用）。
 - `supabase/migrations/20260620090000_content_schema.sql` … 制度DB全テーブル＋RLS
@@ -29,7 +30,7 @@
 - `scripts/export-seed-to-sql.ts` … seed→冪等 SQL を生成（`npx tsx`、DB へは書かない）。出力は gitignore。
 - 移行手順: ① migration 適用 → ② 生成 SQL を service_role で投入 → ③ `DATA_SOURCE=hybrid` で検証 → ④ `supabase`。
 - 検証: typecheck / Vitest 74件 / lint / build すべて green。多面的レビュー（parity・往復整合・RLS・RSC境界・SQL）＋敵対的検証済み。
-- 本番Supabase（ref atdhkmniczfxowfkzwjr）へ migration 適用＋829制度投入済（`supabase db push` ＋ `supabase db query --linked --file` チャンク投入）。
+- 本番Supabase（ref atdhkmniczfxowfkzwjr）へ migration 適用＋1372制度投入済（published 1364 / draft 8）。2026-06-23 時点で production `DATA_SOURCE=hybrid` へ移行。
 
 ### Slice B: 管理画面・運用基盤（2026-06-20 実装・本番Supabase適用済）
 
@@ -45,7 +46,7 @@
 - 検証: 実認証 admin JWT で end-to-end（非admin→draft不可視 / admin→draft可視・編集・revision記録 / incomplete publish 拒否 / valid publish 成功）。匿名 gate・admin walkthrough をブラウザ実地検証。build 1251 / Vitest 74 green。セキュリティレビュー（RLS認可・client安全性・監査・整合性 ×敵対的検証）対応済。
 - 残: source 管理 UI・差分検知の自動巡回・最初の本番 admin 付与（Jimi のログインユーザーを app_roles に登録）。
 
-### Slice F: 品質ゲート・出典/revision/review queue 移行開始（2026-06-22 実装・DB適用は未実行）
+### Slice F: 品質ゲート・出典/revision/review queue 移行開始（2026-06-22 実装・本番Supabase適用済）
 
 - `app/lib/data/quality.ts` … 低品質/古い/公式URL不明/非公式ホスト/低信頼度/下書きレビュー対象を共通判定。
   `blocksPublish` と `shouldQueue` を分け、古い確認日は即公開停止ではなく review queue 対象にする。
@@ -58,6 +59,7 @@
   制度本体、公式出典、seed baseline revision、review queue 候補を冪等SQLとして生成する。DBへは書かない。
 - `scripts/audit-content-quality.ts` / `npm run data:audit` … seedの読み取り専用監査。2026-06-22時点:
   1372制度（published 1364 / draft 8）、品質issueあり11、公開ブロッカー6、review queue候補11。
+- 本番DB確認（2026-06-23）: `support_programs` 1372、`support_sources` 1372、`support_revisions` 1372、`review_queue_items` 14、orphan source 0。
 
 ### 政令市データ拡充 — 4カテゴリ深掘り（Phase 4・2026-06-21）
 

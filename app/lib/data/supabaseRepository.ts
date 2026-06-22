@@ -125,20 +125,33 @@ function warnOnce(message: string, error?: unknown) {
   console.warn(`[supabaseRepository] ${message}`, error ?? "");
 }
 
+const PROGRAM_PAGE_SIZE = 1000;
+
 /** published 制度。null = Supabase 利用不可（seed フォールバックの合図）、[] = 空。 */
 const fetchPublishedPrograms = cache(
   async (): Promise<SupportProgram[] | null> => {
     const sb = getServerReadClient();
     if (!sb) return null;
-    const { data, error } = await sb
-      .from("support_programs")
-      .select(PROGRAM_SELECT)
-      .eq("status", "published");
-    if (error) {
-      warnOnce("制度の取得に失敗。seed にフォールバックします。", error.message);
-      return null;
+
+    const rows: ProgramRow[] = [];
+    for (let from = 0; ; from += PROGRAM_PAGE_SIZE) {
+      const to = from + PROGRAM_PAGE_SIZE - 1;
+      const { data, error } = await sb
+        .from("support_programs")
+        .select(PROGRAM_SELECT)
+        .eq("status", "published")
+        .order("slug", { ascending: true })
+        .range(from, to);
+      if (error) {
+        warnOnce("制度の取得に失敗。seed にフォールバックします。", error.message);
+        return null;
+      }
+
+      const page = (data ?? []) as unknown as ProgramRow[];
+      rows.push(...page);
+      if (page.length < PROGRAM_PAGE_SIZE) break;
     }
-    const rows = (data ?? []) as unknown as ProgramRow[];
+
     // defense-in-depth: DB 側でも published のみ返るが、表示面ゲートを再適用する。
     return rows
       .map(mapProgram)
@@ -151,7 +164,8 @@ const fetchPrefectures = cache(async (): Promise<Prefecture[] | null> => {
   if (!sb) return null;
   const { data, error } = await sb
     .from("prefectures")
-    .select("slug, name, name_kana, region");
+    .select("slug, name, name_kana, region")
+    .order("slug", { ascending: true });
   if (error) {
     warnOnce("都道府県の取得に失敗。", error.message);
     return null;
@@ -181,7 +195,8 @@ const fetchMunicipalities = cache(async (): Promise<Municipality[] | null> => {
     .from("municipalities")
     .select(
       "slug, name, name_kana, official_site_url, population, intro, prefecture:prefectures!inner ( slug )",
-    );
+    )
+    .order("slug", { ascending: true });
   if (error) {
     warnOnce("自治体の取得に失敗。", error.message);
     return null;
@@ -209,7 +224,9 @@ const fetchCategories = cache(async (): Promise<Category[] | null> => {
   if (!sb) return null;
   const { data, error } = await sb
     .from("categories")
-    .select("slug, name, description, sort_order");
+    .select("slug, name, description, sort_order")
+    .order("sort_order", { ascending: true })
+    .order("slug", { ascending: true });
   if (error) {
     warnOnce("カテゴリの取得に失敗。", error.message);
     return null;
@@ -227,7 +244,9 @@ const fetchLifeEvents = cache(async (): Promise<LifeEvent[] | null> => {
   if (!sb) return null;
   const { data, error } = await sb
     .from("life_events")
-    .select("slug, name, description, icon, sort_order, common_checks");
+    .select("slug, name, description, icon, sort_order, common_checks")
+    .order("sort_order", { ascending: true })
+    .order("slug", { ascending: true });
   if (error) {
     warnOnce("生活イベントの取得に失敗。", error.message);
     return null;
