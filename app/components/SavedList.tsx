@@ -25,6 +25,7 @@ import {
   type SavedStatus,
 } from "@/app/lib/saved";
 import { formatCheckedAt } from "@/app/lib/dates";
+import { getTodayIso } from "@/app/lib/now";
 import { track } from "@/app/lib/track";
 
 export function SavedList() {
@@ -56,7 +57,7 @@ export function SavedList() {
     track("saved_status_changed", { context: status });
   }
 
-  const today = new Date().toISOString().slice(0, 10);
+  const today = getTodayIso();
   const counts = savedStatusCounts(items);
 
   // 全分岐で常設するライブリージョン（削除・残件数を読み上げる）。

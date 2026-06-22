@@ -3,6 +3,7 @@ import type {
   SourceConfidence,
   SupportProgram,
 } from "./types";
+import { getTodayIso } from "@/app/lib/now";
 
 export const SOURCE_REVIEW_STALE_DAYS = 90;
 export const SOURCE_REVIEW_WATCH_DAYS = 60;
@@ -78,7 +79,7 @@ function addDays(iso: string, days: number): string {
 }
 
 function todayIso(): string {
-  return new Date().toISOString().slice(0, 10);
+  return getTodayIso();
 }
 
 function isBlank(v: string | null | undefined): boolean {

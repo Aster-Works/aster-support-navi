@@ -17,6 +17,7 @@ import {
   evaluateProgramQuality,
   type QualityIssue,
 } from "@/app/lib/data/quality";
+import { getTodayIso } from "@/app/lib/now";
 
 interface AuditItem {
   slug: string;
@@ -44,7 +45,7 @@ function countBy<T extends string>(values: T[]): Record<T, number> {
   );
 }
 
-const todayIso = argValue("--today") ?? new Date().toISOString().slice(0, 10);
+const todayIso = argValue("--today") ?? getTodayIso();
 const writePath = argValue("--write");
 
 const items: AuditItem[] = programs

@@ -6,6 +6,7 @@ import {
   ShieldAlert,
   Inbox,
   Upload,
+  Activity,
 } from "lucide-react";
 import { AdminGate } from "./AdminGate";
 
@@ -20,6 +21,7 @@ const NAV = [
   { href: "/admin/import", label: "取込", icon: Upload },
   { href: "/admin/quality", label: "品質", icon: ShieldAlert },
   { href: "/admin/review-queue", label: "レビュー", icon: Inbox },
+  { href: "/admin/activity", label: "履歴", icon: Activity },
 ];
 
 export default function AdminLayout({

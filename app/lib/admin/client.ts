@@ -151,17 +151,41 @@ function client() {
 
 /** ログイン済みユーザーが管理者か（app_roles を本人の行だけ read）。 */
 export async function checkIsAdmin(): Promise<boolean> {
+  return (await fetchAdminPrincipal()).isAdmin;
+}
+
+export interface AdminPrincipal {
+  userId: string | null;
+  email: string | null;
+  isAdmin: boolean;
+  adminSince: string | null;
+}
+
+/** ログイン中の本人と admin ロール付与状態。app_roles は本人行のみ RLS で読める。 */
+export async function fetchAdminPrincipal(): Promise<AdminPrincipal> {
   const sb = getSupabase();
-  if (!sb) return false;
+  if (!sb) {
+    return { userId: null, email: null, isAdmin: false, adminSince: null };
+  }
   const { data: auth } = await sb.auth.getUser();
-  if (!auth.user) return false;
+  if (!auth.user) {
+    return { userId: null, email: null, isAdmin: false, adminSince: null };
+  }
   const { data, error } = await sb
     .from("app_roles")
-    .select("role")
+    .select("role, created_at")
     .eq("user_id", auth.user.id)
     .eq("role", "admin")
     .maybeSingle();
-  return !error && Boolean(data);
+  return {
+    userId: auth.user.id,
+    email: auth.user.email ?? null,
+    isAdmin: !error && Boolean(data),
+    adminSince:
+      !error && data && typeof data.created_at === "string"
+        ? data.created_at
+        : null,
+  };
 }
 
 export interface SupportFilter {
@@ -636,6 +660,8 @@ export interface SupportSourceInput {
 export interface SupportRevision {
   id: string;
   supportProgramId: string;
+  programSlug: string | null;
+  programTitle: string | null;
   changedBy: string | null;
   changeType: string;
   changeSummary: string | null;
@@ -762,6 +788,44 @@ export async function fetchSupportRevisions(
   return ((data ?? []) as RevisionRow[]).map((r) => ({
     id: r.id,
     supportProgramId: r.support_program_id,
+    programSlug: null,
+    programTitle: null,
+    changedBy: r.changed_by,
+    changeType: r.change_type,
+    changeSummary: r.change_summary,
+    externalKey: r.external_key,
+    beforeJson: r.before_json,
+    afterJson: r.after_json,
+    createdAt: r.created_at,
+  }));
+}
+
+export async function fetchRecentRevisions(limit = 80): Promise<SupportRevision[]> {
+  const { data, error } = await client()
+    .from("support_revisions")
+    .select(
+      "id, support_program_id, changed_by, change_type, change_summary, external_key, before_json, after_json, created_at, support_programs ( id, slug, title )",
+    )
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  if (error) throw new Error(error.message);
+  type RevisionRow = {
+    id: string;
+    support_program_id: string;
+    changed_by: string | null;
+    change_type: string;
+    change_summary: string | null;
+    external_key: string | null;
+    before_json: unknown;
+    after_json: unknown;
+    created_at: string;
+    support_programs?: { id: string; slug: string; title: string } | null;
+  };
+  return ((data ?? []) as unknown as RevisionRow[]).map((r) => ({
+    id: r.id,
+    supportProgramId: r.support_program_id,
+    programSlug: r.support_programs?.slug ?? null,
+    programTitle: r.support_programs?.title ?? null,
     changedBy: r.changed_by,
     changeType: r.change_type,
     changeSummary: r.change_summary,

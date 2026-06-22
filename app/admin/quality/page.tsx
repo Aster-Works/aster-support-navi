@@ -5,15 +5,17 @@ import Link from "next/link";
 import { Loader2, AlertTriangle, Clock } from "lucide-react";
 import {
   fetchSupports,
+  publishBlockingIssues,
   qualityIssues,
   freshness,
   type AdminProgram,
 } from "@/app/lib/admin/client";
+import { getTodayIso } from "@/app/lib/now";
 
 export default function AdminQualityPage() {
   const [rows, setRows] = useState<AdminProgram[] | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
+  const today = useMemo(() => getTodayIso(), []);
 
   useEffect(() => {
     fetchSupports({ status: "all" })
@@ -31,8 +33,13 @@ export default function AdminQualityPage() {
     );
 
   const failing = rows
-    .map((p) => ({ p, issues: qualityIssues(p) }))
+    .map((p) => ({
+      p,
+      issues: qualityIssues(p),
+      blockers: publishBlockingIssues(p),
+    }))
     .filter((x) => x.issues.length > 0);
+  const blocked = failing.filter((x) => x.blockers.length > 0);
   const stale = rows.filter((p) => freshness(p, today) === "stale");
 
   return (
@@ -41,6 +48,24 @@ export default function AdminQualityPage() {
       <p className="mt-1 text-sm text-charcoal/70">
         低品質・公式URL不明・公式ソース不明・確認日が古い制度を全ステータスから検出します。
       </p>
+      <div className="mt-4 grid gap-3 sm:grid-cols-3">
+        <div className="rounded-xl border border-soft-gray bg-white p-3">
+          <div className="text-2xl font-semibold text-navy">
+            {failing.length}
+          </div>
+          <div className="text-xs text-charcoal/60">品質issue</div>
+        </div>
+        <div className="rounded-xl border border-soft-gray bg-white p-3">
+          <div className="text-2xl font-semibold text-amber-800">
+            {blocked.length}
+          </div>
+          <div className="text-xs text-charcoal/60">publishedブロック</div>
+        </div>
+        <div className="rounded-xl border border-soft-gray bg-white p-3">
+          <div className="text-2xl font-semibold text-navy">{stale.length}</div>
+          <div className="text-xs text-charcoal/60">91日以上未確認</div>
+        </div>
+      </div>
 
       <section className="mt-6">
         <h2 className="flex items-center gap-2 text-sm font-semibold text-amber-800">
@@ -48,7 +73,7 @@ export default function AdminQualityPage() {
           品質ゲート検出: {failing.length}
         </h2>
         <div className="mt-2 divide-y divide-soft-gray rounded-xl border border-soft-gray">
-          {failing.map(({ p, issues }) => (
+          {failing.map(({ p, issues, blockers }) => (
             <Link
               key={p.id}
               href={`/admin/supports/${p.id}`}
@@ -61,6 +86,11 @@ export default function AdminQualityPage() {
               <div className="mt-1 text-xs text-amber-700">
                 {issues.join(" / ")}
               </div>
+              {blockers.length > 0 && (
+                <div className="mt-1 text-xs font-medium text-red-700">
+                  published不可: {blockers.join(" / ")}
+                </div>
+              )}
             </Link>
           ))}
           {failing.length === 0 && (

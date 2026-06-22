@@ -171,6 +171,11 @@ function changedFieldNames(rev: SupportRevision): string[] {
     .slice(0, 8);
 }
 
+function revisionActor(rev: SupportRevision): string {
+  if (!rev.changedBy) return "system / ops";
+  return `user ${rev.changedBy.slice(0, 8)}`;
+}
+
 export default function AdminSupportEditPage() {
   const params = useParams<{ id: string }>();
   const id = params.id;
@@ -349,6 +354,7 @@ export default function AdminSupportEditPage() {
 
   const issues = qualityIssues(program);
   const blockingIssues = publishBlockingIssues(program);
+  const canPublish = blockingIssues.length === 0;
   const set = (k: keyof SupportPatch, v: unknown) =>
     setForm((f) => ({ ...f, [k]: v }));
   const setSource = (k: keyof SourceForm, v: string) =>
@@ -387,13 +393,28 @@ export default function AdminSupportEditPage() {
         </p>
       )}
 
+      {canPublish ? (
+        <p className="mt-2 rounded-lg bg-green-50 p-2 text-sm text-green-800">
+          published への変更をブロックする問題はありません。
+        </p>
+      ) : (
+        <div className="mt-2 rounded-lg bg-red-50 p-3 text-sm text-red-700">
+          <p className="font-medium">published にできません</p>
+          <ul className="mt-1 list-disc pl-4">
+            {blockingIssues.map((i) => (
+              <li key={i}>{i}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {/* ステータス操作 */}
       <div className="mt-4 flex flex-wrap items-center gap-2">
         {NEXT_STATUS[program.status].map((a) => (
           <button
             key={a.to}
             type="button"
-            disabled={saving || (a.to === "published" && blockingIssues.length > 0)}
+            disabled={saving || (a.to === "published" && !canPublish)}
             onClick={() => onStatus(a.to)}
             className={a.to === "published" ? "btn-primary" : "btn-secondary"}
             title={
@@ -766,6 +787,10 @@ export default function AdminSupportEditPage() {
                 </div>
                 <p className="mt-1 text-xs text-charcoal/60">
                   {rev.changeSummary ?? rev.externalKey ?? "自動記録"}
+                </p>
+                <p className="mt-1 text-xs text-charcoal/50">
+                  変更者: {revisionActor(rev)}
+                  {rev.externalKey ? ` ・ ${rev.externalKey}` : ""}
                 </p>
                 {fields.length > 0 && (
                   <p className="mt-1 text-xs text-charcoal/50">
