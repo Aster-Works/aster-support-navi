@@ -11,9 +11,9 @@ export function AreaExplorer({ groups, compact = false }: AreaExplorerProps) {
   if (groups.length === 0) return null;
 
   return (
-    <ul className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+    <ul className="grid items-start gap-4 md:grid-cols-2 xl:grid-cols-3">
       {groups.map((group) => (
-        <li key={group.slug} className="aw-card h-full">
+        <li key={group.slug} className="aw-card">
           <div className="flex items-start gap-3">
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-ok-soft text-ok">
               <MapPinned className="h-5 w-5" aria-hidden="true" />

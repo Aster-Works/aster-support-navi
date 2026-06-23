@@ -88,8 +88,15 @@ export default async function HomePage() {
               <Compass className="h-3.5 w-3.5" aria-hidden="true" />
               支援制度ナビ・全国の主要自治体を順次整備中
             </p>
+            {/* 句読点（読点）でのみ改行されるよう、各節を inline-block の塊にする
+               （「見落とさな／い。」のような語中での折り返しを防ぐ）。 */}
             <h1 className="mt-4 text-3xl font-bold leading-tight tracking-tight text-navy sm:text-[42px] sm:leading-[1.2]">
-              {COPY.brandPromise}
+              {COPY.brandPromise.split("、").map((part, i, arr) => (
+                <span key={part} className="inline-block">
+                  {part}
+                  {i < arr.length - 1 ? "、" : ""}
+                </span>
+              ))}
             </h1>
             <p className="mt-5 text-[16px] leading-8 text-charcoal">
               {COPY.tagline}
