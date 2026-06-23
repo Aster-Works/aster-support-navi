@@ -21,6 +21,8 @@ import { Breadcrumbs } from "@/app/components/Breadcrumbs";
 import { SupportCard } from "@/app/components/SupportCard";
 import { JsonLd } from "@/app/components/JsonLd";
 import { Disclaimer } from "@/app/components/Disclaimer";
+import { TrackedLink } from "@/app/components/TrackedLink";
+import { GuideAnalytics } from "@/app/guides/GuideAnalytics";
 import { formatJaDate } from "@/app/lib/dates";
 import { AdSenseUnit } from "@/app/components/AdSenseUnit";
 import { ADSENSE_GUIDE_SLOT, canShowGuideAds } from "@/app/lib/ads";
@@ -80,6 +82,13 @@ export default async function GuideDetailPage({
         .slice(0, 6)
     : [];
 
+  // 生活イベント→比較カテゴリの対応（スラッグが異なる場合のみ明示）。
+  const LIFEEVENT_TO_CATEGORY: Record<string, string> = { hardship: "livelihood" };
+  const compareCategory = guide.relatedLifeEventSlug
+    ? (LIFEEVENT_TO_CATEGORY[guide.relatedLifeEventSlug] ??
+      guide.relatedLifeEventSlug)
+    : undefined;
+
   const crumbs = [
     { name: "ホーム", path: "/" },
     { name: "ガイド", path: "/guides" },
@@ -92,6 +101,7 @@ export default async function GuideDetailPage({
   return (
     <>
       <Breadcrumbs crumbs={crumbs} />
+      <GuideAnalytics guide={guide.slug} />
       <article className="aw-prose-container py-8">
         <p className="aw-eyebrow">{guide.audience}</p>
         <h1 className="mt-2 text-2xl font-bold leading-snug tracking-tight text-navy sm:text-[30px]">
@@ -207,18 +217,17 @@ export default async function GuideDetailPage({
           <p className="mt-1 text-[13px] text-charcoal/70">
             各区の制度ページで、対象・申請方法・公式ページ・最終確認日を確認できます。
           </p>
-          {guide.relatedLifeEventSlug &&
-            catName(guide.relatedLifeEventSlug) && (
-              <p className="mt-2">
-                <Link
-                  href={`/compare/${guide.relatedLifeEventSlug}`}
-                  className="aw-link inline-flex items-center gap-1 text-[13px] font-semibold"
-                >
-                  {catName(guide.relatedLifeEventSlug)}の制度を自治体で比べる
-                  <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
-                </Link>
-              </p>
-            )}
+          {compareCategory && catName(compareCategory) && (
+            <p className="mt-2">
+              <Link
+                href={`/compare/${compareCategory}`}
+                className="aw-link inline-flex items-center gap-1 text-[13px] font-semibold"
+              >
+                {catName(compareCategory)}の制度を自治体で比べる
+                <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+              </Link>
+            </p>
+          )}
           <ul className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {related.map((p) => (
               <li key={p.slug} className="h-full">
@@ -269,10 +278,16 @@ export default async function GuideDetailPage({
           <p className="text-[14px] text-charcoal">
             自分の状況に合う制度を、まとめて確認できます。
           </p>
-          <Link href="/check" className="btn-primary shrink-0">
+          {/* diagnosis_start: ガイド末尾の診断CTA（ガイド→診断のファネル計測）。 */}
+          <TrackedLink
+            href="/check"
+            className="btn-primary shrink-0"
+            eventName="diagnosis_start"
+            eventParams={{ source: "guide_cta" }}
+          >
             <ClipboardCheck className="h-4 w-4" aria-hidden="true" />
             かんたん診断
-          </Link>
+          </TrackedLink>
         </div>
       </section>
 

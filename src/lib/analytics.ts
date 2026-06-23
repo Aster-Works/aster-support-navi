@@ -12,6 +12,8 @@ export type AnalyticsEventName =
   | "pro_view"
   | "stripe_click"
   | "sample_pack_view"
+  // Phase 1/2（SEOコンテンツ）: ガイド記事の閲覧（流入ファネルの入口計測）。
+  | "guide_view"
   // 申請前パック（PDF/印刷）の補助計測。
   | "checklist_viewed"
   | "checklist_printed"
@@ -38,6 +40,8 @@ const ALLOWED_PARAM_KEYS = new Set([
   // サンプル相談パックの識別子。いずれも非PIIの短い列挙値のみ。
   "plan",
   "sample",
+  // ガイド記事の識別子（非PIIの slug）。
+  "guide",
   // Legacy non-PII keys used by checklist/save diagnostics.
   "context",
   "count",
