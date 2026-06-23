@@ -44,25 +44,25 @@ export default function AdminQualityPage() {
 
   return (
     <div>
-      <h1 className="text-xl font-semibold text-navy">品質チェック</h1>
+      <h1 className="text-xl font-semibold text-fg">品質チェック</h1>
       <p className="mt-1 text-sm text-charcoal/70">
         低品質・公式URL不明・公式ソース不明・確認日が古い制度を全ステータスから検出します。
       </p>
       <div className="mt-4 grid gap-3 sm:grid-cols-3">
-        <div className="rounded-xl border border-soft-gray bg-white p-3">
-          <div className="text-2xl font-semibold text-navy">
+        <div className="rounded-xl border border-soft-gray bg-surface p-3">
+          <div className="text-2xl font-semibold text-fg">
             {failing.length}
           </div>
           <div className="text-xs text-charcoal/60">品質issue</div>
         </div>
-        <div className="rounded-xl border border-soft-gray bg-white p-3">
+        <div className="rounded-xl border border-soft-gray bg-surface p-3">
           <div className="text-2xl font-semibold text-amber-800">
             {blocked.length}
           </div>
           <div className="text-xs text-charcoal/60">publishedブロック</div>
         </div>
-        <div className="rounded-xl border border-soft-gray bg-white p-3">
-          <div className="text-2xl font-semibold text-navy">{stale.length}</div>
+        <div className="rounded-xl border border-soft-gray bg-surface p-3">
+          <div className="text-2xl font-semibold text-fg">{stale.length}</div>
           <div className="text-xs text-charcoal/60">91日以上未確認</div>
         </div>
       </div>
@@ -79,7 +79,7 @@ export default function AdminQualityPage() {
               href={`/admin/supports/${p.id}`}
               className="block px-4 py-3 hover:bg-aster-soft/40"
             >
-              <div className="font-medium text-navy">{p.title}</div>
+              <div className="font-medium text-fg">{p.title}</div>
               <div className="text-xs text-charcoal/60">
                 {p.prefectureName} {p.municipalityName}
               </div>
@@ -114,7 +114,7 @@ export default function AdminQualityPage() {
               className="flex items-center justify-between px-4 py-3 hover:bg-aster-soft/40"
             >
               <span className="min-w-0">
-                <span className="block truncate font-medium text-navy">
+                <span className="block truncate font-medium text-fg">
                   {p.title}
                 </span>
                 <span className="block truncate text-xs text-charcoal/60">

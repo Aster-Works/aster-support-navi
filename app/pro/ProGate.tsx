@@ -73,7 +73,7 @@ export function ProGate({ children }: { children: React.ReactNode }) {
           <Briefcase className="h-5 w-5" aria-hidden="true" />
         </span>
         <div>
-          <h1 className="text-lg font-semibold text-navy">
+          <h1 className="text-lg font-semibold text-fg">
             Pro（相談支援現場向け）
           </h1>
           <p className="mt-1 text-sm text-charcoal/70">

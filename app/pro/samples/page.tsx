@@ -35,7 +35,7 @@ export default function SamplePacksIndexPage() {
           {SAMPLE_PACKS.map((s) => (
             <article key={s.slug} className="aw-card flex h-full flex-col">
               <FileText className="h-5 w-5 text-aster" aria-hidden="true" />
-              <h2 className="mt-3 text-base font-bold text-navy">{s.title}</h2>
+              <h2 className="mt-3 text-base font-bold text-fg">{s.title}</h2>
               <p className="mt-2 flex-1 text-[13px] leading-7 text-charcoal/75">
                 {s.audience}
               </p>

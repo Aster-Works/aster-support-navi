@@ -45,7 +45,7 @@ export default function AdminDashboard() {
 
   return (
     <div>
-      <h1 className="text-xl font-semibold text-navy">ダッシュボード</h1>
+      <h1 className="text-xl font-semibold text-fg">ダッシュボード</h1>
       <p className="mt-1 text-sm text-charcoal/70">
         制度データの状態を把握し、下書き→レビュー→公開の運用を進めます。
       </p>
@@ -56,15 +56,15 @@ export default function AdminDashboard() {
             href={c.href}
             className="aw-card aw-card-hover p-4"
           >
-            <div className="text-2xl font-semibold text-navy">{c.value}</div>
+            <div className="text-2xl font-semibold text-fg">{c.value}</div>
             <div className="mt-1 text-sm text-charcoal/70">{c.label}</div>
           </Link>
         ))}
       </div>
 
       <section className="mt-8 grid gap-3 md:grid-cols-2">
-        <div className="rounded-xl border border-soft-gray bg-white p-4">
-          <h2 className="flex items-center gap-2 text-sm font-semibold text-navy">
+        <div className="rounded-xl border border-soft-gray bg-surface p-4">
+          <h2 className="flex items-center gap-2 text-sm font-semibold text-fg">
             <ShieldCheck className="h-4 w-4" aria-hidden="true" />
             ログイン中の権限
           </h2>
@@ -85,9 +85,9 @@ export default function AdminDashboard() {
 
         <Link
           href="/admin/activity"
-          className="rounded-xl border border-soft-gray bg-white p-4 transition-colors hover:bg-aster-soft/40"
+          className="rounded-xl border border-soft-gray bg-surface p-4 transition-colors hover:bg-aster-soft/40"
         >
-          <h2 className="flex items-center gap-2 text-sm font-semibold text-navy">
+          <h2 className="flex items-center gap-2 text-sm font-semibold text-fg">
             <Activity className="h-4 w-4" aria-hidden="true" />
             最近の変更履歴
           </h2>

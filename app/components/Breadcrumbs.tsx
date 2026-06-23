@@ -26,7 +26,7 @@ export function Breadcrumbs({ crumbs }: { crumbs: Crumb[] }) {
                 ) : (
                   <Link
                     href={c.path}
-                    className="rounded transition-colors hover:text-navy hover:underline"
+                    className="rounded transition-colors hover:text-fg hover:underline"
                   >
                     {c.name}
                   </Link>

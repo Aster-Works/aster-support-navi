@@ -7,7 +7,7 @@ export function OperatorInfo() {
   const op = SITE.operator;
   return (
     <section aria-labelledby="operator-heading" className="aw-card mt-8">
-      <h2 id="operator-heading" className="text-base font-bold text-navy">
+      <h2 id="operator-heading" className="text-base font-bold text-fg">
         運営者の表示
       </h2>
       <dl className="mt-4 grid grid-cols-1 gap-x-6 gap-y-3 text-[14px] sm:grid-cols-[12rem_1fr]">

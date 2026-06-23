@@ -121,7 +121,7 @@ export function ApplicationChecklist({
       <ul className="mt-4 space-y-2.5">
         {items.map((it) => (
           <li key={it.id}>
-            <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-soft-gray bg-white p-3 transition-colors hover:border-navy/25">
+            <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-soft-gray bg-surface p-3 transition-colors hover:border-fg/25">
               <input
                 type="checkbox"
                 checked={!!checked[it.id]}
@@ -133,7 +133,7 @@ export function ApplicationChecklist({
                   className={`text-[14px] font-medium ${
                     checked[it.id]
                       ? "text-charcoal/70 line-through"
-                      : "text-navy"
+                      : "text-fg"
                   }`}
                 >
                   {it.label}

@@ -368,7 +368,7 @@ export default function AdminSupportEditPage() {
       <Link href="/admin/supports" className="aw-link inline-flex items-center gap-1 text-sm">
         <ArrowLeft className="h-4 w-4" aria-hidden="true" /> 制度一覧へ
       </Link>
-      <h1 className="mt-2 text-xl font-semibold text-navy">{program.title}</h1>
+      <h1 className="mt-2 text-xl font-semibold text-fg">{program.title}</h1>
       <p className="mt-1 text-sm text-charcoal/60">
         {program.prefectureName} {program.municipalityName} ・ {program.slug} ・
         現在: <span className="font-medium">{program.status}</span>
@@ -553,7 +553,7 @@ export default function AdminSupportEditPage() {
 
       <section className="mt-10">
         <div className="flex items-center justify-between gap-3">
-          <h2 className="flex items-center gap-2 text-base font-semibold text-navy">
+          <h2 className="flex items-center gap-2 text-base font-semibold text-fg">
             <LinkIcon className="h-4 w-4" aria-hidden="true" />
             出典
           </h2>
@@ -577,7 +577,7 @@ export default function AdminSupportEditPage() {
             >
               <span className="flex items-center justify-between gap-3">
                 <span className="min-w-0">
-                  <span className="block truncate font-medium text-navy">
+                  <span className="block truncate font-medium text-fg">
                     {source.title ?? source.url}
                   </span>
                   <span className="block truncate text-xs text-charcoal/60">
@@ -729,7 +729,7 @@ export default function AdminSupportEditPage() {
       </section>
 
       <section className="mt-10">
-        <h2 className="flex items-center gap-2 text-base font-semibold text-navy">
+        <h2 className="flex items-center gap-2 text-base font-semibold text-fg">
           <Inbox className="h-4 w-4" aria-hidden="true" />
           この制度のレビュー項目
         </h2>
@@ -737,7 +737,7 @@ export default function AdminSupportEditPage() {
           {reviewItems.map((it) => (
             <div key={it.id} className="flex items-start gap-3 px-4 py-3">
               <span className="min-w-0 flex-1">
-                <span className="block font-medium text-navy">{it.reason}</span>
+                <span className="block font-medium text-fg">{it.reason}</span>
                 <span className="mt-1 block text-xs text-charcoal/60">
                   優先度 {it.priority} ・ {it.severity}
                   {it.issueCode ? ` ・ ${it.issueCode}` : ""}
@@ -770,7 +770,7 @@ export default function AdminSupportEditPage() {
       </section>
 
       <section className="mt-10">
-        <h2 className="flex items-center gap-2 text-base font-semibold text-navy">
+        <h2 className="flex items-center gap-2 text-base font-semibold text-fg">
           <History className="h-4 w-4" aria-hidden="true" />
           変更履歴
         </h2>
@@ -780,7 +780,7 @@ export default function AdminSupportEditPage() {
             return (
               <div key={rev.id} className="px-4 py-3">
                 <div className="flex items-center justify-between gap-3">
-                  <span className="font-medium text-navy">{rev.changeType}</span>
+                  <span className="font-medium text-fg">{rev.changeType}</span>
                   <span className="shrink-0 text-xs text-charcoal/50">
                     {shortDateTime(rev.createdAt)}
                   </span>

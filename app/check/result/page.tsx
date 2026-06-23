@@ -52,7 +52,7 @@ export default async function CheckResultPage({
   if (!hasAnyAnswer(answers)) {
     return (
       <div className="aw-prose-container py-16 text-center">
-        <h1 className="text-2xl font-bold text-navy">
+        <h1 className="text-2xl font-bold text-fg">
           支援ルートがありません
         </h1>
         <p className="mt-3 text-[15px] text-charcoal">
@@ -178,7 +178,7 @@ export default async function CheckResultPage({
 
         {candidates.length === 0 ? (
           <div className="aw-card mt-8">
-            <p className="text-[15px] font-bold text-navy">
+            <p className="text-[15px] font-bold text-fg">
               支援ルートを作れませんでした
             </p>
             <p className="mt-2 text-[14px] leading-7 text-charcoal">
@@ -214,10 +214,10 @@ export default async function CheckResultPage({
                 return (
                   <article
                     key={step.label}
-                    className="rounded-2xl border border-soft-gray bg-white p-5"
+                    className="rounded-2xl border border-soft-gray bg-surface p-5"
                   >
                     <Icon className="h-5 w-5 text-gold" aria-hidden="true" />
-                    <h2 className="mt-3 text-[15px] font-bold text-navy">
+                    <h2 className="mt-3 text-[15px] font-bold text-fg">
                       {step.label}
                     </h2>
                     <p className="mt-2 text-[13px] leading-7 text-charcoal/80">
@@ -235,7 +235,7 @@ export default async function CheckResultPage({
                     <Map className="h-3.5 w-3.5" aria-hidden="true" />
                     ルート上で確認する制度
                   </p>
-                  <h2 className="mt-2 text-xl font-bold tracking-tight text-navy">
+                  <h2 className="mt-2 text-xl font-bold tracking-tight text-fg">
                     {candidates.length}件を順番に確認します
                   </h2>
                 </div>
@@ -261,7 +261,7 @@ export default async function CheckResultPage({
                             program={program}
                             categoryName={catName(program.categorySlugs[0])}
                           />
-                          <h2 className="mt-2 text-[17px] font-bold text-navy">
+                          <h2 className="mt-2 text-[17px] font-bold text-fg">
                             <Link
                               href={`/supports/${program.slug}`}
                               className="hover:underline"
@@ -340,7 +340,7 @@ export default async function CheckResultPage({
                 <Briefcase className="h-3.5 w-3.5" aria-hidden="true" />
                 支援する人へ
               </p>
-              <h2 className="mt-2 text-[17px] font-bold text-navy">
+              <h2 className="mt-2 text-[17px] font-bold text-fg">
                 相談者に渡す制度確認パックを整えるなら
               </h2>
               <p className="mt-2 text-[13px] leading-7 text-charcoal">

@@ -104,7 +104,7 @@ export default async function GuideDetailPage({
       <GuideAnalytics guide={guide.slug} />
       <article className="aw-prose-container py-8">
         <p className="aw-eyebrow">{guide.audience}</p>
-        <h1 className="mt-2 text-2xl font-bold leading-snug tracking-tight text-navy sm:text-[30px]">
+        <h1 className="mt-2 text-2xl font-bold leading-snug tracking-tight text-fg sm:text-[30px]">
           {guide.title}
         </h1>
         <p className="mt-2 text-[12px] text-charcoal/70">
@@ -120,7 +120,7 @@ export default async function GuideDetailPage({
         <div className="mt-8 space-y-10">
           {guide.sections.map((s) => (
             <section key={s.heading}>
-              <h2 className="text-xl font-bold text-navy">{s.heading}</h2>
+              <h2 className="text-xl font-bold text-fg">{s.heading}</h2>
               {s.body.map((p, i) => (
                 <p
                   key={i}
@@ -152,7 +152,7 @@ export default async function GuideDetailPage({
         {/* つらいときの導線 */}
         {guide.showHelp && (
           <div className="mt-10 aw-callout flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <p className="flex items-center gap-2 text-[14px] font-medium text-navy">
+            <p className="flex items-center gap-2 text-[14px] font-medium text-fg">
               <HeartHandshake className="h-5 w-5 text-aster" aria-hidden="true" />
               ひとりで抱え込まなくて大丈夫です。
             </p>
@@ -165,11 +165,11 @@ export default async function GuideDetailPage({
         {/* FAQ */}
         {guide.faq && guide.faq.length > 0 && (
           <section className="mt-12">
-            <h2 className="text-xl font-bold text-navy">よくある質問</h2>
+            <h2 className="text-xl font-bold text-fg">よくある質問</h2>
             <dl className="mt-5 divide-y divide-soft-gray border-y border-soft-gray">
               {guide.faq.map((f) => (
                 <div key={f.question} className="py-5">
-                  <dt className="text-[15px] font-bold text-navy">
+                  <dt className="text-[15px] font-bold text-fg">
                     {f.question}
                   </dt>
                   <dd className="mt-2 text-[14px] leading-7 text-charcoal">
@@ -185,7 +185,7 @@ export default async function GuideDetailPage({
         {/* 公式の出典 */}
         {guide.sources && guide.sources.length > 0 && (
           <section className="mt-10">
-            <h2 className="text-base font-bold text-navy">参考（公式情報）</h2>
+            <h2 className="text-base font-bold text-fg">参考（公式情報）</h2>
             <ul className="mt-3 space-y-2">
               {guide.sources.map((src) => (
                 <li key={src.url}>
@@ -213,7 +213,7 @@ export default async function GuideDetailPage({
       {/* 関連制度（prose 幅の外で広く） */}
       {related.length > 0 && (
         <section className="aw-container mt-4 pb-6">
-          <h2 className="text-lg font-bold text-navy">この記事に関連する制度</h2>
+          <h2 className="text-lg font-bold text-fg">この記事に関連する制度</h2>
           <p className="mt-1 text-[13px] text-charcoal/70">
             各区の制度ページで、対象・申請方法・公式ページ・最終確認日を確認できます。
           </p>
@@ -245,7 +245,7 @@ export default async function GuideDetailPage({
       {/* 関連ガイド（同じ生活イベントの話題クラスタ） */}
       {relatedGuides.length > 0 && (
         <section className="aw-container mt-4 pb-6">
-          <h2 className="text-lg font-bold text-navy">関連するガイド</h2>
+          <h2 className="text-lg font-bold text-fg">関連するガイド</h2>
           <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {relatedGuides.map((g) => (
               <li key={g.slug}>
@@ -254,10 +254,10 @@ export default async function GuideDetailPage({
                   className="aw-card aw-card-hover group flex h-full items-start gap-2"
                 >
                   <span className="min-w-0">
-                    <span className="block text-[14px] font-bold leading-6 text-navy">
+                    <span className="block text-[14px] font-bold leading-6 text-fg">
                       {g.title}
                     </span>
-                    <span className="mt-1 inline-flex items-center gap-1 text-[12px] font-semibold text-navy/70">
+                    <span className="mt-1 inline-flex items-center gap-1 text-[12px] font-semibold text-fg/70">
                       読む
                       <ArrowRight
                         className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5"

@@ -74,14 +74,14 @@ export default function ProDashboard() {
 
   return (
     <div className="max-w-3xl">
-      <h1 className="text-xl font-semibold text-navy">Pro ダッシュボード</h1>
+      <h1 className="text-xl font-semibold text-fg">Pro ダッシュボード</h1>
       <p className="mt-1 text-sm text-charcoal/70">
         相談者に渡す「相談パック」を作成・印刷できます。支援する人の業務時間を短くするためのツールです。
       </p>
 
       {orgs.length === 0 ? (
         <form onSubmit={onCreateOrg} className="aw-card mt-6 max-w-md space-y-3 p-5">
-          <h2 className="flex items-center gap-2 text-base font-semibold text-navy">
+          <h2 className="flex items-center gap-2 text-base font-semibold text-fg">
             <Building2 className="h-5 w-5 text-aster" aria-hidden="true" />
             まず組織を作成
           </h2>
@@ -195,7 +195,7 @@ function OrgCard({
     <section className="aw-card p-5">
       <div className="flex items-center gap-2">
         <Users className="h-5 w-5 text-aster" aria-hidden="true" />
-        <h2 className="text-base font-semibold text-navy">{org.name}</h2>
+        <h2 className="text-base font-semibold text-fg">{org.name}</h2>
         <span className="aw-badge aw-badge--neutral">{org.role}</span>
         <span className="aw-badge aw-badge--neutral">{org.plan}</span>
       </div>
@@ -287,7 +287,7 @@ function OrgCard({
                   className="flex items-center gap-3 px-4 py-3 hover:bg-aster-soft/40"
                 >
                   <FileText className="h-4 w-4 text-charcoal/50" aria-hidden="true" />
-                  <span className="min-w-0 flex-1 truncate font-medium text-navy">
+                  <span className="min-w-0 flex-1 truncate font-medium text-fg">
                     {p.title}
                   </span>
                   <span className="shrink-0 text-xs text-charcoal/60">

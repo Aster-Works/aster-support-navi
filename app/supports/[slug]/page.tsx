@@ -152,12 +152,12 @@ export default async function SupportDetailPage({
             program={program}
             categoryName={primaryCategory?.name}
           />
-          <h1 className="mt-3 text-2xl font-bold leading-snug tracking-tight text-navy sm:text-3xl">
+          <h1 className="mt-3 text-2xl font-bold leading-snug tracking-tight text-fg sm:text-3xl">
             {program.title}
           </h1>
           <Link
             href={`/${pref.slug}/${muni.slug}`}
-            className="mt-2 inline-flex items-center gap-1 text-[13px] text-charcoal/70 hover:text-navy"
+            className="mt-2 inline-flex items-center gap-1 text-[13px] text-charcoal/70 hover:text-fg"
           >
             <MapPin className="h-4 w-4" aria-hidden="true" />
             {muni.name}
@@ -188,7 +188,7 @@ export default async function SupportDetailPage({
                   <dt className="text-[12px] font-semibold text-charcoal/70">
                     対象となる可能性がある人
                   </dt>
-                  <dd className="mt-0.5 text-[14px] leading-7 text-navy">
+                  <dd className="mt-0.5 text-[14px] leading-7 text-fg">
                     {program.targetPeople.slice(0, 60)}
                     {program.targetPeople.length > 60 ? "…" : ""}
                   </dd>
@@ -197,7 +197,7 @@ export default async function SupportDetailPage({
                   <dt className="text-[12px] font-semibold text-charcoal/70">
                     支援内容
                   </dt>
-                  <dd className="mt-0.5 text-[14px] leading-7 text-navy">
+                  <dd className="mt-0.5 text-[14px] leading-7 text-fg">
                     {program.benefitAmountText
                       ? `${program.benefitAmountText.slice(0, 50)}${
                           program.benefitAmountText.length > 50 ? "…" : ""
@@ -209,7 +209,7 @@ export default async function SupportDetailPage({
                   <dt className="text-[12px] font-semibold text-charcoal/70">
                     申請方法
                   </dt>
-                  <dd className="mt-0.5 text-[14px] leading-7 text-navy">
+                  <dd className="mt-0.5 text-[14px] leading-7 text-fg">
                     {program.onlineApplicationAvailable
                       ? "窓口・郵送・オンラインなど"
                       : "窓口・郵送など"}
@@ -219,7 +219,7 @@ export default async function SupportDetailPage({
                   <dt className="text-[12px] font-semibold text-charcoal/70">
                     申請期限
                   </dt>
-                  <dd className="mt-0.5 text-[14px] leading-7 text-navy">
+                  <dd className="mt-0.5 text-[14px] leading-7 text-fg">
                     {hasActiveDeadline(program) ? "期限の確認が必要" : "公式ページで確認"}
                   </dd>
                 </div>
@@ -354,7 +354,7 @@ export default async function SupportDetailPage({
         {/* 関連制度 */}
         {related.length > 0 && (
           <section className="mt-14">
-            <h2 className="text-lg font-bold text-navy">
+            <h2 className="text-lg font-bold text-fg">
               {muni.name}の関連する制度
             </h2>
             <ul className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

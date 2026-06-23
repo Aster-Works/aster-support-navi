@@ -118,7 +118,7 @@ function ReminderRow({
       <div className="flex items-start justify-between gap-3">
         <Link
           href={`/supports/${reminder.programSlug}`}
-          className="text-[14px] font-medium text-navy hover:underline"
+          className="text-[14px] font-medium text-fg hover:underline"
         >
           {reminder.programTitle ?? reminder.programSlug}
         </Link>

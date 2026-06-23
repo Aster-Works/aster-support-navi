@@ -12,7 +12,7 @@ export function SectionHeading({
   return (
     <div className="max-w-2xl">
       {eyebrow && <p className="aw-eyebrow">{eyebrow}</p>}
-      <As className="mt-2 text-2xl font-bold tracking-tight text-navy sm:text-[28px]">
+      <As className="mt-2 text-2xl font-bold tracking-tight text-fg sm:text-[28px]">
         {title}
       </As>
       {description && (

@@ -80,20 +80,20 @@ export default async function AreaPage() {
             </section>
 
             <section className="rounded-2xl border border-soft-gray bg-cream/45 p-5">
-              <h2 className="flex items-center gap-2 text-sm font-bold text-navy">
+              <h2 className="flex items-center gap-2 text-sm font-bold text-fg">
                 <Building2 className="h-4 w-4 text-gold-ink" aria-hidden="true" />
                 掲載状況
               </h2>
               <dl className="mt-4 grid grid-cols-2 gap-3 text-center">
                 <div>
                   <dt className="text-[11px] text-charcoal/75">都道府県</dt>
-                  <dd className="mt-1 text-2xl font-bold text-navy">
+                  <dd className="mt-1 text-2xl font-bold text-fg">
                     {prefectureCount}
                   </dd>
                 </div>
                 <div>
                   <dt className="text-[11px] text-charcoal/75">自治体</dt>
-                  <dd className="mt-1 text-2xl font-bold text-navy">
+                  <dd className="mt-1 text-2xl font-bold text-fg">
                     {active.length}
                   </dd>
                 </div>

@@ -82,7 +82,7 @@ export function SavedList() {
         {liveRegion}
         <div className="aw-card mt-8">
           <Bookmark className="h-6 w-6 text-gold" aria-hidden="true" />
-          <p className="mt-3 text-[15px] font-bold text-navy">
+          <p className="mt-3 text-[15px] font-bold text-fg">
             保存した制度はまだありません
           </p>
           <p className="mt-2 text-[14px] leading-7 text-charcoal">
@@ -149,7 +149,7 @@ export function SavedList() {
                     </span>
                   )}
                 </div>
-                <h2 className="mt-2 text-[16px] font-bold text-navy">
+                <h2 className="mt-2 text-[16px] font-bold text-fg">
                   <Link href={`/supports/${it.slug}`} className="hover:underline">
                     {it.title}
                   </Link>

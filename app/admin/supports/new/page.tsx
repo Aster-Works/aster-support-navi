@@ -83,7 +83,7 @@ export default function AdminSupportNewPage() {
       <Link href="/admin/supports" className="aw-link inline-flex items-center gap-1 text-sm">
         <ArrowLeft className="h-4 w-4" aria-hidden="true" /> 制度一覧へ
       </Link>
-      <h1 className="mt-2 text-xl font-semibold text-navy">制度を新規作成</h1>
+      <h1 className="mt-2 text-xl font-semibold text-fg">制度を新規作成</h1>
       <p className="mt-1 text-sm text-charcoal/70">
         下書き（draft）として作成します。公開は編集画面で品質ゲートを満たしてから行います。
       </p>

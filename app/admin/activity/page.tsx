@@ -69,7 +69,7 @@ export default function AdminActivityPage() {
 
   return (
     <div>
-      <h1 className="flex items-center gap-2 text-xl font-semibold text-navy">
+      <h1 className="flex items-center gap-2 text-xl font-semibold text-fg">
         <Activity className="h-5 w-5" aria-hidden="true" />
         変更履歴
       </h1>
@@ -77,7 +77,7 @@ export default function AdminActivityPage() {
         revision に残った制度変更を新しい順に表示します。system / ops はバルク移行や手動SQLの記録です。
       </p>
 
-      <div className="mt-6 divide-y divide-soft-gray rounded-xl border border-soft-gray bg-white">
+      <div className="mt-6 divide-y divide-soft-gray rounded-xl border border-soft-gray bg-surface">
         {rows.map((rev) => {
           const fields = changedFieldNames(rev);
           return (
@@ -85,7 +85,7 @@ export default function AdminActivityPage() {
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <Link
                   href={`/admin/supports/${rev.supportProgramId}`}
-                  className="min-w-0 font-medium text-navy hover:underline"
+                  className="min-w-0 font-medium text-fg hover:underline"
                 >
                   {rev.programTitle ?? rev.programSlug ?? rev.supportProgramId}
                 </Link>

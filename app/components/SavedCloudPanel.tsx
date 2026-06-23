@@ -23,7 +23,7 @@ export function SavedCloudPanel() {
     return (
       <div className="aw-card mt-6 bg-aster-soft/40">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <p className="inline-flex items-center gap-2 text-[14px] text-navy">
+          <p className="inline-flex items-center gap-2 text-[14px] text-fg">
             <ShieldCheck className="h-4 w-4 text-ok" aria-hidden="true" />
             <span className="font-bold">{email}</span> で同期中（複数の端末で見返せます）
           </p>
@@ -57,7 +57,7 @@ export function SavedCloudPanel() {
 
   return (
     <div className="aw-card mt-6 bg-aster-soft/40">
-      <p className="inline-flex items-center gap-2 text-[15px] font-bold text-navy">
+      <p className="inline-flex items-center gap-2 text-[15px] font-bold text-fg">
         <Cloud className="h-5 w-5 text-aster" aria-hidden="true" />
         複数の端末で保存リストを同期する（任意）
       </p>
@@ -87,7 +87,7 @@ export function SavedCloudPanel() {
         <span className="h-px flex-1 bg-charcoal/20" />
       </div>
 
-      <div className="mt-3 inline-flex rounded-xl bg-white p-1 text-[13px]">
+      <div className="mt-3 inline-flex rounded-xl bg-surface p-1 text-[13px]">
         <button
           type="button"
           onClick={() => {

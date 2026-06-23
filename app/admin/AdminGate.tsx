@@ -80,7 +80,7 @@ export function AdminGate({ children }: { children: React.ReactNode }) {
           <span className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-50 text-amber-700">
             <Lock className="h-5 w-5" aria-hidden="true" />
           </span>
-          <h1 className="text-lg font-semibold text-navy">
+          <h1 className="text-lg font-semibold text-fg">
             管理者権限がありません
           </h1>
           <p className="mt-2 text-sm text-charcoal/70">
@@ -101,7 +101,7 @@ export function AdminGate({ children }: { children: React.ReactNode }) {
           <ShieldCheck className="h-5 w-5" aria-hidden="true" />
         </span>
         <div>
-          <h1 className="text-lg font-semibold text-navy">管理画面ログイン</h1>
+          <h1 className="text-lg font-semibold text-fg">管理画面ログイン</h1>
           <p className="mt-1 text-sm text-charcoal/70">
             運用担当者向けです。一般の方は利用しません。
           </p>

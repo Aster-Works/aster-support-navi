@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Bookmark, ClipboardCheck, Menu, X } from "lucide-react";
 import { TrackedLink } from "@/app/components/TrackedLink";
+import { ThemeToggle } from "@/app/components/ThemeToggle";
 
 const NAV = [
   { href: "/search", label: "制度を探す" },
@@ -60,13 +61,16 @@ export function PrimaryNav() {
         </ul>
       </nav>
 
+      {/* テーマ切替（全幅で表示・小さなアイコン） */}
+      <ThemeToggle />
+
       {/* 保存（デスクトップはアイコン、モバイルはメニュー内） */}
       <Link
         href="/saved"
         aria-label="保存した制度"
         aria-current={savedActive ? "page" : undefined}
-        className={`hidden h-11 w-11 items-center justify-center rounded-full transition-colors hover:bg-cream/70 hover:text-navy lg:inline-flex ${
-          savedActive ? "bg-cream text-navy" : "text-charcoal"
+        className={`hidden h-11 w-11 items-center justify-center rounded-full transition-colors hover:bg-cream/70 hover:text-fg lg:inline-flex ${
+          savedActive ? "bg-cream text-fg" : "text-charcoal"
         }`}
       >
         <Bookmark className="h-5 w-5" aria-hidden="true" />
@@ -92,7 +96,7 @@ export function PrimaryNav() {
         aria-expanded={open}
         aria-controls={menuId}
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex h-11 w-11 items-center justify-center rounded-full text-navy transition-colors hover:bg-cream/70 lg:hidden"
+        className="inline-flex h-11 w-11 items-center justify-center rounded-full text-fg transition-colors hover:bg-cream/70 lg:hidden"
       >
         {open ? (
           <X className="h-5 w-5" aria-hidden="true" />

@@ -7,7 +7,7 @@ export function RegionBrowse({ groups }: { groups: RegionGroup[] }) {
     <div className="space-y-5">
       {groups.map((g) => (
         <div key={g.slug}>
-          <h3 className="text-[13px] font-bold text-navy">
+          <h3 className="text-[13px] font-bold text-fg">
             <Link href={`/${g.slug}`} className="hover:underline">
               {g.name}
             </Link>

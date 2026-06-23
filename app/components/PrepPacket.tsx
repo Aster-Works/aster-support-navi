@@ -82,7 +82,7 @@ export function PrepPacket({
               <FileDown className="h-3.5 w-3.5" aria-hidden="true" />
               申請前パック
             </p>
-            <h2 className="mt-2 text-xl font-bold tracking-tight text-navy">
+            <h2 className="mt-2 text-xl font-bold tracking-tight text-fg">
               複数制度をまとめて、印刷・PDF保存できます
             </h2>
             <p className="mt-2 text-[14px] leading-7 text-charcoal">
@@ -129,14 +129,14 @@ export function PrepPacket({
           {programs.map((p, index) => (
             <li
               key={p.slug}
-              className="rounded-xl border border-soft-gray bg-white px-4 py-3"
+              className="rounded-xl border border-soft-gray bg-surface px-4 py-3"
             >
               <div className="flex gap-3">
                 <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-navy text-[12px] font-bold text-white">
                   {index + 1}
                 </span>
                 <div className="min-w-0">
-                  <h3 className="text-[14px] font-bold leading-6 text-navy">
+                  <h3 className="text-[14px] font-bold leading-6 text-fg">
                     {p.title}
                   </h3>
                   <p className="mt-1 text-[12px] leading-6 text-charcoal/75">
@@ -163,7 +163,7 @@ export function PrepPacket({
             )}
             <div className="min-w-0">
               {branding?.orgName?.trim() && (
-                <p className="text-[15px] font-bold text-navy">
+                <p className="text-[15px] font-bold text-fg">
                   {branding.orgName.trim()}
                 </p>
               )}
@@ -176,14 +176,14 @@ export function PrepPacket({
             </div>
           </header>
         )}
-        <h1 className="text-xl font-bold text-navy">申請前パック</h1>
-        <h2 className="mt-1 text-lg font-bold text-navy">{heading}</h2>
+        <h1 className="text-xl font-bold text-fg">申請前パック</h1>
+        <h2 className="mt-1 text-lg font-bold text-fg">{heading}</h2>
         <p className="mt-1 text-[12px] text-charcoal/70">
           このパックは支援制度の確認を助けるための整理資料です。対象可否・金額・期限・必要書類は、必ず自治体の公式ページまたは担当窓口で確認してください。
         </p>
 
         <section className="mt-4 break-inside-avoid rounded border border-soft-gray p-3">
-          <h3 className="text-[14px] font-bold text-navy">このパックで行うこと</h3>
+          <h3 className="text-[14px] font-bold text-fg">このパックで行うこと</h3>
           <ol className="mt-2 list-decimal space-y-1 pl-5 text-[12px] leading-6 text-charcoal">
             <li>制度ごとの対象条件を公式ページで確認する</li>
             <li>申請期限・必要書類・申請方法を確認する</li>
@@ -195,7 +195,7 @@ export function PrepPacket({
         <ol className="mt-4 space-y-5">
           {programs.map((p, i) => (
             <li key={p.slug} className="break-inside-avoid border-t border-soft-gray pt-4">
-              <h3 className="text-[15px] font-bold text-navy">
+              <h3 className="text-[15px] font-bold text-fg">
                 {i + 1}. {p.title}（{p.municipalityName}）
               </h3>
               <dl className="mt-2 space-y-1.5 text-[13px] leading-7 text-charcoal">
@@ -217,7 +217,7 @@ export function PrepPacket({
 
         {nextChecks.length > 0 && (
           <section className="mt-6 break-inside-avoid border-t border-soft-gray pt-4">
-            <h3 className="text-[14px] font-bold text-navy">次に確認すること</h3>
+            <h3 className="text-[14px] font-bold text-fg">次に確認すること</h3>
             <ul className="mt-2 list-disc pl-5 text-[13px] leading-7 text-charcoal">
               {nextChecks.map((c) => (
                 <li key={c}>{c}</li>
@@ -237,7 +237,7 @@ function PackSummary({ label, value }: { label: string; value: string }) {
         <ClipboardList className="h-3.5 w-3.5 text-gold" aria-hidden="true" />
         {label}
       </p>
-      <p className="mt-1 text-[16px] font-bold text-navy">{value}</p>
+      <p className="mt-1 text-[16px] font-bold text-fg">{value}</p>
     </div>
   );
 }

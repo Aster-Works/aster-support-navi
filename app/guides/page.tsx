@@ -48,13 +48,13 @@ export default async function GuidesPage() {
                 <p className="mt-3 text-[11px] font-semibold tracking-wide text-charcoal/70">
                   {g.audience}
                 </p>
-                <h2 className="mt-1 text-[17px] font-bold leading-snug text-navy">
+                <h2 className="mt-1 text-[17px] font-bold leading-snug text-fg">
                   {g.title}
                 </h2>
                 <p className="mt-2 flex-1 text-[14px] leading-7 text-charcoal">
                   {g.description}
                 </p>
-                <span className="mt-4 inline-flex items-center gap-1 text-[13px] font-semibold text-navy transition-transform group-hover:translate-x-0.5">
+                <span className="mt-4 inline-flex items-center gap-1 text-[13px] font-semibold text-fg transition-transform group-hover:translate-x-0.5">
                   読む
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />
                 </span>

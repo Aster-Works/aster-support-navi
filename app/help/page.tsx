@@ -33,7 +33,7 @@ function HelplineCard({ item }: { item: Helpline }) {
       <p className="text-[11px] font-semibold tracking-wide text-charcoal/70">
         {item.category}
       </p>
-      <h3 className="mt-1 text-[16px] font-bold text-navy">{item.title}</h3>
+      <h3 className="mt-1 text-[16px] font-bold text-fg">{item.title}</h3>
       <p className="mt-2 text-[14px] leading-7 text-charcoal">
         {item.description}
       </p>
@@ -120,7 +120,7 @@ export default function HelpPage() {
         <div className="mt-10 space-y-12">
           {helplineGroups.map((group) => (
             <section key={group.heading}>
-              <h2 className="text-lg font-bold text-navy">{group.heading}</h2>
+              <h2 className="text-lg font-bold text-fg">{group.heading}</h2>
               {group.intro && (
                 <p className="mt-2 max-w-2xl text-[14px] leading-7 text-charcoal">
                   {group.intro}
@@ -141,7 +141,7 @@ export default function HelpPage() {
         <section className="mt-14">
           <div className="aw-card flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="max-w-xl">
-              <h2 className="text-[15px] font-bold text-navy">
+              <h2 className="text-[15px] font-bold text-fg">
                 使える制度がないか、あわせて確認する
               </h2>
               <p className="mt-1 text-[13px] leading-7 text-charcoal">

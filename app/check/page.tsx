@@ -32,7 +32,7 @@ export default async function CheckPage() {
         <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-aster-soft text-aster">
           <ClipboardCheck className="h-6 w-6" aria-hidden="true" />
         </span>
-        <h1 className="mt-4 text-2xl font-bold tracking-tight text-navy sm:text-3xl">
+        <h1 className="mt-4 text-2xl font-bold tracking-tight text-fg sm:text-3xl">
           かんたん診断
         </h1>
         <p className="mt-3 text-[15px] leading-8 text-charcoal">

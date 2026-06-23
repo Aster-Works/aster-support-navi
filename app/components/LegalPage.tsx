@@ -21,7 +21,7 @@ export function LegalPage({
         ]}
       />
       <div className="aw-prose-container py-10">
-        <h1 className="text-2xl font-bold tracking-tight text-navy sm:text-3xl">
+        <h1 className="text-2xl font-bold tracking-tight text-fg sm:text-3xl">
           {title}
         </h1>
         <p className="mt-2 text-[12px] text-charcoal/70">最終改定日：{updated}</p>

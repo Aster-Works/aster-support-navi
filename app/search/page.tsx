@@ -209,7 +209,7 @@ export default async function SearchPage({
           role="search"
           className="aw-card h-fit lg:sticky lg:top-20"
         >
-          <h2 className="flex items-center gap-2 text-sm font-bold text-navy">
+          <h2 className="flex items-center gap-2 text-sm font-bold text-fg">
             <SlidersHorizontal className="h-4 w-4 text-gold" aria-hidden="true" />
             絞り込み
           </h2>
@@ -429,7 +429,7 @@ export default async function SearchPage({
 
           {total === 0 ? (
             <div className="aw-card mt-4">
-              <p className="text-[15px] font-bold text-navy">
+              <p className="text-[15px] font-bold text-fg">
                 条件に合う制度が見つかりませんでした
               </p>
               <p className="mt-2 text-[14px] leading-7 text-charcoal">

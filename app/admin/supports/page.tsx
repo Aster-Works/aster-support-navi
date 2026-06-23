@@ -57,7 +57,7 @@ export default function AdminSupportsPage() {
   return (
     <div>
       <div className="flex items-center justify-between gap-3">
-        <h1 className="text-xl font-semibold text-navy">制度</h1>
+        <h1 className="text-xl font-semibold text-fg">制度</h1>
         <div className="flex items-center gap-2">
           <Link href="/admin/import" className="btn-secondary">
             CSV取込
@@ -115,7 +115,7 @@ export default function AdminSupportsPage() {
                   className="flex items-center gap-3 px-4 py-3 hover:bg-aster-soft/40"
                 >
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate font-medium text-navy">
+                    <span className="block truncate font-medium text-fg">
                       {p.title}
                     </span>
                     <span className="block truncate text-xs text-charcoal/60">

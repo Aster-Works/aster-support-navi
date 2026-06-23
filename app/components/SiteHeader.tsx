@@ -12,6 +12,7 @@ export function SiteHeader() {
           className="flex min-w-0 items-center rounded-lg"
           aria-label={`${SITE.name} ホーム`}
         >
+          {/* モバイル（全モード）: マーク（アスターの花＝暗背景でも視認可） */}
           <Image
             src="/brand/aster-support-navi-raster-mark-512.png"
             alt=""
@@ -20,14 +21,28 @@ export function SiteHeader() {
             priority
             className="h-10 w-10 object-contain sm:hidden"
           />
+          {/* デスクトップ・ライト: 横ロゴ（navyワードマーク） */}
           <Image
             src="/brand/aster-support-navi-raster-horizontal.png"
             alt=""
             width={1607}
             height={363}
             priority
-            className="hidden h-11 w-auto max-w-[260px] object-contain sm:block"
+            className="hidden h-11 w-auto max-w-[260px] object-contain sm:block dark:sm:hidden"
           />
+          {/* デスクトップ・ダーク: マーク＋明色のテキスト（navyワードマークは暗背景で沈むため） */}
+          <span className="hidden items-center gap-2 dark:sm:flex">
+            <Image
+              src="/brand/aster-support-navi-raster-mark-512.png"
+              alt=""
+              width={512}
+              height={512}
+              className="h-9 w-9 object-contain"
+            />
+            <span className="text-lg font-bold tracking-tight text-fg">
+              {SITE.name}
+            </span>
+          </span>
         </Link>
 
         <PrimaryNav />

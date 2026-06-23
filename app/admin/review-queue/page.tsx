@@ -53,7 +53,7 @@ export default function AdminReviewQueuePage() {
 
   return (
     <div>
-      <h1 className="text-xl font-semibold text-navy">レビューキュー</h1>
+      <h1 className="text-xl font-semibold text-fg">レビューキュー</h1>
       <p className="mt-1 text-sm text-charcoal/70">
         更新確認や差分検知で「要確認」になった制度。確認できたら解決にします。
       </p>
@@ -71,7 +71,7 @@ export default function AdminReviewQueuePage() {
                 {it.programId ? (
                   <Link
                     href={`/admin/supports/${it.programId}`}
-                    className="inline-flex max-w-full items-center gap-1 font-medium text-navy hover:underline"
+                    className="inline-flex max-w-full items-center gap-1 font-medium text-fg hover:underline"
                   >
                     <span className="truncate">
                       {it.programTitle ?? it.programSlug ?? "制度を開く"}
@@ -79,7 +79,7 @@ export default function AdminReviewQueuePage() {
                     <ExternalLink className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
                   </Link>
                 ) : (
-                  <span className="block truncate font-medium text-navy">
+                  <span className="block truncate font-medium text-fg">
                     （制度未指定）
                   </span>
                 )}

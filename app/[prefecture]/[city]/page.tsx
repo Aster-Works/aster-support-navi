@@ -169,11 +169,11 @@ export default async function MunicipalityPage({
                     <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-aster-soft text-aster">
                       <LifeEventIcon name={e.icon} className="h-5 w-5" />
                     </span>
-                    <span className="flex-1 text-[14px] font-bold text-navy">
+                    <span className="flex-1 text-[14px] font-bold text-fg">
                       {e.name}
                     </span>
                     <ArrowRight
-                      className="h-4 w-4 text-charcoal/40 transition-transform group-hover:translate-x-0.5 group-hover:text-navy"
+                      className="h-4 w-4 text-charcoal/40 transition-transform group-hover:translate-x-0.5 group-hover:text-fg"
                       aria-hidden="true"
                     />
                   </Link>
@@ -235,7 +235,7 @@ export default async function MunicipalityPage({
                   <li key={p.slug}>
                     <Link
                       href={`/supports/${p.slug}`}
-                      className="flex items-baseline justify-between gap-3 text-[14px] text-charcoal hover:text-navy"
+                      className="flex items-baseline justify-between gap-3 text-[14px] text-charcoal hover:text-fg"
                     >
                       <span className="font-medium">{p.title}</span>
                       <span className="shrink-0 text-[12px] text-charcoal/70">
@@ -260,7 +260,7 @@ export default async function MunicipalityPage({
                   <li key={p.slug}>
                     <Link
                       href={`/supports/${p.slug}`}
-                      className="text-[14px] font-medium text-charcoal hover:text-navy"
+                      className="text-[14px] font-medium text-charcoal hover:text-fg"
                     >
                       {p.title}
                     </Link>
@@ -277,7 +277,7 @@ export default async function MunicipalityPage({
           <dl className="mt-6 divide-y divide-soft-gray border-y border-soft-gray">
             {faqs.map((f) => (
               <div key={f.question} className="py-5">
-                <dt className="text-[15px] font-bold text-navy">{f.question}</dt>
+                <dt className="text-[15px] font-bold text-fg">{f.question}</dt>
                 <dd className="mt-2 text-[14px] leading-7 text-charcoal">
                   {f.answer}
                 </dd>

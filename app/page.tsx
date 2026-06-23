@@ -90,7 +90,7 @@ export default async function HomePage() {
             </p>
             {/* 句読点（読点）でのみ改行されるよう、各節を inline-block の塊にする
                （「見落とさな／い。」のような語中での折り返しを防ぐ）。 */}
-            <h1 className="mt-4 text-3xl font-bold leading-tight tracking-tight text-navy sm:text-[42px] sm:leading-[1.2]">
+            <h1 className="mt-4 text-3xl font-bold leading-tight tracking-tight text-fg sm:text-[42px] sm:leading-[1.2]">
               {COPY.brandPromise.split("、").map((part, i, arr) => (
                 <span key={part} className="inline-block">
                   {part}
@@ -145,7 +145,7 @@ export default async function HomePage() {
         <div className="mt-6">
           <Link
             href="/area"
-            className="inline-flex items-center gap-1 text-[14px] font-semibold text-navy hover:underline"
+            className="inline-flex items-center gap-1 text-[14px] font-semibold text-fg hover:underline"
           >
             対応エリアをすべて見る
             <ArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -172,11 +172,11 @@ export default async function HomePage() {
                 </span>
                 <span className="flex-1">
                   <span className="flex items-center justify-between">
-                    <span className="text-[15px] font-bold text-navy">
+                    <span className="text-[15px] font-bold text-fg">
                       {e.name}
                     </span>
                     <ArrowRight
-                      className="h-4 w-4 text-charcoal/40 transition-transform group-hover:translate-x-0.5 group-hover:text-navy"
+                      className="h-4 w-4 text-charcoal/40 transition-transform group-hover:translate-x-0.5 group-hover:text-fg"
                       aria-hidden="true"
                     />
                   </span>
@@ -209,7 +209,7 @@ export default async function HomePage() {
         <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2">
           <Link
             href="/guides"
-            className="inline-flex items-center gap-1 text-[14px] font-semibold text-navy hover:underline"
+            className="inline-flex items-center gap-1 text-[14px] font-semibold text-fg hover:underline"
           >
             <BookOpen className="h-4 w-4 text-gold-ink" aria-hidden="true" />
             ガイドで制度のしくみを読む
@@ -217,7 +217,7 @@ export default async function HomePage() {
           </Link>
           <Link
             href="/compare"
-            className="inline-flex items-center gap-1 text-[14px] font-semibold text-navy hover:underline"
+            className="inline-flex items-center gap-1 text-[14px] font-semibold text-fg hover:underline"
           >
             <GitCompare className="h-4 w-4 text-gold-ink" aria-hidden="true" />
             自治体で制度を比べる
@@ -248,7 +248,7 @@ export default async function HomePage() {
           ].map((s) => (
             <div key={s.title} className="aw-card">
               <s.icon className="h-6 w-6 text-gold" aria-hidden="true" />
-              <h3 className="mt-3 text-[15px] font-bold text-navy">{s.title}</h3>
+              <h3 className="mt-3 text-[15px] font-bold text-fg">{s.title}</h3>
               <p className="mt-1.5 text-[13px] leading-7 text-charcoal">
                 {s.body}
               </p>
@@ -259,7 +259,7 @@ export default async function HomePage() {
 
       {/* 診断バンド */}
       <section className="aw-container aw-section-tight">
-        <div className="aw-card flex flex-col items-start gap-5 border-navy/10 bg-navy text-white sm:flex-row sm:items-center sm:justify-between">
+        <div className="aw-card flex flex-col items-start gap-5 border-fg/10 bg-navy text-white sm:flex-row sm:items-center sm:justify-between">
           <div className="max-w-xl">
             <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-gold">
               かんたん診断
@@ -274,7 +274,7 @@ export default async function HomePage() {
           {/* diagnosis_start: ホーム下部の診断CTAをクリックした時に発火。 */}
           <TrackedLink
             href="/check"
-            className="btn-primary shrink-0 bg-gold text-navy hover:bg-gold-soft hover:text-navy"
+            className="btn-primary shrink-0 bg-gold text-fg hover:bg-gold-soft hover:text-fg"
             eventName="diagnosis_start"
             eventParams={{ source: "home_bottom_band" }}
           >
@@ -292,7 +292,7 @@ export default async function HomePage() {
               <Users className="h-3.5 w-3.5" aria-hidden="true" />
               支援する人へ
             </p>
-            <h2 className="mt-2 text-xl font-bold tracking-tight text-navy">
+            <h2 className="mt-2 text-xl font-bold tracking-tight text-fg">
               相談者に渡せる制度確認パックを、数分で整える
             </h2>
             <p className="mt-2 text-[13px] leading-7 text-charcoal">

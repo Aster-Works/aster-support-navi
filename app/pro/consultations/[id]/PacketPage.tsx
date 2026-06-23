@@ -102,7 +102,7 @@ export default function PacketPage() {
       </Link>
 
       <input
-        className="mt-2 w-full border-0 bg-transparent text-xl font-semibold text-navy focus:outline-none focus:ring-0"
+        className="mt-2 w-full border-0 bg-transparent text-xl font-semibold text-fg focus:outline-none focus:ring-0"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         onBlur={saveMeta}
@@ -120,11 +120,11 @@ export default function PacketPage() {
         <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px] text-charcoal/70">
           <span>
             団体名:{" "}
-            <span className="font-medium text-navy">{org?.name ?? "—"}</span>
+            <span className="font-medium text-fg">{org?.name ?? "—"}</span>
           </span>
           <span>
             ロゴ:{" "}
-            <span className="font-medium text-navy">
+            <span className="font-medium text-fg">
               {org?.logoUrl ? "設定済み" : "未設定"}
             </span>
           </span>
@@ -165,7 +165,7 @@ export default function PacketPage() {
             {selected.map((p) => (
               <li key={p.slug} className="flex items-center gap-3 px-4 py-2.5">
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate font-medium text-navy">
+                  <span className="block truncate font-medium text-fg">
                     {p.title}
                   </span>
                   <span className="block truncate text-xs text-charcoal/60">
@@ -245,7 +245,7 @@ export default function PacketPage() {
               return (
                 <li key={p.slug} className="flex items-center gap-3 px-4 py-2.5">
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate font-medium text-navy">
+                    <span className="block truncate font-medium text-fg">
                       {p.title}
                     </span>
                     <span className="block truncate text-xs text-charcoal/60">

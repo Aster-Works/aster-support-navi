@@ -45,7 +45,7 @@ export default async function CompareIndexPage() {
                   <GitCompare className="h-5 w-5" aria-hidden="true" />
                 </span>
                 <span className="flex-1">
-                  <span className="block text-[15px] font-bold text-navy">
+                  <span className="block text-[15px] font-bold text-fg">
                     {c.name}
                   </span>
                   {c.description && (
@@ -55,7 +55,7 @@ export default async function CompareIndexPage() {
                   )}
                 </span>
                 <ArrowRight
-                  className="h-4 w-4 text-charcoal/40 transition-transform group-hover:translate-x-0.5 group-hover:text-navy"
+                  className="h-4 w-4 text-charcoal/40 transition-transform group-hover:translate-x-0.5 group-hover:text-fg"
                   aria-hidden="true"
                 />
               </Link>

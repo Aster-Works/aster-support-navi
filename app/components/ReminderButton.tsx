@@ -36,7 +36,7 @@ export function ReminderButton({
 
   return (
     <div className="rounded-xl border border-soft-gray p-3">
-      <p className="flex items-center gap-1.5 text-[13px] font-semibold text-navy">
+      <p className="flex items-center gap-1.5 text-[13px] font-semibold text-fg">
         <BellRing className="h-4 w-4 text-gold" aria-hidden="true" />
         申請期限をメールで通知
       </p>

@@ -21,7 +21,7 @@ export function SupportCard({
     >
       <ProgramBadges program={program} categoryName={categoryName} />
 
-      <h3 className="mt-3 text-[17px] font-bold leading-snug text-navy">
+      <h3 className="mt-3 text-[17px] font-bold leading-snug text-fg">
         {program.title}
       </h3>
 
@@ -41,7 +41,7 @@ export function SupportCard({
           <ShieldCheck className="h-3.5 w-3.5 text-ok" aria-hidden="true" />
           {formatCheckedAt(program.lastOfficialCheckedAt)}
         </span>
-        <span className="inline-flex items-center gap-1 text-[13px] font-semibold text-navy transition-transform group-hover:translate-x-0.5">
+        <span className="inline-flex items-center gap-1 text-[13px] font-semibold text-fg transition-transform group-hover:translate-x-0.5">
           詳しく見る
           <ArrowRight className="h-4 w-4" aria-hidden="true" />
         </span>

@@ -19,7 +19,7 @@ export function AreaExplorer({ groups, compact = false }: AreaExplorerProps) {
               <MapPinned className="h-5 w-5" aria-hidden="true" />
             </span>
             <div className="min-w-0 flex-1">
-              <h3 className="text-lg font-bold text-navy">{group.name}</h3>
+              <h3 className="text-lg font-bold text-fg">{group.name}</h3>
               <p className="mt-0.5 text-[12px] leading-6 text-charcoal/70">
                 {group.prefectures.length}都道府県・{group.municipalityCount}
                 自治体を掲載中
@@ -32,10 +32,10 @@ export function AreaExplorer({ groups, compact = false }: AreaExplorerProps) {
               <Link
                 key={prefecture.slug}
                 href={`/${prefecture.slug}`}
-                className="group/pref flex min-h-12 items-center justify-between gap-3 rounded-xl border border-soft-gray bg-white px-3.5 py-2.5 text-left transition-colors hover:border-ok/35 hover:bg-ok-soft/35"
+                className="group/pref flex min-h-12 items-center justify-between gap-3 rounded-xl border border-soft-gray bg-surface px-3.5 py-2.5 text-left transition-colors hover:border-ok/35 hover:bg-ok-soft/35"
               >
                 <span className="min-w-0">
-                  <span className="block text-[14px] font-bold leading-6 text-navy">
+                  <span className="block text-[14px] font-bold leading-6 text-fg">
                     {prefecture.name}
                   </span>
                   {!compact && (

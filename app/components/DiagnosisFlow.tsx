@@ -128,7 +128,7 @@ export function DiagnosisFlow({
                 className="aw-input pl-9"
               />
             </div>
-            <div className="mt-3 max-h-80 overflow-auto rounded-xl border border-soft-gray bg-white/70 p-3">
+            <div className="mt-3 max-h-80 overflow-auto rounded-xl border border-soft-gray bg-surface/70 p-3">
               {filteredMunis.length > 0 ? (
                 <div className="flex flex-wrap gap-2">
                   {filteredMunis.map((m) => (
@@ -272,7 +272,7 @@ function Question({
 }) {
   return (
     <div>
-      <h2 className="text-lg font-bold leading-snug text-navy">{title}</h2>
+      <h2 className="text-lg font-bold leading-snug text-fg">{title}</h2>
       <div className="mt-4">{children}</div>
     </div>
   );

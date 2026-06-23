@@ -99,7 +99,7 @@ export default function ProLandingPage() {
               <Briefcase className="h-3.5 w-3.5" aria-hidden="true" />
               相談支援現場向け
             </p>
-            <h1 className="mt-4 text-3xl font-bold leading-tight tracking-tight text-navy sm:text-4xl">
+            <h1 className="mt-4 text-3xl font-bold leading-tight tracking-tight text-fg sm:text-4xl">
               相談者に渡せる制度確認パックを、数分で整える。
             </h1>
             <p className="mt-5 text-[16px] leading-8 text-charcoal">
@@ -141,13 +141,13 @@ export default function ProLandingPage() {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-navy/10 bg-white p-5 shadow-[0_20px_60px_-42px_rgba(13,27,42,0.45)]">
+          <div className="rounded-2xl border border-fg/10 bg-surface p-5 shadow-[0_20px_60px_-42px_rgba(13,27,42,0.45)]">
             <div className="flex items-center justify-between border-b border-soft-gray pb-3">
               <div>
                 <p className="text-xs font-semibold text-gold-ink">
                   相談パック例
                 </p>
-                <h2 className="mt-1 text-base font-bold text-navy">
+                <h2 className="mt-1 text-base font-bold text-fg">
                   出産・子育ての確認資料
                 </h2>
               </div>
@@ -180,7 +180,7 @@ export default function ProLandingPage() {
         <section className="mt-14">
           <div className="max-w-2xl">
             <p className="aw-eyebrow">できること</p>
-            <h2 className="mt-2 text-2xl font-bold tracking-tight text-navy">
+            <h2 className="mt-2 text-2xl font-bold tracking-tight text-fg">
               制度を探すだけで終わらせず、面談後の一歩まで整えます
             </h2>
           </div>
@@ -188,7 +188,7 @@ export default function ProLandingPage() {
             {FEATURES.map(({ icon: Icon, title, body }) => (
               <article key={title} className="aw-card h-full">
                 <Icon className="h-5 w-5 text-aster" aria-hidden="true" />
-                <h3 className="mt-4 text-base font-bold text-navy">{title}</h3>
+                <h3 className="mt-4 text-base font-bold text-fg">{title}</h3>
                 <p className="mt-2 text-sm leading-7 text-charcoal/75">{body}</p>
               </article>
             ))}
@@ -199,7 +199,7 @@ export default function ProLandingPage() {
         <section id="pricing" className="mt-16 scroll-mt-24">
           <div className="max-w-2xl">
             <p className="aw-eyebrow">料金プラン</p>
-            <h2 className="mt-2 text-2xl font-bold tracking-tight text-navy">
+            <h2 className="mt-2 text-2xl font-bold tracking-tight text-fg">
               制度を調べるのは無料。支援する人の道具に課金します
             </h2>
             <p className="mt-3 text-[15px] leading-8 text-charcoal">
@@ -219,7 +219,7 @@ export default function ProLandingPage() {
           <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div className="max-w-2xl">
               <p className="aw-eyebrow">サンプル</p>
-              <h2 className="mt-2 text-2xl font-bold tracking-tight text-navy">
+              <h2 className="mt-2 text-2xl font-bold tracking-tight text-fg">
                 相談パックの仕上がりを見てみる
               </h2>
               <p className="mt-3 text-[15px] leading-8 text-charcoal">
@@ -239,11 +239,11 @@ export default function ProLandingPage() {
                 <span className="aw-badge aw-badge--neutral self-start">
                   サンプル
                 </span>
-                <h3 className="mt-3 text-base font-bold text-navy">{s.title}</h3>
+                <h3 className="mt-3 text-base font-bold text-fg">{s.title}</h3>
                 <p className="mt-2 flex-1 text-[13px] leading-7 text-charcoal/75">
                   {s.audience}
                 </p>
-                <span className="mt-3 inline-flex items-center gap-1 text-[13px] font-semibold text-navy">
+                <span className="mt-3 inline-flex items-center gap-1 text-[13px] font-semibold text-fg">
                   見本を開く
                   <ArrowRight
                     className="h-4 w-4 transition-transform group-hover:translate-x-0.5"
@@ -261,7 +261,7 @@ export default function ProLandingPage() {
               <Users className="h-3.5 w-3.5" aria-hidden="true" />
               想定利用者
             </p>
-            <h2 className="mt-2 text-2xl font-bold tracking-tight text-navy">
+            <h2 className="mt-2 text-2xl font-bold tracking-tight text-fg">
               支援する人のための小さな業務基盤
             </h2>
             <p className="mt-3 text-[15px] leading-8 text-charcoal">
@@ -272,7 +272,7 @@ export default function ProLandingPage() {
             {AUDIENCES.map((audience) => (
               <div
                 key={audience}
-                className="rounded-xl border border-soft-gray bg-white px-4 py-3 text-sm font-medium text-navy"
+                className="rounded-xl border border-soft-gray bg-surface px-4 py-3 text-sm font-medium text-fg"
               >
                 {audience}
               </div>
@@ -283,7 +283,7 @@ export default function ProLandingPage() {
         <section className="mt-14 grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
             <p className="aw-eyebrow">安全な境界</p>
-            <h2 className="mt-2 text-2xl font-bold tracking-tight text-navy">
+            <h2 className="mt-2 text-2xl font-bold tracking-tight text-fg">
               便利さより先に、誤解を生まない設計にします
             </h2>
           </div>
@@ -303,7 +303,7 @@ export default function ProLandingPage() {
         >
           <div>
             <p className="aw-eyebrow">問い合わせ</p>
-            <h2 className="mt-2 text-2xl font-bold tracking-tight text-navy">
+            <h2 className="mt-2 text-2xl font-bold tracking-tight text-fg">
               試用・導入相談
             </h2>
             <p className="mt-3 text-[15px] leading-8 text-charcoal">

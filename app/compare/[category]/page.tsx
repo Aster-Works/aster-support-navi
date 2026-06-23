@@ -135,7 +135,7 @@ export default async function ComparePage({
                   <th scope="row" className="px-4 py-3 font-normal">
                     <Link
                       href={`/supports/${p.slug}`}
-                      className="font-bold text-navy hover:underline"
+                      className="font-bold text-fg hover:underline"
                     >
                       {p.title}
                     </Link>

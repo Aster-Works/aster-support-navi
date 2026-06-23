@@ -84,7 +84,7 @@ export default async function SamplePackPage({
       <main className="aw-container pb-16 pt-10">
         <div className="print:hidden">
           <p className="aw-eyebrow">相談パックの見本</p>
-          <h1 className="mt-2 text-3xl font-bold leading-tight tracking-tight text-navy sm:text-4xl">
+          <h1 className="mt-2 text-3xl font-bold leading-tight tracking-tight text-fg sm:text-4xl">
             {sample.title}
           </h1>
           <p className="mt-2 text-[13px] font-semibold text-gold-ink">

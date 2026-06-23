@@ -91,7 +91,7 @@ export default async function PrefecturePage({
                     className="aw-card aw-card-hover flex items-center gap-3"
                   >
                     <MapPin className="h-5 w-5 text-gold" aria-hidden="true" />
-                    <span className="text-[15px] font-bold text-navy">
+                    <span className="text-[15px] font-bold text-fg">
                       {m.name}
                     </span>
                   </Link>

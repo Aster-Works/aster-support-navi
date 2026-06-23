@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* クラス方式のダークモード（<html class="dark">）。system設定＋手動トグル。 */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* =============================================================
    Aster Support Navi — デザイントークン（Aster Works 規約に準拠）
    出典: /Users/james/syncthing/Astro/aster-works/src/styles/global.css
@@ -14,6 +17,11 @@
   --color-gold: #d4a24c;
   --color-soft-gray: #e6e7e8;
   --color-background: #fafaf8;
+
+  /* セマンティックなサーフェス／前景（ダークモードで反転する核トークン）。
+     ライト値はそれぞれ #fff・navy と一致＝ライト表示は従来と完全に同一。 */
+  --color-surface: #ffffff; /* カード・パネルの面 */
+  --color-fg: #0d1b2a; /* 主要テキスト・見出し（= navy） */
 
   /* 補助トーン（Aster Works 共通） */
   --color-gold-soft: #f3ead7;
@@ -56,11 +64,15 @@
     -webkit-text-size-adjust: 100%;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
+    color-scheme: light;
+  }
+  html.dark {
+    color-scheme: dark;
   }
 
   body {
     background-color: var(--color-background);
-    color: var(--color-navy);
+    color: var(--color-fg);
     line-height: 1.8;
     letter-spacing: 0.01em;
   }
@@ -90,8 +102,52 @@
 
   ::selection {
     background-color: color-mix(in srgb, var(--color-gold) 28%, transparent);
-    color: var(--color-navy);
+    color: var(--color-fg);
   }
+
+  /* ダークモードでは navy ハローが沈むため、明るいハローへ差し替える。 */
+  .dark :focus-visible {
+    box-shadow: 0 0 0 4px color-mix(in srgb, white 16%, transparent);
+  }
+}
+
+/* =============================================================
+   ダークモード（トークン反転）
+   ブランドの navy/gold を反転せず、面=surface・前景=fg・補助トーンを
+   ダーク用に置き換える。アクセント文字色は低照度でAAを満たすよう持ち上げる。
+   ============================================================= */
+.dark {
+  --color-background: #0e1620; /* ページ背景（深い navy-charcoal） */
+  --color-surface: #18222e; /* カード・パネル（一段持ち上げ） */
+  --color-fg: #e9eff6; /* 主要テキスト（やや冷たい白） */
+  --color-charcoal: #b7c2cf; /* 副次テキスト（/70 でもAAを保つ明度） */
+  --color-soft-gray: #2d3a49; /* ボーダー・中立面 */
+  --color-cream: #1d2734; /* 控えめな面・ナビhover */
+  --color-gold-soft: #2a2517; /* ヒーローの放射グラデを暗い暖色に */
+  --color-gold-ink: #d9b876; /* eyebrow 等のラベル＝明るい金 */
+
+  /* セマンティック文字色（ダークで持ち上げ） */
+  --color-online: #54d0bc;
+  --color-deadline: #e2b566;
+  --color-info: #9bb0db;
+  --color-ok: #6bc6a2;
+  --color-aster: #b9a8e1;
+  /* セマンティックの淡い面（低照度のティントへ） */
+  --color-online-soft: #102a27;
+  --color-deadline-soft: #2a2412;
+  --color-info-soft: #182335;
+  --color-ok-soft: #122620;
+  --color-aster-soft: #211d30;
+}
+
+/* ダーク時のコンポーネント微調整 */
+.dark .btn-primary {
+  /* navy ボタンは暗背景で沈むため、ブランドのゴールドCTAにする（高コントラスト）。 */
+  background-color: var(--color-gold);
+  color: #1a1205;
+}
+.dark .btn-primary:hover {
+  background-color: color-mix(in srgb, var(--color-gold) 84%, white);
 }
 
 /* =============================================================
@@ -110,7 +166,7 @@
     @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-medium tracking-wide transition-all duration-200 ease-out bg-navy text-white shadow-sm hover:-translate-y-0.5 hover:bg-ink hover:shadow-md;
   }
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-medium tracking-wide transition-all duration-200 ease-out border border-navy/15 bg-white/70 text-navy hover:border-navy/30 hover:bg-white;
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-medium tracking-wide transition-all duration-200 ease-out border border-fg/15 bg-surface/70 text-fg hover:border-fg/30 hover:bg-surface;
   }
 
   .aw-eyebrow {
@@ -118,7 +174,7 @@
   }
 
   .aw-card {
-    @apply rounded-2xl border border-soft-gray bg-white p-6 shadow-[0_1px_2px_rgba(13,27,42,0.04),0_6px_16px_-10px_rgba(13,27,42,0.10)] transition-all duration-200 ease-out sm:p-7;
+    @apply rounded-2xl border border-soft-gray bg-surface p-6 shadow-[0_1px_2px_rgba(13,27,42,0.04),0_6px_16px_-10px_rgba(13,27,42,0.10)] transition-all duration-200 ease-out sm:p-7;
   }
   .aw-card-hover {
     @apply hover:-translate-y-1 hover:border-gold/40 hover:shadow-[0_18px_40px_-24px_rgba(13,27,42,0.35)];
@@ -155,16 +211,16 @@
 
   /* リンクの下線ホバー（本文中の主要リンク） */
   .aw-link {
-    @apply text-navy underline decoration-gold/50 underline-offset-4 transition-colors hover:decoration-gold;
+    @apply text-fg underline decoration-gold/50 underline-offset-4 transition-colors hover:decoration-gold;
   }
 
   /* フィルター用チップ（選択トグル） */
   .aw-chip {
-    @apply inline-flex min-h-11 items-center gap-1.5 rounded-full border border-soft-gray bg-white px-3.5 py-1.5 text-sm font-medium text-charcoal transition-colors hover:border-navy/30 hover:bg-cream/60;
+    @apply inline-flex min-h-11 items-center gap-1.5 rounded-full border border-soft-gray bg-surface px-3.5 py-1.5 text-sm font-medium text-charcoal transition-colors hover:border-fg/30 hover:bg-cream/60;
   }
   .aw-chip[aria-pressed="true"],
   .aw-chip[data-active="true"] {
-    @apply border-navy bg-navy text-white hover:bg-ink;
+    @apply border-fg bg-navy text-white hover:bg-ink;
   }
 
   /* セクションの縦リズム（ページ全体で統一）。
@@ -179,10 +235,10 @@
   /* ヘッダーのナビリンク（ホバー＋現在地の二重表現）。
      現在地は色だけでなく aria-current="page" でも伝える。 */
   .aw-navlink {
-    @apply inline-flex min-h-11 items-center whitespace-nowrap rounded-full px-3 py-2.5 text-sm font-medium text-charcoal transition-colors hover:bg-cream/70 hover:text-navy;
+    @apply inline-flex min-h-11 items-center whitespace-nowrap rounded-full px-3 py-2.5 text-sm font-medium text-charcoal transition-colors hover:bg-cream/70 hover:text-fg;
   }
   .aw-navlink[aria-current="page"] {
-    @apply bg-cream font-semibold text-navy;
+    @apply bg-cream font-semibold text-fg;
   }
   /* モバイルメニュー内のフル幅リンク行 */
   .aw-navlink--row {
@@ -198,15 +254,15 @@
   /* カード／囲み内の見出し（アイコン＋ラベル）。見出し階層の最下層。
      各ページで text-base/text-[15px] に揺れていたものを text-base に統一。 */
   .aw-card-heading {
-    @apply flex items-center gap-2 text-base font-bold text-navy;
+    @apply flex items-center gap-2 text-base font-bold text-fg;
   }
 
   /* 入力フィールド */
   .aw-input {
-    @apply w-full rounded-xl border border-soft-gray bg-white px-4 py-3 text-[15px] text-navy placeholder:text-charcoal/70 focus:border-navy/40 focus:outline-none focus-visible:outline-2 focus-visible:outline-gold;
+    @apply w-full rounded-xl border border-soft-gray bg-surface px-4 py-3 text-[15px] text-fg placeholder:text-charcoal/70 focus:border-fg/40 focus:outline-none focus-visible:outline-2 focus-visible:outline-gold;
   }
   .aw-select {
-    @apply w-full appearance-none rounded-xl border border-soft-gray bg-white px-4 py-3 pr-10 text-[15px] text-navy focus:border-navy/40 focus:outline-none focus-visible:outline-2 focus-visible:outline-gold;
+    @apply w-full appearance-none rounded-xl border border-soft-gray bg-surface px-4 py-3 pr-10 text-[15px] text-fg focus:border-fg/40 focus:outline-none focus-visible:outline-2 focus-visible:outline-gold;
   }
 
   /* 注意・免責のコールアウト */
@@ -223,10 +279,10 @@
    ============================================================= */
 @layer components {
   .aw-doc :where(h2) {
-    @apply mt-12 mb-3 text-xl font-bold text-navy first:mt-0;
+    @apply mt-12 mb-3 text-xl font-bold text-fg first:mt-0;
   }
   .aw-doc :where(h3) {
-    @apply mt-8 mb-2 text-base font-bold text-navy;
+    @apply mt-8 mb-2 text-base font-bold text-fg;
   }
   .aw-doc :where(p) {
     @apply my-4 text-[15px] leading-8 text-charcoal;
@@ -238,7 +294,7 @@
     @apply my-4 list-decimal space-y-2 pl-5 text-[15px] leading-8 text-charcoal marker:text-gold;
   }
   .aw-doc :where(a) {
-    @apply text-navy underline decoration-gold/50 underline-offset-4 hover:decoration-gold;
+    @apply text-fg underline decoration-gold/50 underline-offset-4 hover:decoration-gold;
   }
 }
 

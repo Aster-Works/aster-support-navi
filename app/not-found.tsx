@@ -5,7 +5,7 @@ export default function NotFound() {
   return (
     <div className="aw-prose-container py-24 text-center">
       <p className="aw-eyebrow justify-center">404</p>
-      <h1 className="mt-3 text-2xl font-bold tracking-tight text-navy sm:text-3xl">
+      <h1 className="mt-3 text-2xl font-bold tracking-tight text-fg sm:text-3xl">
         ページが見つかりませんでした
       </h1>
       <p className="mt-3 text-[15px] leading-8 text-charcoal">

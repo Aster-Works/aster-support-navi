@@ -33,7 +33,7 @@ const COLUMNS: { heading: string; links: { href: string; label: string }[] }[] =
 export function SiteFooter() {
   const year = new Date().getFullYear();
   return (
-    <footer className="mt-20 border-t border-soft-gray bg-white print:hidden">
+    <footer className="mt-20 border-t border-soft-gray bg-surface print:hidden">
       <div className="aw-container py-12">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr]">
           <div>
@@ -42,8 +42,12 @@ export function SiteFooter() {
               alt="Aster Support Navi"
               width={1607}
               height={363}
-              className="h-auto w-[250px] max-w-full object-contain"
+              className="h-auto w-[250px] max-w-full object-contain dark:hidden"
             />
+            {/* ダーク: navyワードマークは沈むため明色テキストで表す */}
+            <span className="hidden text-xl font-bold tracking-tight text-fg dark:block">
+              {SITE.name}
+            </span>
             <p className="mt-4 max-w-sm text-[13px] leading-7 text-charcoal">
               {SITE.tagline}
               <br />
@@ -66,7 +70,7 @@ export function SiteFooter() {
                       // diagnosis_start: フッターの「かんたん診断」リンクをクリックした時に発火。
                       <TrackedLink
                         href={l.href}
-                        className="text-[14px] text-charcoal transition-colors hover:text-navy"
+                        className="text-[14px] text-charcoal transition-colors hover:text-fg"
                         eventName="diagnosis_start"
                         eventParams={{ source: "footer" }}
                       >
@@ -76,7 +80,7 @@ export function SiteFooter() {
                       // pro_interest_click: フッターのPro導線をクリックした時に発火。
                       <TrackedLink
                         href={l.href}
-                        className="text-[14px] text-charcoal transition-colors hover:text-navy"
+                        className="text-[14px] text-charcoal transition-colors hover:text-fg"
                         eventName="pro_interest_click"
                         eventParams={{
                           source: "footer_pro_link",
@@ -88,7 +92,7 @@ export function SiteFooter() {
                     ) : (
                       <Link
                         href={l.href}
-                        className="text-[14px] text-charcoal transition-colors hover:text-navy"
+                        className="text-[14px] text-charcoal transition-colors hover:text-fg"
                       >
                         {l.label}
                       </Link>

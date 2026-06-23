@@ -82,7 +82,7 @@ export default function AdminImportPage() {
 
   return (
     <div className="max-w-3xl">
-      <h1 className="text-xl font-semibold text-navy">CSV 取込</h1>
+      <h1 className="text-xl font-semibold text-fg">CSV 取込</h1>
       <p className="mt-1 text-sm text-charcoal/70">
         制度データを CSV で一括登録・更新します（slug 衝突は更新）。published
         にする行は品質ゲートを満たす必要があります。
@@ -180,7 +180,7 @@ export default function AdminImportPage() {
             <div className="max-h-64 overflow-auto rounded-lg border border-soft-gray text-xs">
               {result.errors.map((e) => (
                 <div key={e.line} className="border-b border-soft-gray px-3 py-2 last:border-0">
-                  <span className="font-medium text-navy">行 {e.line}</span>:{" "}
+                  <span className="font-medium text-fg">行 {e.line}</span>:{" "}
                   <span className="text-amber-700">{e.messages.join(" / ")}</span>
                 </div>
               ))}

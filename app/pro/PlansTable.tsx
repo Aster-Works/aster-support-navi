@@ -29,21 +29,21 @@ function PlanCard({ plan }: { plan: Plan }) {
   const highlighted = !!plan.highlighted;
   return (
     <article
-      className={`relative flex h-full flex-col rounded-2xl border bg-white p-5 ${
+      className={`relative flex h-full flex-col rounded-2xl border bg-surface p-5 ${
         highlighted
           ? "border-gold/60 shadow-[0_24px_60px_-40px_rgba(212,162,76,0.7)] ring-1 ring-gold/40"
           : "border-soft-gray"
       }`}
     >
       {highlighted && (
-        <span className="absolute -top-3 left-5 inline-flex items-center gap-1 rounded-full bg-gold px-2.5 py-1 text-[11px] font-bold text-navy">
+        <span className="absolute -top-3 left-5 inline-flex items-center gap-1 rounded-full bg-gold px-2.5 py-1 text-[11px] font-bold text-fg">
           <Sparkles className="h-3 w-3" aria-hidden="true" />
           おすすめ
         </span>
       )}
 
-      <h3 className="text-lg font-bold text-navy">{plan.name}</h3>
-      <p className="aw-tnum mt-2 text-2xl font-bold tracking-tight text-navy">
+      <h3 className="text-lg font-bold text-fg">{plan.name}</h3>
+      <p className="aw-tnum mt-2 text-2xl font-bold tracking-tight text-fg">
         {formatPlanPrice(plan)}
       </p>
       <p className="mt-2 min-h-[2.5rem] text-[13px] leading-6 text-charcoal/80">
