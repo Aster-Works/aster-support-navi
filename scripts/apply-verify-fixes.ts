@@ -1,6 +1,11 @@
 /**
- * 敵対検証Workflow が出した flagged 配列（{slug, issue, note, suggestedTitle?}）を
- * app/data/programs.ts に適用する。
+ * 【非常用・legacy】敵対検証Workflow が出した flagged 配列を app/data/programs.ts に適用する。
+ *
+ * 現在の正式な制度更新経路は DB / 管理画面 CSV import。app/data/programs.ts は
+ * 緊急退避・ローカル初期データ用の seed であり、通常運用では直接変更しない。
+ * --write は ALLOW_SEED_WRITE=1 が無い限り停止する。
+ *
+ * flagged 配列: {slug, issue, note, suggestedTitle?}
  *   - issue=scope かつ suggestedTitle あり → その制度の title を suggestedTitle に置換（公開維持）。
  *   - それ以外（identity / unreachable / assertion、または suggestedTitle 無しの scope）→ published→draft へ降格。
  *
@@ -12,6 +17,12 @@ import { readFileSync, writeFileSync } from "node:fs";
 const inputPath = process.argv[2];
 const write = process.argv.includes("--write");
 if (!inputPath) throw new Error("usage: tsx apply-verify-fixes.ts <flagged.json> [--write]");
+if (write && process.env.ALLOW_SEED_WRITE !== "1") {
+  throw new Error(
+    "apply-verify-fixes.ts の --write は停止中です。制度修正はDB/管理画面/CSV取込で行ってください。" +
+      "緊急退避として seed を編集する場合のみ ALLOW_SEED_WRITE=1 を明示してください。",
+  );
+}
 
 interface Flag {
   slug: string;

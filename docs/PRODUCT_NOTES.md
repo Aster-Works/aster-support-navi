@@ -6,31 +6,43 @@
 
 ## 何を作ったか
 
-「支援制度版SUUMO」。自治体の個人・世帯向け支援制度を、住所×生活状況から探し、申請準備まで伴走する SEO-first Web Product。MVP は **東京23区 × 出産/子育て**から始め、現在は seed/DB ともに 1372 制度（published 1364 / draft 8）まで拡張済み。
+「支援制度版SUUMO」。自治体の個人・世帯向け支援制度を、住所×生活状況から探し、申請準備まで伴走する SEO-first Web Product。MVP は **東京23区 × 出産/子育て**から始め、現在は Supabase DB を正式な source of truth として 1372 制度（published 1371 / archived 1）まで拡張済み。
 
 ## アーキテクチャ
 
 - Next.js 16 App Router / React 19 / Tailwind v4 / TypeScript。npm、dev/start ポート 3040。
-- データは `app/lib/data`（データアクセス層）経由でのみ読む。**Slice A 以降、実体の読み取りは
-  `SupportRepository`（seed / supabase / hybrid）が担う**。`DATA_SOURCE` を切り替えても、この層の
-  公開 API（= ページ・コンポーネントの呼び出し側）は完全に不変。
+- データは `app/lib/data`（データアクセス層）経由でのみ読む。**正式な制度データの source of truth は
+  Supabase DB**。`SupportRepository` は `supabase` を既定とし、`seed` は緊急退避・ローカル初期データ、
+  `hybrid` は移行検証専用として残す。`DATA_SOURCE` を切り替えても、この層の公開 API
+  （= ページ・コンポーネントの呼び出し側）は完全に不変。
 - 純関数は `app/lib`（`eligibility` 診断マッチ / `dates` 期限 / `slug` / `copy` 文言ガード / `checklist`）。すべて Vitest 網羅。
 
-### Slice A: データ基盤の堅牢化（2026-06-20 実装・公開挙動は seed 既定で不変）
+### Slice A: データ基盤の堅牢化（2026-06-20 実装 / 2026-06-23 DBを正式source of truth化）
 
 - `app/lib/data/repository.ts` … `SupportRepository` interface・`resolveDataSource()`・`getRepository()`。
-- `app/lib/data/seedRepository.ts` … 既定。型付き seed を読む（published は module scope で一度評価）。
+- `app/lib/data/seedRepository.ts` … 緊急退避・ローカル初期データ用。型付き seed を読む（published は module scope で一度評価）。
 - `app/lib/data/supabaseRepository.ts` … Supabase 制度DB（published のみ）を読む `supabaseRepository` と、
-  DB 優先＋seed 補完の `hybridRepository`。接続失敗・env 未設定時は seed へグレースフルフォールバック。
+  DB 優先＋seed 補完の `hybridRepository`。`supabase` モードでは接続失敗・env 未設定時に seed へ
+  自動フォールバックしない。古い制度を出すリスクを避けるため、本番相当ではDB取得失敗をビルド/実行エラーとして扱う。
   Data API の1リクエスト上限を避けるため、published 制度は 1000件単位でページング取得する。
   `mapProgram` / `unionBySlug` / `unionMunicipalities` は純関数として Vitest 網羅。
 - `app/lib/supabase-server.ts` … サーバー専用クライアント（遅延生成・anon 読取・service_role 不使用）。
 - `supabase/migrations/20260620090000_content_schema.sql` … 制度DB全テーブル＋RLS
   （support_programs は published のみ公開 select。sources/revisions/review_queue/app_roles は拒否＝Slice B で管理者ポリシー追加）。
-- `scripts/export-seed-to-sql.ts` … seed→冪等 SQL を生成（`npx tsx`、DB へは書かない）。出力は gitignore。
-- 移行手順: ① migration 適用 → ② 生成 SQL を service_role で投入 → ③ `DATA_SOURCE=hybrid` で検証 → ④ `supabase`。
+- `scripts/export-seed-to-sql.ts` … legacy seed→冪等 SQL を生成（`npx tsx`、DB へは書かない）。出力は gitignore。
+  今後の新規制度追加には使わず、緊急退避seedからDBを復旧する場合のみ使う。
+- 移行手順（完了済み）: ① migration 適用 → ② 生成 SQL を service_role で投入 → ③ `DATA_SOURCE=hybrid` で検証 → ④ `supabase`。
 - 検証: typecheck / Vitest 74件 / lint / build すべて green。多面的レビュー（parity・往復整合・RLS・RSC境界・SQL）＋敵対的検証済み。
-- 本番Supabase（ref atdhkmniczfxowfkzwjr）へ migration 適用＋1372制度投入済（published 1364 / draft 8）。2026-06-23 時点で production `DATA_SOURCE=supabase` へ移行。
+- 本番Supabase（ref atdhkmniczfxowfkzwjr）へ migration 適用＋1372制度投入済。2026-06-23 時点で
+  `DATA_SOURCE=supabase` を正式運用し、published 1371 / archived 1、draft 0、open review queue 0。
+
+### 現行データ運用ルール（2026-06-23 以降）
+
+- **新規制度追加・既存制度更新は、管理画面のCSV取込またはDB運用で行う。**
+- **`app/data/programs.ts` へ新規制度を直接追記しない。** seed は正式データではなく、緊急退避・ローカル初期データ扱い。
+- `scripts/gen-append-programs.ts` と `scripts/apply-verify-fixes.ts --write` は通常停止。非常時のみ `ALLOW_SEED_WRITE=1` を明示して使う。
+- 本番/本番相当の `DATA_SOURCE` は `supabase`。`seed` はDB障害時の手動退避またはSupabase未接続のローカル初期確認のみ。
+- `hybrid` は移行検証専用。本番公開で seed 補完を混ぜない。
 
 ### Slice B: 管理画面・運用基盤（2026-06-20 実装・本番Supabase適用済）
 
@@ -58,9 +70,11 @@
   `private.refresh_content_quality_queue()` は private schema の運用SQL用で、Data API には公開しない。
 - `scripts/export-seed-to-sql.ts` … seed の全 status を Supabase へ載せられるように拡張。
   制度本体、公式出典、seed baseline revision、review queue 候補を冪等SQLとして生成する。DBへは書かない。
-- `scripts/audit-content-quality.ts` / `npm run data:audit` … seedの読み取り専用監査。2026-06-22時点:
-  1372制度（published 1364 / draft 8）、品質issueあり11、公開ブロッカー6、review queue候補11。
-- 本番DB確認（2026-06-23）: `support_programs` 1372、`support_sources` 1372、`support_revisions` 1372、`review_queue_items` 14、orphan source 0。
+- `scripts/audit-content-quality.ts` / `npm run data:audit` … seedの読み取り専用監査。seedは正式データではないが、
+  緊急退避データとして壊れていないか確認する。2026-06-23時点: 1372制度（published 1371 / archived 1）、
+  品質issue 0、公開ブロッカー 0、review queue候補 0。
+- 本番DB確認（2026-06-23）: `support_programs` 1372（published 1371 / archived 1）、open review queue 0、
+  `support_sources.quality_state='needs_review'` 0、active low confidence 0、orphan source 0。
 - Slice F 続き（2026-06-23）: `support_sources` に自動巡回専用メタ（`fetched_content_hash` /
   `last_fetched_at` / `last_fetch_status` / `last_fetch_error` / `last_fetch_changed_at`）を追加。
   `/api/cron/check-sources` を Vercel Cron に登録し、公式URLを少量ずつ取得する。初回は取得hashの
@@ -71,16 +85,16 @@
 
 20政令市はそれまで出産・子育てのみだった。**法令で全市に必ず存在する制度**だけに絞り、ひとり親 / 生活困窮 / 介護 / 障害の4カテゴリへ深掘り（制度の存在は法令で保証＝市ごとに不明なのは公式URL・窓口だけ＝YMYL捏造リスク最小）。
 
-- **研究→敵対検証Workflow**（`scripts/` の `gen-append-programs.ts`／`preview-append-programs.ts` と併用）: (市×カテゴリ) ごとに、研究エージェントが各市公式ドメイン限定 WebSearch→WebFetch で実URL確認・窓口/連絡先抽出、検証エージェントが独立に再WebFetchで scope/到達/断定を再審査。session limit で検証段が一部未了→ research のみの層は curl で全URL HTTP 200 を確認し補完。
-- **多層の捏造防止ゲート**: ①研究WebFetch ②敵対検証WebFetch ③`gen-append` の公式ホスト許可リスト＋`FORBIDDEN_PHRASES`＋`isPublishable`＋slug一意（未達は published→draft 降格） ④`tests/unit/safety.test.ts`（全 published に公式URL/確認日/対象/公的ソースhost/禁止語不在を強制）。
-- **社協ホスト**: 生活福祉資金は各市社協が窓口。`gen-append`/`preview`/`safety.test` に検証済み社協ホストの明示許可（`EXTRA_ALLOWED_HOSTS`＝`csw-kawasaki.or.jp`・`www.with-kobe.or.jp`）を追加。shakyo/syakyo/cosw 含むホストは既存ルールで許可。
+- **研究→敵対検証Workflow（履歴）**: 当時は `scripts/` の `gen-append-programs.ts`／`preview-append-programs.ts` と併用していたが、現在の新規制度追加は管理画面CSV取込またはDB運用へ固定。seed追記スクリプトは非常時のみ `ALLOW_SEED_WRITE=1` で使う。
+- **多層の捏造防止ゲート**: ①研究WebFetch ②敵対検証WebFetch ③公式ホスト許可リスト＋`FORBIDDEN_PHRASES`＋`isPublishable`＋slug一意（未達は published→draft 降格） ④`tests/unit/safety.test.ts`（全 published に公式URL/確認日/対象/公的ソースhost/禁止語不在を強制）。
+- **社協ホスト**: 生活福祉資金は各市社協が窓口。`preview`/`safety.test` に検証済み社協ホストの明示許可（`EXTRA_ALLOWED_HOSTS`＝`csw-kawasaki.or.jp`・`www.with-kobe.or.jp`）を追加。shakyo/syakyo/cosw 含むホストは既存ルールで許可。
 - **取り込み結果**: 制度 829→**1099**（published 1094 / draft 5）。政令市の制度 ~136→**406**（4カテゴリ深掘り）。静的ページ 1247→**1579**。全URL HTTP 200、typecheck/lint/Vitest 94件/build すべて green。**本番デプロイ済（2026-06-21・commit `bf5ea83`・https://astersupport.com で新ページ200・内容描画確認）**。
 - **2回のWorkflow**: ①本体（20市×4カテゴリ。session limit で検証段の大半が未了→研究層＋curl で補完）②取りこぼし補完（熊本/仙台/北九州障害＝前回失敗の9ペア。検証段も完了＝二層検証）。
 - **draft の5件**は研究が公式ページを確認できず自己申告で非公開化。seed には残るが `isPublishable` で描画されない。
 - **lastOfficialCheckedAt = 2026-06-21**。redirect 14件は同一ホストの正規URLへ置換済み。社協3ホスト（csw-kawasaki/with-kobe/kumamoto-city-csw）を検証して `EXTRA_ALLOWED_HOSTS` に追加。
 - **TS2590 対応**: programs.ts が 1099件で「union 型が複雑すぎる」型エラー→ 5チャンク（programs_0..4）に分割し `.concat()` で結合（巨大 seed 配列の定番回避策。今後の拡充でも分割を維持）。
 - **独立検証**: 私（メインループ）の WebFetch 抜き取り 17サンプル（全20市・全4カテゴリ）→ 16完全一致＋1（福岡 障害者手帳が身体のみ）を是正。障害者手帳は15/16がハブページと確認。
-- **要追い（任意・品質向上）**: seed→Supabase 反映（現状は hybrid の seed 補完で公開中＝描画は正常だが admin 編集対象にするなら `export-seed-to-sql` 再生成＋投入）。
+- **DB移行済み**: seed→Supabase 反映は完了。現在はDBが正式source of truthで、`export-seed-to-sql` は緊急復旧・再投入用のlegacy手段に降格。
 
 ### 新データの敵対検証パス（2026-06-21・実施済）
 

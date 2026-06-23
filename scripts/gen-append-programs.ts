@@ -1,7 +1,11 @@
 /**
- * Workflow が出力した制度JSON → app/data/programs.ts へ追記する TS オブジェクトを生成・挿入する。
+ * 【非常用・legacy】旧Workflowが出力した制度JSONを seed 形式へ変換する。
  *
- *   npx tsx scripts/gen-append-programs.ts <programs.json> <fixedCategorySlug>
+ * 現在の正式な制度追加経路は DB / 管理画面 CSV import。app/data/programs.ts は
+ * 緊急退避・ローカル初期データ用の seed であり、新規制度を直接追記しない。
+ * 誤用防止のため、ALLOW_SEED_WRITE=1 が無い限りこのスクリプトは停止する。
+ *
+ *   ALLOW_SEED_WRITE=1 npx tsx scripts/gen-append-programs.ts <programs.json> <fixedCategorySlug>
  *
  * 安全ゲート（公開=published に残す条件。外れたら draft へ降格・ログ）:
  *   - officialUrl が https かつ許可ホスト（lg.jp/go.jp/tokyo.jp/shakyo/syakyo/cosw/city.*）
@@ -9,7 +13,7 @@
  *   - targetPeople と (applicationMethodText|contactName|contactUrl) が揃う（isPublishable）
  *   - slug 一意（既存・バッチ内で重複は skip）
  * uncertainFields は humanizeUncertain が解釈できる正準キーへ寄せる。
- * このスクリプトは programs.ts を編集するだけ。DB へは書かない（別途 export-seed-to-sql）。
+ * このスクリプトは programs.ts を編集するだけ。DB へは書かない。
  */
 import { readFileSync, writeFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";
@@ -21,6 +25,12 @@ const CHECK_DATE = "2026-06-21";
 const inputPath = process.argv[2];
 const fixedCategory = process.argv[3] ?? "livelihood";
 if (!inputPath) throw new Error("usage: tsx gen-append-programs.ts <json> <category>");
+if (process.env.ALLOW_SEED_WRITE !== "1") {
+  throw new Error(
+    "gen-append-programs.ts は停止中です。新規制度は /admin/import のCSV取込またはDB運用で追加してください。" +
+      "緊急退避として seed を編集する場合のみ ALLOW_SEED_WRITE=1 を明示してください。",
+  );
+}
 
 interface InProgram {
   slug: string;

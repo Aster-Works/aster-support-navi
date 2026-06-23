@@ -1,9 +1,9 @@
 /**
  * Supabase 読み取りリポジトリ（公開制度のみ）と hybrid 合成。
  *
- * - `supabaseRepository`: Supabase content schema を読む。env 未設定／接続失敗時は seed へ
- *   グレースフルフォールバック（YMYL サイトの可用性優先）。DB が空（[]）の場合は空を返す
- *   （= 明示的に supabase モードを選んだ場合の正しい状態。hybrid なら seed で補完する）。
+ * - `supabaseRepository`: Supabase content schema を読む。本番の正式 source of truth。
+ *   env 未設定／接続失敗時に seed へは戻らない。DB が使えない状態で静的生成・公開を
+ *   続けると古い制度を出す危険があるため、明示的に失敗させる。
  * - `hybridRepository`: Supabase published を優先し、未登録 slug を seed で補完。
  *   ガイド記事は編集コンテンツのため Slice A では seed のままにする。
  *
@@ -123,6 +123,14 @@ function warnOnce(message: string, error?: unknown) {
   if (warned) return;
   warned = true;
   console.warn(`[supabaseRepository] ${message}`, error ?? "");
+}
+
+function requireSupabaseRows<T>(rows: T[] | null, label: string): T[] {
+  if (rows) return rows;
+  throw new Error(
+    `Supabase ${label} を取得できません。DB が正式な source of truth です。` +
+      "緊急退避またはローカル初期データで seed を使う場合のみ DATA_SOURCE=seed を明示してください。",
+  );
 }
 
 const PROGRAM_PAGE_SIZE = 1000;
@@ -261,34 +269,34 @@ const fetchLifeEvents = cache(async (): Promise<LifeEvent[] | null> => {
   }));
 });
 
-// ---- supabaseRepository（空はそのまま、unavailable は seed フォールバック） -
+// ---- supabaseRepository（DB 正式。unavailable は失敗させる） -------------
 
 export const supabaseRepository: SupportRepository = {
   async getPrefectures() {
-    return (await fetchPrefectures()) ?? seedRepository.getPrefectures();
+    return requireSupabaseRows(await fetchPrefectures(), "prefectures");
   },
   async getMunicipalities() {
-    return (await fetchMunicipalities()) ?? seedRepository.getMunicipalities();
+    return requireSupabaseRows(await fetchMunicipalities(), "municipalities");
   },
   async getCategories() {
-    return (await fetchCategories()) ?? seedRepository.getCategories();
+    return requireSupabaseRows(await fetchCategories(), "categories");
   },
   async getLifeEvents() {
-    return (await fetchLifeEvents()) ?? seedRepository.getLifeEvents();
+    return requireSupabaseRows(await fetchLifeEvents(), "life_events");
   },
   async getGuides(): Promise<Guide[]> {
-    // ガイドは編集コンテンツ。Slice A では制度DBに含めず seed のまま。
+    // ガイドは編集コンテンツ。制度DBの source of truth とは別に静的管理する。
     return seedRepository.getGuides();
   },
   async getPublishedPrograms() {
-    return (
-      (await fetchPublishedPrograms()) ??
-      seedRepository.getPublishedPrograms()
+    return requireSupabaseRows(
+      await fetchPublishedPrograms(),
+      "support_programs",
     );
   },
 };
 
-// ---- hybridRepository（DB 優先 + seed 補完） ------------------------------
+// ---- hybridRepository（移行検証専用。通常運用では使わない） --------------
 
 export function unionBySlug<T extends { slug: string }>(
   db: T[],

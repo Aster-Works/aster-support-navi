@@ -1,5 +1,9 @@
 /**
- * 型付き seed（app/data）→ Supabase content schema 用の冪等 SQL を生成する。
+ * 【legacy / 非常用】型付き seed（app/data）→ Supabase content schema 用の冪等 SQL を生成する。
+ *
+ * 2026-06-23 以降、正式な制度データの source of truth は Supabase DB。
+ * 新規制度追加・既存制度更新は管理画面のCSV取込またはDB運用で行い、
+ * app/data/programs.ts へ直接追記しない。
  *
  * 使い方:
  *   npx tsx scripts/export-seed-to-sql.ts
@@ -13,8 +17,8 @@
  * 安全:
  *   - 本スクリプトは SQL を「生成」するだけで、DB へは一切書き込まない。
  *   - 生成 SQL は upsert / where not exists で冪等。再実行しても重複しない。
- *   - support_programs は seed の status を尊重する。draft もDBへ載せ、review_queue で確認できるようにする。
- *   - 公開挙動は DATA_SOURCE=seed の間は変わらない。投入後 hybrid/supabase に切替えて検証する。
+ *   - support_programs は seed の status を尊重する。緊急退避データからDBを復旧する場合のみ使う。
+ *   - 本番/本番相当の公開挙動は DATA_SOURCE=supabase。hybrid は移行検証専用。
  */
 import { createHash } from "node:crypto";
 import { writeFileSync, mkdirSync } from "node:fs";

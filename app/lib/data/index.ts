@@ -18,8 +18,8 @@ import {
 } from "@/app/lib/data/types";
 
 // ---- リポジトリ読み取り（薄いローダ） -------------------------------------
-// 注意: seed 既定では即値（プロセス内キャッシュ済）。supabase/hybrid では
-// supabaseRepository 側が React cache() で per-request dedupe する。
+// 注意: supabase/hybrid は supabaseRepository 側が React cache() で
+// per-request dedupe する。seed は明示選択時だけ module scope の即値を読む。
 const loadPublished = (): Promise<SupportProgram[]> =>
   getRepository().getPublishedPrograms();
 const loadPrefectures = (): Promise<Prefecture[]> =>

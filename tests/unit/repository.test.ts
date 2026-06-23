@@ -20,14 +20,14 @@ afterEach(() => {
 
 describe("resolveDataSource", () => {
   const cases: [string | undefined, DataSource][] = [
-    [undefined, "seed"],
-    ["", "seed"],
+    [undefined, "supabase"],
+    ["", "supabase"],
     ["seed", "seed"],
     ["supabase", "supabase"],
     ["hybrid", "hybrid"],
     ["SUPABASE", "supabase"],
     ["  Hybrid  ", "hybrid"],
-    ["garbage", "seed"],
+    ["garbage", "supabase"],
   ];
   for (const [value, expected] of cases) {
     it(`${JSON.stringify(value)} → ${expected}`, () => {
@@ -39,13 +39,13 @@ describe("resolveDataSource", () => {
 });
 
 describe("getRepository selection", () => {
-  it("既定は seedRepository（本番の現状＝公開挙動不変）", () => {
+  it("既定は supabaseRepository（DBが正式source of truth）", () => {
     delete process.env.DATA_SOURCE;
-    expect(getRepository()).toBe(seedRepository);
-  });
-  it("supabase / hybrid を選べる", () => {
-    process.env.DATA_SOURCE = "supabase";
     expect(getRepository()).toBe(supabaseRepository);
+  });
+  it("seed / hybrid は明示した場合だけ選べる", () => {
+    process.env.DATA_SOURCE = "seed";
+    expect(getRepository()).toBe(seedRepository);
     process.env.DATA_SOURCE = "hybrid";
     expect(getRepository()).toBe(hybridRepository);
   });
@@ -77,8 +77,8 @@ describe("seedRepository の不変条件", () => {
 });
 
 describe("データ層の委譲（parity）", () => {
-  it("getAllPublishedPrograms() は seedRepository と一致する（既定）", async () => {
-    delete process.env.DATA_SOURCE;
+  it("DATA_SOURCE=seed 明示時は getAllPublishedPrograms() が seedRepository と一致する", async () => {
+    process.env.DATA_SOURCE = "seed";
     const viaIndex = await getAllPublishedPrograms();
     const viaRepo = await seedRepository.getPublishedPrograms();
     expect(viaIndex.map((p) => p.slug)).toEqual(viaRepo.map((p) => p.slug));

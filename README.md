@@ -10,15 +10,17 @@
 
 ## 技術スタック
 
-Next.js 16 (App Router) / React 19 / TypeScript 5 / Tailwind v4 / lucide-react / Vitest / Playwright + axe-core。データは型付き seed（`app/data`）で、`app/lib/data` のデータアクセス層を経由（Supabase へ差し替え可能な設計）。dev/start ポートは **3040**。
+Next.js 16 (App Router) / React 19 / TypeScript 5 / Tailwind v4 / lucide-react / Vitest / Playwright + axe-core。制度データの正式な source of truth は Supabase DB で、公開面は `app/lib/data` のデータアクセス層を経由して読む。`app/data` の型付き seed は緊急退避・ローカル初期データ用。dev/start ポートは **3040**。
 
 ## セットアップ
 
 ```bash
 npm install
-cp .env.example .env.local   # 何も設定しなくても seed で完全動作（任意）
+cp .env.example .env.local   # 本番相当は DATA_SOURCE=supabase
 npm run dev                  # http://localhost:3040
 ```
+
+ローカルでSupabaseに接続しない初期確認だけを行う場合は `DATA_SOURCE=seed` を明示する。新規制度追加・更新は `app/data/programs.ts` へ直接追記せず、管理画面のCSV取込またはDB運用で行う。
 
 ## 品質ゲート
 
@@ -48,8 +50,8 @@ app/
   sitemap.ts  robots.ts  opengraph-image.tsx
   components/                      UIプリミティブ・各部品
   lib/                             純関数（eligibility/dates/slug/copy/checklist/saved/seo）
-  lib/data/                        データアクセス層（型＋seedリポジトリ）
-  data/                            seed（制度・自治体・カテゴリ・生活イベント・ガイド・相談窓口）
+  lib/data/                        データアクセス層（Supabase DB 正式 / seed は明示時のみ）
+  data/                            seed（緊急退避・ローカル初期データ、ガイド・相談窓口等）
 ```
 
 ## 不変条件（YMYL・最優先）

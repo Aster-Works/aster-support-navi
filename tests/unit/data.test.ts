@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { afterAll, beforeAll, describe, it, expect } from "vitest";
 import {
   applyFilters,
   getActiveMunicipalities,
@@ -8,6 +8,17 @@ import {
   getAllPublishedPrograms,
   getProgram,
 } from "@/app/lib/data";
+
+const ORIGINAL_DATA_SOURCE = process.env.DATA_SOURCE;
+
+beforeAll(() => {
+  process.env.DATA_SOURCE = "seed";
+});
+
+afterAll(() => {
+  if (ORIGINAL_DATA_SOURCE === undefined) delete process.env.DATA_SOURCE;
+  else process.env.DATA_SOURCE = ORIGINAL_DATA_SOURCE;
+});
 
 describe("applyFilters", () => {
   it("自治体・カテゴリ・オンライン・キーワードで絞り込む", async () => {

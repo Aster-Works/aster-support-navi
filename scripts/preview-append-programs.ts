@@ -1,7 +1,9 @@
 /**
- * 生成された制度JSON（{ programs: [...] }）を programs.ts に追記する「前」に、
- * 読み取り専用で品質を監査する。何も書き換えない。gen-append-programs.ts と同じ安全ゲートを再現し、
- * 公開（published）に残る件数・draft降格理由・slug衝突・公式ホスト分布・officialUrl一覧を出す。
+ * 【legacy / 読み取り専用】生成された制度JSON（{ programs: [...] }）を旧seed形式で
+ * 監査する。何も書き換えない。
+ *
+ * 現在の正式な制度追加経路は DB / 管理画面 CSV import。app/data/programs.ts へ
+ * 直接追記しない。このスクリプトは過去データや非常時seed作業の品質確認用に残す。
  *
  *   npx tsx scripts/preview-append-programs.ts <programs.json> [fixedCategorySlug]
  */
