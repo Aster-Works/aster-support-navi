@@ -3,10 +3,19 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Loader2, Plus, Users, FileText, Building2 } from "lucide-react";
+import {
+  Loader2,
+  Plus,
+  Users,
+  FileText,
+  Building2,
+  Image as ImageIcon,
+  Save,
+} from "lucide-react";
 import {
   getMyOrganizations,
   createOrganization,
+  updateOrganization,
   listPackets,
   createPacket,
   type Organization,
@@ -145,12 +154,29 @@ function OrgCard({
 }) {
   const [packets, setPackets] = useState<Packet[] | null>(null);
   const [title, setTitle] = useState("");
+  const [showBrand, setShowBrand] = useState(false);
+  const [orgName, setOrgName] = useState(org.name);
+  const [logoUrl, setLogoUrl] = useState(org.logoUrl ?? "");
+  const [brandMsg, setBrandMsg] = useState<string | null>(null);
 
   useEffect(() => {
     listPackets(org.id)
       .then(setPackets)
       .catch((e) => setError(String(e.message ?? e)));
   }, [org.id, setError]);
+
+  const saveBrand = (e: React.FormEvent) => {
+    e.preventDefault();
+    setBusy(true);
+    setBrandMsg(null);
+    updateOrganization(org.id, {
+      name: orgName.trim() || org.name,
+      logo_url: logoUrl.trim() || null,
+    })
+      .then(() => setBrandMsg("保存しました。反映には団体名・ロゴが各PDFに差し込まれます。"))
+      .catch((e) => setBrandMsg(String((e as Error).message ?? e)))
+      .finally(() => setBusy(false));
+  };
 
   const onCreatePacket = (e: React.FormEvent) => {
     e.preventDefault();
@@ -173,6 +199,63 @@ function OrgCard({
         <span className="aw-badge aw-badge--neutral">{org.role}</span>
         <span className="aw-badge aw-badge--neutral">{org.plan}</span>
       </div>
+
+      {(org.role === "owner" || org.role === "admin") && (
+        <div className="mt-3">
+          <button
+            type="button"
+            onClick={() => setShowBrand((v) => !v)}
+            className="aw-link inline-flex items-center gap-1 text-[13px]"
+          >
+            <ImageIcon className="h-3.5 w-3.5" aria-hidden="true" />
+            団体名・ロゴ（PDFに差込）{showBrand ? "を閉じる" : "を設定"}
+          </button>
+          {showBrand && (
+            <form
+              onSubmit={saveBrand}
+              className="mt-3 space-y-3 rounded-xl border border-soft-gray bg-cream/30 p-4"
+            >
+              <label className="block text-sm">
+                <span className="mb-1 block text-charcoal/80">団体名</span>
+                <input
+                  className="aw-input w-full max-w-md"
+                  value={orgName}
+                  onChange={(e) => setOrgName(e.target.value)}
+                />
+              </label>
+              <label className="block text-sm">
+                <span className="mb-1 block text-charcoal/80">
+                  ロゴ画像URL（https://…）
+                </span>
+                <input
+                  className="aw-input w-full max-w-md"
+                  value={logoUrl}
+                  onChange={(e) => setLogoUrl(e.target.value)}
+                  placeholder="https://example.org/logo.png"
+                  inputMode="url"
+                />
+              </label>
+              {/^https?:\/\//i.test(logoUrl.trim()) && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={logoUrl.trim()}
+                  alt=""
+                  className="h-10 w-auto max-w-[160px] object-contain"
+                />
+              )}
+              <div className="flex items-center gap-3">
+                <button type="submit" disabled={busy} className="btn-secondary">
+                  <Save className="h-4 w-4" aria-hidden="true" />
+                  保存
+                </button>
+                {brandMsg && (
+                  <span className="text-[12px] text-charcoal/70">{brandMsg}</span>
+                )}
+              </div>
+            </form>
+          )}
+        </div>
+      )}
 
       <form onSubmit={onCreatePacket} className="mt-4 flex flex-wrap gap-2">
         <input

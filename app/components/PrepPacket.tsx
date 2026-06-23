@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ClipboardList, FileDown, Printer } from "lucide-react";
 import { trackEvent } from "@/src/lib/analytics";
 
@@ -18,6 +18,24 @@ export interface PrepProgram {
   officialUrl: string;
 }
 
+/** 印刷PDFに差し込むブランド情報（Personal=担当者名 / Pro=団体名・ロゴ）。 */
+export interface PacketBranding {
+  orgName?: string;
+  preparedBy?: string;
+  logoUrl?: string;
+}
+
+/** ロゴURLは http(s) のみ許可（任意入力の安全側ガード）。 */
+export function isHttpUrl(u: string | undefined): u is string {
+  if (!u) return false;
+  return /^https?:\/\//i.test(u.trim());
+}
+
+/** ブランド差込（団体名・担当者名・ロゴのいずれか）があるか。 */
+export function hasBranding(b: PacketBranding | undefined): b is PacketBranding {
+  return !!b && (!!b.orgName?.trim() || !!b.preparedBy?.trim() || isHttpUrl(b.logoUrl));
+}
+
 /**
  * 複数制度をまとめた「申請前パック」。
  * 画面では内容の概要を見せ、印刷時はPDF保存しやすい詳細パケットへ切り替える。
@@ -28,18 +46,31 @@ export function PrepPacket({
   heading,
   nextChecks = [],
   context,
+  branding,
 }: {
   programs: PrepProgram[];
   heading: string;
   nextChecks?: string[];
   context: string;
+  branding?: PacketBranding;
 }) {
+  // 作成日はクライアントで決める（SSR と一致させるため初期値は空にして mount 後に埋める）。
+  // set-state-in-effect を避けるためマイクロタスク内で更新する（リポジトリ規約）。
+  const [printedOn, setPrintedOn] = useState("");
+  useEffect(() => {
+    Promise.resolve().then(() =>
+      setPrintedOn(new Date().toLocaleDateString("ja-JP")),
+    );
+  }, []);
+
   // 申請前パック表示の補助計測。diagnosis_complete は結果ページ側で発火する。
   useEffect(() => {
     trackEvent("checklist_viewed", { context, count: programs.length });
   }, [context, programs.length]);
 
   if (programs.length === 0) return null;
+
+  const showBranding = hasBranding(branding);
 
   return (
     <>
@@ -58,6 +89,16 @@ export function PrepPacket({
               支援ルートに出てきた制度を、公式確認・必要書類・問い合わせ先まで1つの資料にまとめます。
               役所や支援者に相談する前の整理用として使えます。
             </p>
+            {showBranding && (
+              <p className="mt-3 inline-flex flex-wrap items-center gap-x-2 gap-y-1 rounded-lg bg-cream/60 px-3 py-2 text-[12px] text-charcoal/80">
+                <span className="font-semibold text-gold-ink">PDFに差込:</span>
+                {isHttpUrl(branding?.logoUrl) && <span>ロゴ</span>}
+                {branding?.orgName?.trim() && <span>{branding.orgName.trim()}</span>}
+                {branding?.preparedBy?.trim() && (
+                  <span>担当 {branding.preparedBy.trim()}</span>
+                )}
+              </p>
+            )}
           </div>
           <button
             type="button"
@@ -110,6 +151,31 @@ export function PrepPacket({
 
       {/* 印刷用：詳細パケット（画面では非表示） */}
       <div className="hidden print:block">
+        {showBranding && (
+          <header className="mb-3 flex items-center gap-3 border-b border-soft-gray pb-3">
+            {isHttpUrl(branding?.logoUrl) && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={branding!.logoUrl}
+                alt=""
+                className="h-12 w-auto max-w-[160px] object-contain"
+              />
+            )}
+            <div className="min-w-0">
+              {branding?.orgName?.trim() && (
+                <p className="text-[15px] font-bold text-navy">
+                  {branding.orgName.trim()}
+                </p>
+              )}
+              <p className="text-[11px] text-charcoal/70">
+                {branding?.preparedBy?.trim() && (
+                  <span>担当: {branding.preparedBy.trim()}　</span>
+                )}
+                {printedOn && <span>作成日: {printedOn}</span>}
+              </p>
+            </div>
+          </header>
+        )}
         <h1 className="text-xl font-bold text-navy">申請前パック</h1>
         <h2 className="mt-1 text-lg font-bold text-navy">{heading}</h2>
         <p className="mt-1 text-[12px] text-charcoal/70">

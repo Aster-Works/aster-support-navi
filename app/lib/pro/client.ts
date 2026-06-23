@@ -18,6 +18,7 @@ export interface Organization {
   organizationType: string;
   plan: string;
   role: string; // 自分の役割
+  logoUrl?: string | null; // 団体ロゴ（印刷PDFのブランド差込）
 }
 
 export interface Packet {
@@ -28,6 +29,7 @@ export interface Packet {
   municipalitySlug?: string | null;
   selectedProgramSlugs: string[];
   notes?: string | null;
+  preparedBy?: string | null; // 担当者名（印刷PDFのブランド差込）
   status: string;
   updatedAt?: string | null;
 }
@@ -100,7 +102,9 @@ export async function getMyOrganizations(): Promise<Organization[]> {
   if (!auth.user) return [];
   const { data, error } = await sb
     .from("organization_members")
-    .select("role, organizations!inner ( id, name, organization_type, plan )")
+    .select(
+      "role, organizations!inner ( id, name, organization_type, plan, logo_url )",
+    )
     .eq("user_id", auth.user.id);
   if (error) throw new Error(error.message);
   type Row = {
@@ -110,6 +114,7 @@ export async function getMyOrganizations(): Promise<Organization[]> {
       name: string;
       organization_type: string;
       plan: string;
+      logo_url: string | null;
     } | null;
   };
   return (data as unknown as Row[])
@@ -120,6 +125,7 @@ export async function getMyOrganizations(): Promise<Organization[]> {
       organizationType: r.organizations!.organization_type,
       plan: r.organizations!.plan,
       role: r.role,
+      logoUrl: r.organizations!.logo_url,
     }));
 }
 
@@ -135,6 +141,18 @@ export async function createOrganization(
   return data as string;
 }
 
+/** 団体名・ロゴの更新（owner/admin のみ・RLS で強制）。 */
+export async function updateOrganization(
+  id: string,
+  patch: Partial<{ name: string; logo_url: string | null }>,
+): Promise<void> {
+  const { error } = await client()
+    .from("organizations")
+    .update(patch)
+    .eq("id", id);
+  if (error) throw new Error(error.message);
+}
+
 // ---- 相談パック ------------------------------------------------------------
 type PacketRow = {
   id: string;
@@ -144,6 +162,7 @@ type PacketRow = {
   municipality_slug: string | null;
   selected_program_slugs: string[] | null;
   notes: string | null;
+  prepared_by: string | null;
   status: string;
   updated_at: string | null;
 };
@@ -157,17 +176,19 @@ function mapPacket(r: PacketRow): Packet {
     municipalitySlug: r.municipality_slug,
     selectedProgramSlugs: r.selected_program_slugs ?? [],
     notes: r.notes,
+    preparedBy: r.prepared_by,
     status: r.status,
     updatedAt: r.updated_at,
   };
 }
 
+const PACKET_SELECT =
+  "id, organization_id, title, prefecture_slug, municipality_slug, selected_program_slugs, notes, prepared_by, status, updated_at";
+
 export async function listPackets(organizationId: string): Promise<Packet[]> {
   const { data, error } = await client()
     .from("consultation_packets")
-    .select(
-      "id, organization_id, title, prefecture_slug, municipality_slug, selected_program_slugs, notes, status, updated_at",
-    )
+    .select(PACKET_SELECT)
     .eq("organization_id", organizationId)
     .order("updated_at", { ascending: false });
   if (error) throw new Error(error.message);
@@ -197,9 +218,7 @@ export async function createPacket(
 export async function getPacket(id: string): Promise<Packet | null> {
   const { data, error } = await client()
     .from("consultation_packets")
-    .select(
-      "id, organization_id, title, prefecture_slug, municipality_slug, selected_program_slugs, notes, status, updated_at",
-    )
+    .select(PACKET_SELECT)
     .eq("id", id)
     .maybeSingle();
   if (error) throw new Error(error.message);
@@ -211,6 +230,7 @@ export async function updatePacket(
   patch: Partial<{
     title: string;
     notes: string | null;
+    prepared_by: string | null;
     selected_program_slugs: string[];
     status: string;
   }>,

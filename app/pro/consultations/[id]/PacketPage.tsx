@@ -5,10 +5,12 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { Loader2, ArrowLeft, Search, Plus, X, Save } from "lucide-react";
 import {
+  getMyOrganizations,
   getPacket,
   getProgramsBySlugs,
   searchPublished,
   updatePacket,
+  type Organization,
   type Packet,
   type ProProgram,
 } from "@/app/lib/pro/client";
@@ -18,10 +20,12 @@ export default function PacketPage() {
   const params = useParams<{ id: string }>();
   const id = params.id;
   const [packet, setPacket] = useState<Packet | null>(null);
+  const [org, setOrg] = useState<Organization | null>(null);
   const [selected, setSelected] = useState<ProProgram[]>([]);
   const [loading, setLoading] = useState(true);
   const [title, setTitle] = useState("");
   const [notes, setNotes] = useState("");
+  const [preparedBy, setPreparedBy] = useState("");
   const [q, setQ] = useState("");
   const [results, setResults] = useState<ProProgram[]>([]);
   const [searching, setSearching] = useState(false);
@@ -34,7 +38,11 @@ export default function PacketPage() {
         if (p) {
           setTitle(p.title);
           setNotes(p.notes ?? "");
+          setPreparedBy(p.preparedBy ?? "");
           setSelected(await getProgramsBySlugs(p.selectedProgramSlugs));
+          // 印刷PDFのブランド差込に使う団体名・ロゴを取得する。
+          const orgs = await getMyOrganizations();
+          setOrg(orgs.find((o) => o.id === p.organizationId) ?? null);
         }
       })
       .catch((e) => setMsg({ ok: false, text: String((e as Error).message ?? e) }))
@@ -67,7 +75,11 @@ export default function PacketPage() {
   };
 
   const saveMeta = () => {
-    updatePacket(id, { title: title.trim() || packet?.title || "相談パック", notes })
+    updatePacket(id, {
+      title: title.trim() || packet?.title || "相談パック",
+      notes,
+      prepared_by: preparedBy.trim() || null,
+    })
       .then(() => setMsg({ ok: true, text: "保存しました。" }))
       .catch((e) => setMsg({ ok: false, text: String((e as Error).message ?? e) }));
   };
@@ -99,6 +111,41 @@ export default function PacketPage() {
       <p className="text-[12px] text-charcoal/60">
         {selected.length} 制度 ・ 相談者の機微情報（氏名・住所・収入・病名など）は入れないでください
       </p>
+
+      {/* ブランド差込（印刷PDF用）：団体名・ロゴ＋担当者名 */}
+      <section className="mt-4 rounded-xl border border-soft-gray bg-cream/30 p-4 print:hidden">
+        <h2 className="text-[13px] font-semibold text-charcoal/80">
+          PDFに差し込む情報
+        </h2>
+        <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px] text-charcoal/70">
+          <span>
+            団体名:{" "}
+            <span className="font-medium text-navy">{org?.name ?? "—"}</span>
+          </span>
+          <span>
+            ロゴ:{" "}
+            <span className="font-medium text-navy">
+              {org?.logoUrl ? "設定済み" : "未設定"}
+            </span>
+          </span>
+          <Link href="/pro/dashboard" className="aw-link">
+            団体名・ロゴを変更
+          </Link>
+        </div>
+        <label className="mt-3 block text-sm">
+          <span className="mb-1 block font-medium text-charcoal/80">
+            担当者名（任意・PDFに表示）
+          </span>
+          <input
+            className="aw-input w-full max-w-xs"
+            value={preparedBy}
+            onChange={(e) => setPreparedBy(e.target.value)}
+            onBlur={saveMeta}
+            placeholder="例：山田 太郎"
+            aria-label="担当者名"
+          />
+        </label>
+      </section>
 
       {msg && (
         <p className={`mt-2 text-sm ${msg.ok ? "text-green-700" : "text-red-600"}`}>
@@ -144,6 +191,11 @@ export default function PacketPage() {
         programs={prepPrograms}
         heading={title || packet.title}
         context="pro"
+        branding={{
+          orgName: org?.name,
+          preparedBy,
+          logoUrl: org?.logoUrl ?? undefined,
+        }}
       />
 
       {/* メモ */}

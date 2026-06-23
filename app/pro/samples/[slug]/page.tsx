@@ -101,12 +101,16 @@ export default async function SamplePackPage({
           </p>
         </div>
 
-        {/* 印刷・PDF保存できる相談パック本体 */}
+        {/* 印刷・PDF保存できる相談パック本体（団体名・担当者の差込は見本表示） */}
         <PrepPacket
           programs={prepPrograms}
           heading={sample.title}
           nextChecks={sample.nextChecks}
           context="pro_sample"
+          branding={{
+            orgName: "◯◯支援センター（見本）",
+            preparedBy: "相談担当",
+          }}
         />
 
         {/* 自分の地域・状況で作る導線 */}
