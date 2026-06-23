@@ -26,7 +26,6 @@ import { track } from "@/app/lib/track";
 const ORG_TYPES: { value: string; label: string }[] = [
   { value: "support_group", label: "支援団体・相談" },
   { value: "npo", label: "NPO" },
-  { value: "church", label: "教会" },
   { value: "school", label: "学校・フリースクール" },
   { value: "professional", label: "士業（行政書士・社労士等）" },
   { value: "company", label: "企業・その他" },

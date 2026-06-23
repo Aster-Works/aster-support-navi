@@ -344,7 +344,7 @@ export default async function CheckResultPage({
                 相談者に渡す制度確認パックを整えるなら
               </h2>
               <p className="mt-2 text-[13px] leading-7 text-charcoal">
-                この申請前パックは無料で印刷・PDF保存できます。教会・子ども食堂・NPO・相談員の方には、名前やロゴ入りの資料・テンプレート・履歴が使える Pro もあります。
+                この申請前パックは無料で印刷・PDF保存できます。子ども食堂・NPO・相談員の方には、名前やロゴ入りの資料・テンプレート・履歴が使える Pro もあります。
               </p>
             </div>
             {/* pro_interest_click: 診断結果からPro案内へ。 */}

@@ -53,7 +53,7 @@ export const PLANS: readonly Plan[] = [
     id: "personal",
     name: "Personal",
     priceMonthly: 2980,
-    audience: "牧師・FP・個人で支援にあたる方",
+    audience: "FP・個人で支援にあたる方",
     tagline: "面談で渡す資料に、あなたの名前を入れて整えます。",
     features: [
       "相談パックPDF 月10件",
@@ -68,7 +68,7 @@ export const PLANS: readonly Plan[] = [
     id: "pro",
     name: "Pro",
     priceMonthly: 9800,
-    audience: "子ども食堂・教会・NPO・小規模団体",
+    audience: "子ども食堂・NPO・小規模団体",
     tagline: "団体として相談支援を回すための業務基盤。",
     features: [
       "相談パックPDF 月100件",

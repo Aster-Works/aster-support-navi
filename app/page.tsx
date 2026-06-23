@@ -296,7 +296,7 @@ export default async function HomePage() {
               相談者に渡せる制度確認パックを、数分で整える
             </h2>
             <p className="mt-2 text-[13px] leading-7 text-charcoal">
-              教会・子ども食堂・NPO・FP・相談員の方へ。面談後に渡せる申請前パックを整える業務ツール（Pro）です。制度を調べるだけなら無料で使えます。
+              子ども食堂・NPO・FP・相談員の方へ。面談後に渡せる申請前パックを整える業務ツール（Pro）です。制度を調べるだけなら無料で使えます。
             </p>
           </div>
           {/* pro_interest_click: ホームの支援者向けバンドからPro案内へ。 */}

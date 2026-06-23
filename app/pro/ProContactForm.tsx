@@ -6,7 +6,7 @@ import { trackEvent } from "@/src/lib/analytics";
 
 type OrgType =
   | "支援団体・NPO"
-  | "教会・地域コミュニティ"
+  | "地域コミュニティ"
   | "学校・フリースクール"
   | "士業・FP"
   | "個人で検討"
@@ -14,7 +14,7 @@ type OrgType =
 
 const ORG_TYPES: OrgType[] = [
   "支援団体・NPO",
-  "教会・地域コミュニティ",
+  "地域コミュニティ",
   "学校・フリースクール",
   "士業・FP",
   "個人で検討",
