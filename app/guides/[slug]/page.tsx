@@ -6,6 +6,7 @@ import {
   ExternalLink,
   HeartHandshake,
   ClipboardCheck,
+  ArrowRight,
 } from "lucide-react";
 import {
   getGuide,
@@ -55,7 +56,7 @@ export default async function GuideDetailPage({
   const guide = await getGuide(slug);
   if (!guide) notFound();
 
-  const [related, categories, munis] = await Promise.all([
+  const [related, categories, munis, allGuides] = await Promise.all([
     guide.relatedProgramKey
       ? getProgramsByKey(guide.relatedProgramKey)
       : guide.relatedLifeEventSlug
@@ -63,9 +64,21 @@ export default async function GuideDetailPage({
         : Promise.resolve([]),
     getCategories(),
     getMunicipalities("tokyo"),
+    getGuides(),
   ]);
   const catName = (s: string) => categories.find((c) => c.slug === s)?.name;
   const muniName = (s: string) => munis.find((m) => m.slug === s)?.name;
+
+  // 同じ生活イベントの関連ガイド（内部リンクの話題クラスタ）。
+  const relatedGuides = guide.relatedLifeEventSlug
+    ? allGuides
+        .filter(
+          (g) =>
+            g.slug !== guide.slug &&
+            g.relatedLifeEventSlug === guide.relatedLifeEventSlug,
+        )
+        .slice(0, 6)
+    : [];
 
   const crumbs = [
     { name: "ホーム", path: "/" },
@@ -194,6 +207,18 @@ export default async function GuideDetailPage({
           <p className="mt-1 text-[13px] text-charcoal/70">
             各区の制度ページで、対象・申請方法・公式ページ・最終確認日を確認できます。
           </p>
+          {guide.relatedLifeEventSlug &&
+            catName(guide.relatedLifeEventSlug) && (
+              <p className="mt-2">
+                <Link
+                  href={`/compare/${guide.relatedLifeEventSlug}`}
+                  className="aw-link inline-flex items-center gap-1 text-[13px] font-semibold"
+                >
+                  {catName(guide.relatedLifeEventSlug)}の制度を自治体で比べる
+                  <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+                </Link>
+              </p>
+            )}
           <ul className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {related.map((p) => (
               <li key={p.slug} className="h-full">
@@ -202,6 +227,36 @@ export default async function GuideDetailPage({
                   categoryName={catName(p.categorySlugs[0])}
                   municipalityName={muniName(p.municipalitySlug)}
                 />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {/* 関連ガイド（同じ生活イベントの話題クラスタ） */}
+      {relatedGuides.length > 0 && (
+        <section className="aw-container mt-4 pb-6">
+          <h2 className="text-lg font-bold text-navy">関連するガイド</h2>
+          <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {relatedGuides.map((g) => (
+              <li key={g.slug}>
+                <Link
+                  href={`/guides/${g.slug}`}
+                  className="aw-card aw-card-hover group flex h-full items-start gap-2"
+                >
+                  <span className="min-w-0">
+                    <span className="block text-[14px] font-bold leading-6 text-navy">
+                      {g.title}
+                    </span>
+                    <span className="mt-1 inline-flex items-center gap-1 text-[12px] font-semibold text-navy/70">
+                      読む
+                      <ArrowRight
+                        className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5"
+                        aria-hidden="true"
+                      />
+                    </span>
+                  </span>
+                </Link>
               </li>
             ))}
           </ul>
