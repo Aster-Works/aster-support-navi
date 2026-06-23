@@ -51,6 +51,7 @@ describe("track（YMYL 安全）", () => {
     expect(name).toBe("diagnosis_complete");
     expect(params).toEqual({
       send_to: "G-TEST",
+      transport_type: "beacon",
       result_count: 5,
       prefecture: "tokyo",
       city: "setagaya",
@@ -96,6 +97,7 @@ describe("track（YMYL 安全）", () => {
       "official_link_click",
       {
         send_to: "G-TEST",
+        transport_type: "beacon",
         support_id: "tokyo-setagaya-child-allowance",
         support_title: "児童手当",
         category: "子育て",

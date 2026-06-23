@@ -86,6 +86,7 @@ export function trackEvent(
   try {
     window.gtag("event", eventName, {
       send_to: window.__asterGaDestinationId,
+      transport_type: "beacon",
       ...sanitizeParams(params),
     });
   } catch {
