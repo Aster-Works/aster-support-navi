@@ -8,6 +8,7 @@ import {
   getGuides,
   getPresentCategories,
 } from "@/app/lib/data";
+import { SAMPLE_PACKS } from "@/app/lib/pro/samples";
 
 export const revalidate = 3600;
 
@@ -39,6 +40,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: absoluteUrl("/guides"), changeFrequency: "weekly", priority: 0.6 },
     { url: absoluteUrl("/help"), changeFrequency: "monthly", priority: 0.5 },
     { url: absoluteUrl("/pro"), changeFrequency: "monthly", priority: 0.5 },
+    {
+      url: absoluteUrl("/pro/samples"),
+      changeFrequency: "monthly",
+      priority: 0.5,
+    },
+    ...SAMPLE_PACKS.map((s) => ({
+      url: absoluteUrl(`/pro/samples/${s.slug}`),
+      changeFrequency: "monthly" as const,
+      priority: 0.5,
+    })),
     { url: absoluteUrl("/about"), changeFrequency: "monthly", priority: 0.4 },
     {
       url: absoluteUrl("/disclaimer"),

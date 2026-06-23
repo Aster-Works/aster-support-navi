@@ -15,6 +15,9 @@ import { JsonLd } from "@/app/components/JsonLd";
 import { SITE } from "@/app/lib/site";
 import { buildMetadata, faqJsonLd } from "@/app/lib/seo";
 import { ProContactForm } from "./ProContactForm";
+import { PlansTable } from "./PlansTable";
+import { ProPageAnalytics } from "./ProPageAnalytics";
+import { SAMPLE_PACKS } from "@/app/lib/pro/samples";
 import { TrackedAnchor, TrackedLink } from "@/app/components/TrackedLink";
 
 export const metadata: Metadata = buildMetadata({
@@ -61,14 +64,19 @@ const FAQ = [
       "いいえ。制度の確認と申請前の準備を助ける情報整理ツールです。申請代行や受給可否の判定は行いません。",
   },
   {
+    question: "制度を調べるだけなら料金はかかりますか？",
+    answer:
+      "いいえ。制度の検索・閲覧・かんたん診断・申請前パックの印刷やPDF保存は、どなたでも無料で使えます。有料プランは、支援する人が面談で渡す資料に名前やロゴを入れたり、テンプレートや履歴を使ったりするための業務ツールです。",
+  },
+  {
     question: "相談者の個人情報を保存しますか？",
     answer:
       "Proの相談パックには、氏名・詳細住所・収入・病名などの機微情報を入れない運用を前提にしています。",
   },
   {
-    question: "現在すぐに利用できますか？",
+    question: "支払いはどうなりますか？",
     answer:
-      "ログイン機能と相談パックの原型はあります。現在は少数の支援者・団体向けに試用相談を受け付ける段階です。",
+      "月額のサブスクリプションです。現在は少数の支援者・団体と一緒に使い方を確かめている段階で、お申し込み前にご相談いただけます。",
   },
 ] as const;
 
@@ -82,6 +90,7 @@ export default function ProLandingPage() {
         ]}
       />
       <JsonLd data={faqJsonLd(FAQ)} />
+      <ProPageAnalytics />
 
       <main className="aw-container pb-16 pt-10">
         <section className="grid gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(340px,0.95fr)] lg:items-start">
@@ -100,10 +109,20 @@ export default function ProLandingPage() {
               公共情報を閉じ込めるのではなく、公式ページ・窓口確認へ進むための準備を短くします。
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
+              {/* pro_interest_click: Pro Hero の料金表CTAをクリックした時に発火。 */}
+              <TrackedLink
+                href="#pricing"
+                className="btn-primary"
+                eventName="pro_interest_click"
+                eventParams={{ source: "pro_hero_pricing", plan_hint: "pricing" }}
+              >
+                料金プランを見る
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </TrackedLink>
               {/* pro_interest_click: Pro Hero の問い合わせCTAをクリックした時に発火。 */}
               <TrackedLink
                 href="#contact"
-                className="btn-primary"
+                className="btn-secondary"
                 eventName="pro_interest_click"
                 eventParams={{ source: "pro_hero_contact", plan_hint: "trial" }}
               >
@@ -113,12 +132,11 @@ export default function ProLandingPage() {
               {/* pro_interest_click: Pro Hero のログインCTAをクリックした時に発火。 */}
               <TrackedLink
                 href="/pro/dashboard"
-                className="btn-secondary"
+                className="aw-link self-center text-sm"
                 eventName="pro_interest_click"
                 eventParams={{ source: "pro_hero_login", plan_hint: "login" }}
               >
                 ログイン
-                <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </TrackedLink>
             </div>
           </div>
@@ -177,6 +195,66 @@ export default function ProLandingPage() {
           </div>
         </section>
 
+        {/* 料金プラン */}
+        <section id="pricing" className="mt-16 scroll-mt-24">
+          <div className="max-w-2xl">
+            <p className="aw-eyebrow">料金プラン</p>
+            <h2 className="mt-2 text-2xl font-bold tracking-tight text-navy">
+              制度を調べるのは無料。支援する人の道具に課金します
+            </h2>
+            <p className="mt-3 text-[15px] leading-8 text-charcoal">
+              制度の検索・診断・申請前パックの印刷やPDF保存は、どなたでも無料です。有料プランは、面談で渡す資料に名前やロゴを入れ、テンプレート・履歴・地域別の整理を使うための業務ツールです。
+            </p>
+          </div>
+          <div className="mt-7">
+            <PlansTable />
+          </div>
+          <p className="mt-4 text-[12px] leading-6 text-charcoal/65">
+            表示は月額（税込）。対象可否・金額・期限・必要書類は、必ず自治体の公式ページまたは担当窓口で確認する前提です。受給可否の判定や申請の代行は行いません。
+          </p>
+        </section>
+
+        {/* サンプル相談パック */}
+        <section className="mt-16">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div className="max-w-2xl">
+              <p className="aw-eyebrow">サンプル</p>
+              <h2 className="mt-2 text-2xl font-bold tracking-tight text-navy">
+                相談パックの仕上がりを見てみる
+              </h2>
+              <p className="mt-3 text-[15px] leading-8 text-charcoal">
+                実際に相談者へ渡せる「制度確認パック」の見本です。印刷・PDF保存して、現場での使い心地を確かめてください。
+              </p>
+            </div>
+          </div>
+          <div className="mt-6 grid gap-4 md:grid-cols-3">
+            {SAMPLE_PACKS.map((s) => (
+              <TrackedLink
+                key={s.slug}
+                href={`/pro/samples/${s.slug}`}
+                className="aw-card aw-card-hover group flex h-full flex-col"
+                eventName="pro_interest_click"
+                eventParams={{ source: "pro_sample_card", plan_hint: s.slug }}
+              >
+                <span className="aw-badge aw-badge--neutral self-start">
+                  サンプル
+                </span>
+                <h3 className="mt-3 text-base font-bold text-navy">{s.title}</h3>
+                <p className="mt-2 flex-1 text-[13px] leading-7 text-charcoal/75">
+                  {s.audience}
+                </p>
+                <span className="mt-3 inline-flex items-center gap-1 text-[13px] font-semibold text-navy">
+                  見本を開く
+                  <ArrowRight
+                    className="h-4 w-4 transition-transform group-hover:translate-x-0.5"
+                    aria-hidden="true"
+                  />
+                </span>
+              </TrackedLink>
+            ))}
+          </div>
+        </section>
+
         <section className="mt-14 grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
             <p className="aw-eyebrow">
@@ -219,7 +297,10 @@ export default function ProLandingPage() {
           </div>
         </section>
 
-        <section className="mt-14 grid gap-8 lg:grid-cols-[0.85fr_1.15fr]">
+        <section
+          id="contact"
+          className="mt-14 grid scroll-mt-24 gap-8 lg:grid-cols-[0.85fr_1.15fr]"
+        >
           <div>
             <p className="aw-eyebrow">問い合わせ</p>
             <h2 className="mt-2 text-2xl font-bold tracking-tight text-navy">

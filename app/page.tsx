@@ -9,6 +9,7 @@ import {
   Compass,
   BookOpen,
   GitCompare,
+  Users,
 } from "lucide-react";
 import {
   getActiveMunicipalities,
@@ -271,6 +272,34 @@ export default async function HomePage() {
             eventParams={{ source: "home_bottom_band" }}
           >
             診断をはじめる
+            <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          </TrackedLink>
+        </div>
+      </section>
+
+      {/* 支援者向け（Pro 導線） */}
+      <section className="aw-container aw-section-tight">
+        <div className="aw-card flex flex-col items-start gap-5 border-gold/30 bg-cream/40 sm:flex-row sm:items-center sm:justify-between">
+          <div className="max-w-xl">
+            <p className="aw-eyebrow">
+              <Users className="h-3.5 w-3.5" aria-hidden="true" />
+              支援する人へ
+            </p>
+            <h2 className="mt-2 text-xl font-bold tracking-tight text-navy">
+              相談者に渡せる制度確認パックを、数分で整える
+            </h2>
+            <p className="mt-2 text-[13px] leading-7 text-charcoal">
+              教会・子ども食堂・NPO・FP・相談員の方へ。面談後に渡せる申請前パックを整える業務ツール（Pro）です。制度を調べるだけなら無料で使えます。
+            </p>
+          </div>
+          {/* pro_interest_click: ホームの支援者向けバンドからPro案内へ。 */}
+          <TrackedLink
+            href="/pro"
+            className="btn-secondary shrink-0"
+            eventName="pro_interest_click"
+            eventParams={{ source: "home_supporter_band", plan_hint: "pro" }}
+          >
+            支援者向けのご案内
             <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </TrackedLink>
         </div>

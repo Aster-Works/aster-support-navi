@@ -10,6 +10,7 @@ import {
   FileDown,
   Map,
   ShieldCheck,
+  Briefcase,
 } from "lucide-react";
 import {
   getAllPublishedPrograms,
@@ -329,6 +330,36 @@ export default async function CheckResultPage({
         nextChecks={nextChecks}
         context="diagnosis"
       />
+
+      {/* 支援者・相談員向け（Pro 導線） */}
+      {candidates.length > 0 && (
+        <section className="mt-12 print:hidden">
+          <div className="aw-card flex flex-col items-start gap-4 border-gold/30 bg-cream/40 sm:flex-row sm:items-center sm:justify-between">
+            <div className="max-w-xl">
+              <p className="aw-eyebrow">
+                <Briefcase className="h-3.5 w-3.5" aria-hidden="true" />
+                支援する人へ
+              </p>
+              <h2 className="mt-2 text-[17px] font-bold text-navy">
+                相談者に渡す制度確認パックを整えるなら
+              </h2>
+              <p className="mt-2 text-[13px] leading-7 text-charcoal">
+                この申請前パックは無料で印刷・PDF保存できます。教会・子ども食堂・NPO・相談員の方には、名前やロゴ入りの資料・テンプレート・履歴が使える Pro もあります。
+              </p>
+            </div>
+            {/* pro_interest_click: 診断結果からPro案内へ。 */}
+            <TrackedLink
+              href="/pro"
+              className="btn-secondary shrink-0"
+              eventName="pro_interest_click"
+              eventParams={{ source: "result_supporter", plan_hint: "pro" }}
+            >
+              支援者向けのご案内
+              <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </TrackedLink>
+          </div>
+        </section>
+      )}
 
       {/* 次に確認すること */}
       {nextChecks.length > 0 && (

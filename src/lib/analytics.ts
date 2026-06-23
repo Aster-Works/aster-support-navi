@@ -8,6 +8,13 @@ export type AnalyticsEventName =
   | "support_detail_view"
   | "official_link_click"
   | "pro_interest_click"
+  // Phase 0（収益導線）: Pro 閲覧・Stripe（Payment Link）クリック・サンプルパック閲覧。
+  | "pro_view"
+  | "stripe_click"
+  | "sample_pack_view"
+  // 申請前パック（PDF/印刷）の補助計測。
+  | "checklist_viewed"
+  | "checklist_printed"
   | (string & {});
 
 export type AnalyticsEventParams = Record<string, AnalyticsParamValue>;
@@ -27,6 +34,10 @@ const ALLOWED_PARAM_KEYS = new Set([
   "municipality",
   "outbound_url_domain",
   "plan_hint",
+  // Phase 0（収益導線）: クリックされた料金プラン（free/personal/pro/team）と
+  // サンプル相談パックの識別子。いずれも非PIIの短い列挙値のみ。
+  "plan",
+  "sample",
   // Legacy non-PII keys used by checklist/save diagnostics.
   "context",
   "count",

@@ -107,6 +107,27 @@
   - ほか: 特別障害者手当・ひとり親相談で「単一制度title↔総合インデックスpage」不一致、identity 2件（相模原 手帳=カード化お知らせpage／さいたま 障害福祉サービス=地域生活支援事業page）。
 - **再キュレーション backlog**: `docs/verify-flagged-2026-06-21.json`（24件・各 note＋suggestedTitle 付き）。次回、自立支援医療を type別に再モデル化／手帳はハブURL採用／インデックスpageはtitle整合、で published へ戻す。
 
+### Slice G: 収益導線（Phase 0・2026-06-23 実装）
+
+ChatGPT 90日ロードマップの Phase 0「収益導線を先に作る」を実装。詳細は `docs/REVENUE_ROADMAP.md`。
+
+- **料金プラン**: `app/lib/pro/plans.ts`（Free/Personal ¥2,980/Pro ¥9,800/Team ¥29,800 の単一真実源）＋
+  `app/pro/PlansTable.tsx`。`/pro#pricing` に掲示。**公共情報は無料のまま、課金は支援者の業務ツールに対して**
+  （`PrepPacket` のペイウォール非化方針と整合）。
+- **Stripe 決済**: Payment Link 方式（MVP。バックエンド/Webhook 不要）。各有料CTAは
+  `NEXT_PUBLIC_STRIPE_LINK_{PERSONAL,PRO,TEAM}` の決済URLへ遷移。未設定なら問い合わせ `#contact` へ
+  フォールバック＝**env 無しでも安全にデプロイ可能**。クリックは `stripe_click`（plan付き）で計測。
+- **サンプル相談パック×3**: `app/lib/pro/samples.ts` ＋ `/pro/samples`・`/pro/samples/[slug]`
+  （single-parent / livelihood-housing / birth-childcare）。実在の published 制度のみで構成し
+  （`selectSampleProgramsFrom` が制度種別ごとに代表1件へ畳む純関数）、`PrepPacket` で印刷・PDF保存可。
+  sitemap 登録・index 可（SEO資産兼営業コラテラル）。
+- **導線追加**: ホーム下部「支援する人へ」バンド → `/pro`、`/check/result` 申請前パック直下の Pro CTA。
+- **GA4 イベント追加**（`src/lib/analytics.ts`）: `pro_view` / `stripe_click` / `sample_pack_view`。
+  許可パラメータに `plan` / `sample` を追加（非PIIの短い列挙値のみ）。
+- 検証: typecheck / lint / Vitest 131件（+37）/ build（/pro・/pro/samples・3サンプル静的生成）すべて green。
+- **Jimi の残作業**: Stripe で各プランの Payment Link を作成 → Vercel に env 設定 → 再デプロイ。
+  GA4 で `pro_view → stripe_click` をコンバージョン登録。
+
 ## ルート
 
 | ルート | 種別 | index |

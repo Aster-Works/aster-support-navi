@@ -81,6 +81,40 @@ describe("track（YMYL 安全）", () => {
     expect(params.send_to).toBe("G-TEST");
   });
 
+  it("stripe_click は plan を送れる（収益ファネルの計測）", () => {
+    const calls: GtagCall[] = [];
+    (window as unknown as { gtag: (...a: unknown[]) => void }).gtag = (...a) =>
+      calls.push(a);
+    (window as unknown as { __asterGaDestinationId: string })
+      .__asterGaDestinationId = "G-TEST";
+
+    trackEvent("stripe_click", { plan: "pro", source: "pricing_checkout" });
+
+    expect(calls[0]).toEqual([
+      "event",
+      "stripe_click",
+      {
+        send_to: "G-TEST",
+        transport_type: "beacon",
+        plan: "pro",
+        source: "pricing_checkout",
+      },
+    ]);
+  });
+
+  it("sample_pack_view は sample 識別子を送れる", () => {
+    const calls: GtagCall[] = [];
+    (window as unknown as { gtag: (...a: unknown[]) => void }).gtag = (...a) =>
+      calls.push(a);
+    (window as unknown as { __asterGaDestinationId: string })
+      .__asterGaDestinationId = "G-TEST";
+
+    trackEvent("sample_pack_view", { sample: "single-parent" });
+
+    const params = (calls[0] as [string, string, Record<string, unknown>])[2];
+    expect(params.sample).toBe("single-parent");
+  });
+
   it("official_link_click は制度情報と外部ドメインだけを送れる", () => {
     const calls: GtagCall[] = [];
     (window as unknown as { gtag: (...a: unknown[]) => void }).gtag = (...a) =>
