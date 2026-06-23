@@ -4,6 +4,7 @@ import Script from "next/script";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { GA_ID, GOOGLE_ADS_ID, GOOGLE_TAG_LOADER_ID } from "@/app/lib/googleTag";
+import { flushQueuedEvents } from "@/src/lib/analytics";
 
 /**
  * Google tag（Google Ads は常時、GA4 は任意・env ゲート）。
@@ -39,6 +40,11 @@ export function Analytics() {
   const firstLoad = useRef(true);
 
   useEffect(() => {
+    const timer = window.setTimeout(flushQueuedEvents, 1000);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
     // 初回ロードの config/page_view は google-tag-init 内で path のみ送信済み。
     // 二重計上を避けるため初回はスキップ。
     if (firstLoad.current) {
@@ -59,6 +65,7 @@ export function Analytics() {
         send_to: GA_ID,
         ...page,
       });
+      window.setTimeout(flushQueuedEvents, 0);
     }
   }, [pathname]);
 

@@ -1,5 +1,10 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { safeHost, trackEvent } from "@/src/lib/analytics";
+import {
+  flushQueuedEvents,
+  queueEvent,
+  safeHost,
+  trackEvent,
+} from "@/src/lib/analytics";
 
 type GtagCall = unknown[];
 
@@ -7,6 +12,7 @@ afterEach(() => {
   delete (window as unknown as { gtag?: unknown }).gtag;
   delete (window as unknown as { __asterGaDestinationId?: unknown })
     .__asterGaDestinationId;
+  window.sessionStorage.clear();
 });
 
 describe("track（YMYL 安全）", () => {
@@ -104,6 +110,36 @@ describe("track（YMYL 安全）", () => {
         municipality: "世田谷区",
         outbound_url_domain: "www.city.setagaya.lg.jp",
       },
+    ]);
+  });
+
+  it("内部遷移用キューは許可キーだけを保持し、gtag 準備後に送る", () => {
+    queueEvent("diagnosis_start", {
+      source: "header",
+      page_path: "/",
+      email: "test@example.com",
+      note: "自由入力",
+    });
+
+    const calls: GtagCall[] = [];
+    (window as unknown as { gtag: (...a: unknown[]) => void }).gtag = (...a) =>
+      calls.push(a);
+    (window as unknown as { __asterGaDestinationId: string })
+      .__asterGaDestinationId = "G-TEST";
+
+    flushQueuedEvents();
+
+    expect(calls).toEqual([
+      [
+        "event",
+        "diagnosis_start",
+        {
+          send_to: "G-TEST",
+          transport_type: "beacon",
+          source: "header",
+          page_path: "/",
+        },
+      ],
     ]);
   });
 });

@@ -12,6 +12,8 @@ export type AnalyticsEventName =
 
 export type AnalyticsEventParams = Record<string, AnalyticsParamValue>;
 
+const QUEUED_EVENTS_KEY = "aster.analytics.queue";
+
 const ALLOWED_PARAM_KEYS = new Set([
   "source",
   "page_path",
@@ -65,6 +67,30 @@ function sanitizeParams(params: AnalyticsEventParams): Record<string, string | n
   return safe;
 }
 
+type QueuedAnalyticsEvent = {
+  eventName: AnalyticsEventName;
+  params: Record<string, string | number | boolean>;
+  queuedAt: number;
+};
+
+function readQueuedEvents(): QueuedAnalyticsEvent[] {
+  try {
+    const raw = window.sessionStorage.getItem(QUEUED_EVENTS_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter(
+      (event): event is QueuedAnalyticsEvent =>
+        event &&
+        typeof event.eventName === "string" &&
+        typeof event.params === "object" &&
+        typeof event.queuedAt === "number",
+    );
+  } catch {
+    return [];
+  }
+}
+
 /**
  * GA4 カスタムイベント送信。
  *
@@ -91,6 +117,52 @@ export function trackEvent(
     });
   } catch {
     // 計測失敗はUXに影響させない。
+  }
+}
+
+/** 内部リンク遷移でイベントが失われないよう、次ページで送るため一時キューする。 */
+export function queueEvent(
+  eventName: AnalyticsEventName,
+  params: AnalyticsEventParams = {},
+): void {
+  if (typeof window === "undefined") return;
+  try {
+    const queue = readQueuedEvents().slice(-9);
+    queue.push({
+      eventName,
+      params: sanitizeParams(params),
+      queuedAt: Date.now(),
+    });
+    window.sessionStorage.setItem(QUEUED_EVENTS_KEY, JSON.stringify(queue));
+  } catch {
+    trackEvent(eventName, params);
+  }
+}
+
+/** キュー済みイベントを送信する。gtag未初期化なら消さずに次回へ回す。 */
+export function flushQueuedEvents(): void {
+  if (
+    typeof window === "undefined" ||
+    typeof window.gtag !== "function" ||
+    !window.__asterGaDestinationId
+  ) {
+    return;
+  }
+
+  const queue = readQueuedEvents();
+  if (queue.length === 0) return;
+
+  try {
+    window.sessionStorage.removeItem(QUEUED_EVENTS_KEY);
+  } catch {
+    // storage 失敗時も送信は試みる。
+  }
+
+  const maxAgeMs = 5 * 60 * 1000;
+  const now = Date.now();
+  for (const event of queue) {
+    if (now - event.queuedAt > maxAgeMs) continue;
+    trackEvent(event.eventName, event.params);
   }
 }
 
