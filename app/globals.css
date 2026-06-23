@@ -73,11 +73,19 @@
     letter-spacing: 0.005em;
   }
 
-  /* フォーカスリング（アクセシビリティ） */
+  /* フォーカスリング（アクセシビリティ）。
+     ブランドのゴールド枠＋濃紺のソフトな縁取りで、明背景でも輪郭がはっきり見える
+     （白上のゴールド単体は視認コントラストが弱いため、navy のハローで補強）。 */
   :focus-visible {
     outline: 2px solid var(--color-gold);
     outline-offset: 2px;
-    border-radius: 2px;
+    border-radius: 3px;
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-navy) 14%, transparent);
+  }
+
+  /* 数字は等幅（金額・件数・日付・表の桁ぶれを抑え、精度と信頼感を高める） */
+  :where(table, time, .aw-tnum) {
+    font-variant-numeric: tabular-nums;
   }
 
   ::selection {
@@ -110,7 +118,7 @@
   }
 
   .aw-card {
-    @apply rounded-2xl border border-soft-gray bg-white p-6 transition-all duration-200 ease-out sm:p-7;
+    @apply rounded-2xl border border-soft-gray bg-white p-6 shadow-[0_1px_2px_rgba(13,27,42,0.04),0_6px_16px_-10px_rgba(13,27,42,0.10)] transition-all duration-200 ease-out sm:p-7;
   }
   .aw-card-hover {
     @apply hover:-translate-y-1 hover:border-gold/40 hover:shadow-[0_18px_40px_-24px_rgba(13,27,42,0.35)];
@@ -171,7 +179,7 @@
   /* ヘッダーのナビリンク（ホバー＋現在地の二重表現）。
      現在地は色だけでなく aria-current="page" でも伝える。 */
   .aw-navlink {
-    @apply inline-flex min-h-11 items-center rounded-full px-3 py-2.5 text-sm font-medium text-charcoal transition-colors hover:bg-cream/70 hover:text-navy;
+    @apply inline-flex min-h-11 items-center whitespace-nowrap rounded-full px-3 py-2.5 text-sm font-medium text-charcoal transition-colors hover:bg-cream/70 hover:text-navy;
   }
   .aw-navlink[aria-current="page"] {
     @apply bg-cream font-semibold text-navy;

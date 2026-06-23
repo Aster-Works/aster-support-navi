@@ -43,7 +43,7 @@ function PlanCard({ plan }: { plan: Plan }) {
       )}
 
       <h3 className="text-lg font-bold text-navy">{plan.name}</h3>
-      <p className="mt-2 text-2xl font-bold tracking-tight text-navy">
+      <p className="aw-tnum mt-2 text-2xl font-bold tracking-tight text-navy">
         {formatPlanPrice(plan)}
       </p>
       <p className="mt-2 min-h-[2.5rem] text-[13px] leading-6 text-charcoal/80">

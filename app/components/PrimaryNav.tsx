@@ -43,8 +43,8 @@ export function PrimaryNav() {
 
   return (
     <div className="flex items-center gap-1 sm:gap-2">
-      {/* デスクトップ: 主要ナビ */}
-      <nav aria-label="グローバルナビゲーション" className="hidden sm:block">
+      {/* デスクトップ: 主要ナビ（タブレット幅での詰まりを避け lg 以上で表示） */}
+      <nav aria-label="グローバルナビゲーション" className="hidden lg:block">
         <ul className="flex items-center gap-1">
           {NAV.map((n) => (
             <li key={n.href}>
@@ -65,7 +65,7 @@ export function PrimaryNav() {
         href="/saved"
         aria-label="保存した制度"
         aria-current={savedActive ? "page" : undefined}
-        className={`hidden h-11 w-11 items-center justify-center rounded-full transition-colors hover:bg-cream/70 hover:text-navy sm:inline-flex ${
+        className={`hidden h-11 w-11 items-center justify-center rounded-full transition-colors hover:bg-cream/70 hover:text-navy lg:inline-flex ${
           savedActive ? "bg-cream text-navy" : "text-charcoal"
         }`}
       >
@@ -81,8 +81,8 @@ export function PrimaryNav() {
         eventParams={{ source: "header" }}
       >
         <ClipboardCheck className="h-4 w-4 shrink-0" aria-hidden="true" />
-        <span className="sm:hidden">診断</span>
-        <span className="hidden sm:inline">かんたん診断</span>
+        <span className="lg:hidden">診断</span>
+        <span className="hidden lg:inline">かんたん診断</span>
       </TrackedLink>
 
       {/* モバイル: ハンバーガー */}
@@ -92,7 +92,7 @@ export function PrimaryNav() {
         aria-expanded={open}
         aria-controls={menuId}
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex h-11 w-11 items-center justify-center rounded-full text-navy transition-colors hover:bg-cream/70 sm:hidden"
+        className="inline-flex h-11 w-11 items-center justify-center rounded-full text-navy transition-colors hover:bg-cream/70 lg:hidden"
       >
         {open ? (
           <X className="h-5 w-5" aria-hidden="true" />
@@ -105,7 +105,7 @@ export function PrimaryNav() {
       {open && (
         <div
           id={menuId}
-          className="fixed inset-x-0 top-16 z-40 border-b border-soft-gray bg-background shadow-[0_18px_40px_-24px_rgba(13,27,42,0.35)] sm:hidden"
+          className="fixed inset-x-0 top-16 z-40 border-b border-soft-gray bg-background shadow-[0_18px_40px_-24px_rgba(13,27,42,0.35)] lg:hidden"
         >
           <nav aria-label="モバイルナビゲーション" className="aw-container py-3">
             <ul className="flex flex-col gap-0.5">
