@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { ClipboardList, FileDown, Printer } from "lucide-react";
-import { track } from "@/app/lib/track";
+import { trackEvent } from "@/src/lib/analytics";
 
 export interface PrepProgram {
   slug: string;
@@ -34,10 +34,9 @@ export function PrepPacket({
   nextChecks?: string[];
   context: string;
 }) {
-  // 表示＝diagnosis_completed / checklist_viewed の計測（件数のみ・機微情報なし）。
+  // 申請前パック表示の補助計測。diagnosis_complete は結果ページ側で発火する。
   useEffect(() => {
-    if (context === "diagnosis") track("diagnosis_completed", { count: programs.length });
-    track("checklist_viewed", { context, count: programs.length });
+    trackEvent("checklist_viewed", { context, count: programs.length });
   }, [context, programs.length]);
 
   if (programs.length === 0) return null;
@@ -63,7 +62,7 @@ export function PrepPacket({
           <button
             type="button"
             onClick={() => {
-              track("checklist_printed", { context, count: programs.length });
+              trackEvent("checklist_printed", { context, count: programs.length });
               window.print();
             }}
             className="btn-primary shrink-0"

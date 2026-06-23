@@ -32,6 +32,8 @@ import { SupportCard } from "@/app/components/SupportCard";
 import { ApplicationChecklist } from "@/app/components/ApplicationChecklist";
 import { SaveButton } from "@/app/components/SaveButton";
 import { ReminderButton } from "@/app/components/ReminderButton";
+import { OfficialLink } from "@/app/components/OfficialLink";
+import { SupportDetailAnalytics } from "@/app/components/SupportDetailAnalytics";
 
 export const revalidate = 86400;
 export const dynamicParams = true;
@@ -136,6 +138,12 @@ export default async function SupportDetailPage({
 
   return (
     <>
+      <SupportDetailAnalytics
+        supportId={program.slug}
+        supportTitle={program.title}
+        category={primaryCategory?.name}
+        municipality={muni.name}
+      />
       <Breadcrumbs crumbs={crumbs} />
       <article className="aw-container py-8">
         {/* ヘッダー */}
@@ -270,14 +278,15 @@ export default async function SupportDetailPage({
                   )}
                   {program.contactUrl && (
                     <p className="mt-1">
-                      <a
-                        href={program.contactUrl}
-                        target="_blank"
-                        rel="noopener noreferrer nofollow"
-                        className="aw-link"
-                      >
-                        問い合わせ先ページを開く
-                      </a>
+                      <OfficialLink
+                        url={program.contactUrl}
+                        label="問い合わせ先ページを開く"
+                        className="aw-link inline-flex items-center gap-1"
+                        supportId={program.slug}
+                        supportTitle={program.title}
+                        category={primaryCategory?.name}
+                        municipality={muni.name}
+                      />
                     </p>
                   )}
                 </Field>
@@ -321,7 +330,11 @@ export default async function SupportDetailPage({
 
           {/* サイド */}
           <aside className="space-y-6 lg:sticky lg:top-20 lg:self-start">
-            <TrustSignal program={program} />
+            <TrustSignal
+              program={program}
+              categoryName={primaryCategory?.name}
+              municipalityName={muni.name}
+            />
             <ReminderButton
               programSlug={program.slug}
               programTitle={program.title}
@@ -329,6 +342,7 @@ export default async function SupportDetailPage({
             <ApplicationChecklist
               program={checklistProgram}
               municipalityName={muni.name}
+              categoryName={primaryCategory?.name}
             />
           </aside>
         </div>

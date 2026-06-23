@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { SITE } from "@/app/lib/site";
 import { DISCLAIMER_SHORT } from "@/app/lib/copy";
+import { TrackedLink } from "@/app/components/TrackedLink";
 
 const COLUMNS: { heading: string; links: { href: string; label: string }[] }[] =
   [
@@ -61,12 +62,37 @@ export function SiteFooter() {
               <ul className="mt-4 space-y-2.5">
                 {col.links.map((l) => (
                   <li key={l.href}>
-                    <Link
-                      href={l.href}
-                      className="text-[14px] text-charcoal transition-colors hover:text-navy"
-                    >
-                      {l.label}
-                    </Link>
+                    {l.href === "/check" ? (
+                      // diagnosis_start: フッターの「かんたん診断」リンクをクリックした時に発火。
+                      <TrackedLink
+                        href={l.href}
+                        className="text-[14px] text-charcoal transition-colors hover:text-navy"
+                        eventName="diagnosis_start"
+                        eventParams={{ source: "footer" }}
+                      >
+                        {l.label}
+                      </TrackedLink>
+                    ) : l.href === "/pro" ? (
+                      // pro_interest_click: フッターのPro導線をクリックした時に発火。
+                      <TrackedLink
+                        href={l.href}
+                        className="text-[14px] text-charcoal transition-colors hover:text-navy"
+                        eventName="pro_interest_click"
+                        eventParams={{
+                          source: "footer_pro_link",
+                          plan_hint: "pro",
+                        }}
+                      >
+                        {l.label}
+                      </TrackedLink>
+                    ) : (
+                      <Link
+                        href={l.href}
+                        className="text-[14px] text-charcoal transition-colors hover:text-navy"
+                      >
+                        {l.label}
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>

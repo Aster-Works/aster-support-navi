@@ -175,6 +175,10 @@ export default async function ComparePage({
                       url={p.officialUrl}
                       label="公式"
                       className="aw-link inline-flex items-center gap-1 text-[13px]"
+                      supportId={p.slug}
+                      supportTitle={p.title}
+                      category={cat.name}
+                      municipality={nameOf(p)}
                     />
                   </td>
                 </tr>

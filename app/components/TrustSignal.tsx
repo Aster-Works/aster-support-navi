@@ -5,7 +5,15 @@ import { OfficialLink } from "@/app/components/OfficialLink";
 
 /** 制度詳細の「公式情報」ブロック（不変条件 §3）。
  *  公式URL・最終確認日を必ず本文に表示する。 */
-export function TrustSignal({ program }: { program: SupportProgram }) {
+export function TrustSignal({
+  program,
+  categoryName,
+  municipalityName,
+}: {
+  program: SupportProgram;
+  categoryName?: string;
+  municipalityName?: string;
+}) {
   return (
     <section
       aria-labelledby="official-heading"
@@ -43,7 +51,13 @@ export function TrustSignal({ program }: { program: SupportProgram }) {
       </p>
 
       <div className="mt-4">
-        <OfficialLink url={program.officialUrl} />
+        <OfficialLink
+          url={program.officialUrl}
+          supportId={program.slug}
+          supportTitle={program.title}
+          category={categoryName ?? program.categorySlugs[0]}
+          municipality={municipalityName ?? program.municipalitySlug}
+        />
       </div>
     </section>
   );

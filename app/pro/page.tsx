@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import {
   ArrowRight,
   Briefcase,
@@ -16,6 +15,7 @@ import { JsonLd } from "@/app/components/JsonLd";
 import { SITE } from "@/app/lib/site";
 import { buildMetadata, faqJsonLd } from "@/app/lib/seo";
 import { ProContactForm } from "./ProContactForm";
+import { TrackedAnchor, TrackedLink } from "@/app/components/TrackedLink";
 
 export const metadata: Metadata = buildMetadata({
   title: "Pro（相談支援現場向け）",
@@ -100,14 +100,26 @@ export default function ProLandingPage() {
               公共情報を閉じ込めるのではなく、公式ページ・窓口確認へ進むための準備を短くします。
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
-              <a href="#contact" className="btn-primary">
+              {/* pro_interest_click: Pro Hero の問い合わせCTAをクリックした時に発火。 */}
+              <TrackedLink
+                href="#contact"
+                className="btn-primary"
+                eventName="pro_interest_click"
+                eventParams={{ source: "pro_hero_contact", plan_hint: "trial" }}
+              >
                 <Mail className="h-4 w-4" aria-hidden="true" />
                 試用について問い合わせる
-              </a>
-              <Link href="/pro/dashboard" className="btn-secondary">
+              </TrackedLink>
+              {/* pro_interest_click: Pro Hero のログインCTAをクリックした時に発火。 */}
+              <TrackedLink
+                href="/pro/dashboard"
+                className="btn-secondary"
+                eventName="pro_interest_click"
+                eventParams={{ source: "pro_hero_login", plan_hint: "login" }}
+              >
                 ログイン
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />
-              </Link>
+              </TrackedLink>
             </div>
           </div>
 
@@ -218,9 +230,18 @@ export default function ProLandingPage() {
             </p>
             <p className="mt-3 text-sm leading-7 text-charcoal/70">
               直接メールする場合は{" "}
-              <a className="aw-link" href={`mailto:${SITE.operator.contactEmail}`}>
+              {/* pro_interest_click: Pro問い合わせ欄の直接メールCTAをクリックした時に発火。 */}
+              <TrackedAnchor
+                className="aw-link"
+                href={`mailto:${SITE.operator.contactEmail}`}
+                eventName="pro_interest_click"
+                eventParams={{
+                  source: "pro_direct_mailto",
+                  plan_hint: "trial",
+                }}
+              >
                 {SITE.operator.contactEmail}
-              </a>{" "}
+              </TrackedAnchor>{" "}
               へどうぞ。
             </p>
           </div>

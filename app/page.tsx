@@ -28,6 +28,7 @@ import { LifeEventIcon } from "@/app/components/Icon";
 import { SupportCard } from "@/app/components/SupportCard";
 import { SectionHeading } from "@/app/components/SectionHeading";
 import { AreaExplorer } from "@/app/components/AreaExplorer";
+import { TrackedLink } from "@/app/components/TrackedLink";
 
 export const metadata: Metadata = buildMetadata({
   title: SITE.tagline,
@@ -104,10 +105,16 @@ export default async function HomePage() {
             </div>
 
             <div className="mt-6 flex flex-wrap items-center gap-3">
-              <Link href="/check" className="btn-primary">
+              {/* diagnosis_start: ホームHeroの診断CTAをクリックした時に発火。 */}
+              <TrackedLink
+                href="/check"
+                className="btn-primary"
+                eventName="diagnosis_start"
+                eventParams={{ source: "home_hero" }}
+              >
                 <ClipboardCheck className="h-4 w-4" aria-hidden="true" />
                 かんたん診断ではじめる
-              </Link>
+              </TrackedLink>
               <Link href="/search" className="btn-secondary">
                 <Search className="h-4 w-4" aria-hidden="true" />
                 制度を一覧から探す
@@ -256,13 +263,16 @@ export default async function HomePage() {
               ログインは不要・入力は保存しません。{COPY.candidateNote}。
             </p>
           </div>
-          <Link
+          {/* diagnosis_start: ホーム下部の診断CTAをクリックした時に発火。 */}
+          <TrackedLink
             href="/check"
             className="btn-primary shrink-0 bg-gold text-navy hover:bg-gold-soft hover:text-navy"
+            eventName="diagnosis_start"
+            eventParams={{ source: "home_bottom_band" }}
           >
             診断をはじめる
             <ArrowRight className="h-4 w-4" aria-hidden="true" />
-          </Link>
+          </TrackedLink>
         </div>
       </section>
 

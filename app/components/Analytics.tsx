@@ -25,7 +25,11 @@ import { GA_ID, GOOGLE_ADS_ID, GOOGLE_TAG_LOADER_ID } from "@/app/lib/googleTag"
 declare global {
   interface Window {
     dataLayer?: unknown[];
-    gtag?: (...args: unknown[]) => void;
+    gtag?: (
+      command: "event" | "config" | "js",
+      target: string | Date,
+      params?: Record<string, unknown>,
+    ) => void;
     __asterGaDestinationId?: string;
   }
 }

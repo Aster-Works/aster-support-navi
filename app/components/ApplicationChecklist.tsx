@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Printer, Copy, Check, ListChecks } from "lucide-react";
 import type { SupportProgram } from "@/app/lib/data/types";
 import { buildChecklist, buildInquiryText } from "@/app/lib/checklist";
-import { track } from "@/app/lib/track";
+import { trackEvent } from "@/src/lib/analytics";
 import { OfficialLink } from "@/app/components/OfficialLink";
 
 export interface ChecklistProgram {
@@ -26,9 +26,11 @@ export interface ChecklistProgram {
 export function ApplicationChecklist({
   program,
   municipalityName,
+  categoryName,
 }: {
   program: ChecklistProgram;
   municipalityName: string;
+  categoryName?: string;
 }) {
   const source: Pick<
     SupportProgram,
@@ -85,7 +87,7 @@ export function ApplicationChecklist({
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
-      track("inquiry_text_copied");
+      trackEvent("inquiry_text_copied");
       window.setTimeout(() => setCopied(false), 2000);
     } catch {
       setCopied(false);
@@ -148,7 +150,14 @@ export function ApplicationChecklist({
       </ul>
 
       <div className="mt-5 flex flex-wrap gap-2.5 print:hidden">
-        <OfficialLink url={program.officialHref} className="btn-primary" />
+        <OfficialLink
+          url={program.officialHref}
+          className="btn-primary"
+          supportId={program.slug}
+          supportTitle={program.title}
+          category={categoryName}
+          municipality={municipalityName}
+        />
         <button type="button" onClick={copyInquiry} className="btn-secondary">
           {copied ? (
             <>
@@ -168,7 +177,7 @@ export function ApplicationChecklist({
         <button
           type="button"
           onClick={() => {
-            track("checklist_printed", { context: "support" });
+            trackEvent("checklist_printed", { context: "support" });
             window.print();
           }}
           className="btn-secondary"

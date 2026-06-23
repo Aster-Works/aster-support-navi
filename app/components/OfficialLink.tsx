@@ -1,21 +1,29 @@
 "use client";
 
 import { ExternalLink } from "lucide-react";
-import { track, safeHost } from "@/app/lib/track";
+import { safeHost, trackEvent } from "@/src/lib/analytics";
 
 /** 公式ページへの外部リンク。新規タブ・noopener。YMYL の最終確認先。
- *  クリックを official_link_clicked として計測（host のみ・機微情報は送らない）。 */
+ *  official_link_click: 外部公式リンクをクリックした時に発火。
+ *  URLはドメインだけを送信し、パス・クエリは送らない。 */
 export function OfficialLink({
   url,
   label = "公式ページで確認する",
   className = "btn-primary",
-  context,
+  supportId,
+  supportTitle,
+  category,
+  municipality,
 }: {
   url: string;
   label?: string;
   className?: string;
-  context?: string;
+  supportId?: string;
+  supportTitle?: string;
+  category?: string;
+  municipality?: string;
 }) {
+  const outboundDomain = safeHost(url);
   return (
     <a
       href={url}
@@ -23,9 +31,12 @@ export function OfficialLink({
       rel="noopener noreferrer nofollow"
       className={className}
       onClick={() =>
-        track("official_link_clicked", {
-          ...(safeHost(url) ? { host: safeHost(url)! } : {}),
-          ...(context ? { context } : {}),
+        trackEvent("official_link_click", {
+          support_id: supportId,
+          support_title: supportTitle,
+          category,
+          municipality,
+          outbound_url_domain: outboundDomain,
         })
       }
     >

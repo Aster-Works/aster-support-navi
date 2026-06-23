@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Copy, Mail } from "lucide-react";
-import { track } from "@/app/lib/track";
+import { trackEvent } from "@/src/lib/analytics";
 
 type OrgType =
   | "支援団体・NPO"
@@ -66,7 +66,13 @@ export function ProContactForm({ contactEmail }: { contactEmail: string }) {
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setStatus("メールアプリを開きます。内容を確認して送信してください。");
-    track("pro_contact_mailto_started", { context: "pro" });
+    // pro_interest_click: Pro問い合わせフォームの「メールを作成する」をクリックした時に発火。
+    // 氏名・メールアドレス・自由入力本文は送信しない。
+    trackEvent("pro_interest_click", {
+      source: "pro_contact_form_submit",
+      plan_hint: "trial",
+      page_path: window.location.pathname,
+    });
     window.location.href = mailHref;
   };
 
@@ -74,7 +80,13 @@ export function ProContactForm({ contactEmail }: { contactEmail: string }) {
     try {
       await navigator.clipboard.writeText(body);
       setStatus("問い合わせ本文をコピーしました。");
-      track("pro_contact_body_copied", { context: "pro" });
+      // pro_interest_click: Pro問い合わせフォームの「本文をコピー」をクリックした時に発火。
+      // コピーした本文そのものは送信しない。
+      trackEvent("pro_interest_click", {
+        source: "pro_contact_body_copy",
+        plan_hint: "trial",
+        page_path: window.location.pathname,
+      });
     } catch {
       setStatus("コピーできませんでした。メールを作成するボタンをご利用ください。");
     }

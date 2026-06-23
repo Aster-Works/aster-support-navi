@@ -4,6 +4,7 @@ import { useEffect, useId, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Bookmark, ClipboardCheck, Menu, X } from "lucide-react";
+import { TrackedLink } from "@/app/components/TrackedLink";
 
 const NAV = [
   { href: "/search", label: "制度を探す" },
@@ -72,14 +73,17 @@ export function PrimaryNav() {
       </Link>
 
       {/* 診断CTA（常時表示・主要導線）。狭い画面ではラベルを短縮し折り返しを防ぐ。 */}
-      <Link
+      {/* diagnosis_start: ヘッダーの診断CTAをクリックした時に発火。 */}
+      <TrackedLink
         href="/check"
         className="btn-primary min-h-11 whitespace-nowrap px-4 py-2.5 text-[13px]"
+        eventName="diagnosis_start"
+        eventParams={{ source: "header" }}
       >
         <ClipboardCheck className="h-4 w-4 shrink-0" aria-hidden="true" />
         <span className="sm:hidden">診断</span>
         <span className="hidden sm:inline">かんたん診断</span>
-      </Link>
+      </TrackedLink>
 
       {/* モバイル: ハンバーガー */}
       <button

@@ -28,6 +28,8 @@ import { ProgramBadges } from "@/app/components/StatusBadges";
 import { OfficialLink } from "@/app/components/OfficialLink";
 import { Disclaimer } from "@/app/components/Disclaimer";
 import { SectionHeading } from "@/app/components/SectionHeading";
+import { DiagnosisResultAnalytics } from "@/app/components/DiagnosisResultAnalytics";
+import { TrackedLink } from "@/app/components/TrackedLink";
 
 export const metadata: Metadata = buildMetadata({
   title: "支援ルート",
@@ -55,10 +57,16 @@ export default async function CheckResultPage({
         <p className="mt-3 text-[15px] text-charcoal">
           先にかんたん診断にお答えください。
         </p>
-        <Link href="/check" className="btn-primary mt-6">
+        {/* diagnosis_start: 空の結果URLから診断へ戻るCTAをクリックした時に発火。 */}
+        <TrackedLink
+          href="/check"
+          className="btn-primary mt-6"
+          eventName="diagnosis_start"
+          eventParams={{ source: "result_no_answers" }}
+        >
           <ClipboardCheck className="h-4 w-4" aria-hidden="true" />
           かんたん診断へ
-        </Link>
+        </TrackedLink>
       </div>
     );
   }
@@ -143,9 +151,18 @@ export default async function CheckResultPage({
       icon: FileDown,
     },
   ];
+  const resultCategoryCount = new Set(
+    candidates.flatMap(({ program }) => program.categorySlugs),
+  ).size;
 
   return (
     <div className="aw-container py-10">
+      <DiagnosisResultAnalytics
+        resultCount={candidates.length}
+        prefecture={answers.prefecture}
+        city={answers.municipality}
+        categoryCount={resultCategoryCount}
+      />
       <div className="print:hidden">
         <SectionHeading
           as="h1"
@@ -167,10 +184,16 @@ export default async function CheckResultPage({
               選んだ条件では、次に確認する制度を絞り込めませんでした。自治体ページから直接さがすか、条件を変えて診断し直してください。
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
-              <Link href="/check" className="btn-primary">
+              {/* diagnosis_start: 結果なし画面の再診断CTAをクリックした時に発火。 */}
+              <TrackedLink
+                href="/check"
+                className="btn-primary"
+                eventName="diagnosis_start"
+                eventParams={{ source: "result_empty_retry" }}
+              >
                 <RefreshCw className="h-4 w-4" aria-hidden="true" />
                 もう一度診断する
-              </Link>
+              </TrackedLink>
               {muni && muniHref && (
                 <Link href={muniHref} className="btn-secondary">
                   {muni.name}のページへ
@@ -276,6 +299,13 @@ export default async function CheckResultPage({
                           <OfficialLink
                             url={program.officialUrl}
                             className="btn-secondary"
+                            supportId={program.slug}
+                            supportTitle={program.title}
+                            category={catName(program.categorySlugs[0])}
+                            municipality={muniNameOf(
+                              program.prefectureSlug,
+                              program.municipalitySlug,
+                            )}
                           />
                         </div>
                       </div>
@@ -288,7 +318,7 @@ export default async function CheckResultPage({
         )}
       </div>
 
-      {/* 複数制度をまとめた申請前パック（印刷・PDF保存。diagnosis_completed も計測） */}
+      {/* 複数制度をまとめた申請前パック（印刷・PDF保存） */}
       <PrepPacket
         programs={prepPrograms}
         heading={
@@ -337,10 +367,16 @@ export default async function CheckResultPage({
             候補が合わないときや、いまの暮らしがつらいときは、ひとりで抱え込まなくて大丈夫です。条件を変えて探したり、公的な相談窓口に相談したりできます。
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
-            <Link href="/check" className="btn-secondary">
+            {/* diagnosis_start: 支援ルート下部の条件変更CTAをクリックした時に発火。 */}
+            <TrackedLink
+              href="/check"
+              className="btn-secondary"
+              eventName="diagnosis_start"
+              eventParams={{ source: "result_retry" }}
+            >
               <RefreshCw className="h-4 w-4" aria-hidden="true" />
               条件を変えて診断する
-            </Link>
+            </TrackedLink>
             {muni && muniHref && (
               <Link href={muniHref} className="btn-secondary">
                 {muni.name}の制度一覧へ
