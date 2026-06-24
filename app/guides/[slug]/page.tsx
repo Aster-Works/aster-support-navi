@@ -83,7 +83,10 @@ export default async function GuideDetailPage({
     : [];
 
   // 生活イベント→比較カテゴリの対応（スラッグが異なる場合のみ明示）。
-  const LIFEEVENT_TO_CATEGORY: Record<string, string> = { hardship: "livelihood" };
+  const LIFEEVENT_TO_CATEGORY: Record<string, string> = {
+    hardship: "livelihood",
+    caregiving: "nursing-care",
+  };
   const compareCategory = guide.relatedLifeEventSlug
     ? (LIFEEVENT_TO_CATEGORY[guide.relatedLifeEventSlug] ??
       guide.relatedLifeEventSlug)
