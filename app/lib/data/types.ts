@@ -48,6 +48,41 @@ export interface LifeEvent {
   commonChecks?: string[];
 }
 
+/** 細分類の支援テーマ（自治体独自の細かな支援を横断的に扱う層）。 */
+export interface SupportTopic {
+  slug: string; // 例: hearing-aid
+  name: string; // 例: 補聴器購入費助成
+  description?: string;
+  /** 大分類カテゴリへの親子（粗い分類）。任意。 */
+  parentCategorySlug?: string;
+  priority: number;
+  sortOrder: number;
+  /** テーマ単体での index 可否ヒント（実際の noindex はページ条件で最終判定）。 */
+  indexable: boolean;
+}
+
+/** 自治体×テーマの調査状態（内部運用。公開画面には出さない）。
+ *  not_found_on_official_site は「制度が無い」断定ではなく「確認日時点で確認できなかった」内部状態。 */
+export type ResearchStatus =
+  | "not_started"
+  | "researching"
+  | "found"
+  | "not_found_on_official_site"
+  | "needs_review"
+  | "not_applicable";
+
+/** 自治体×テーマの調査カバレッジ台帳（内部）。 */
+export interface MunicipalityTopicCoverage {
+  prefectureSlug: string;
+  municipalitySlug: string;
+  topicSlug: string;
+  researchStatus: ResearchStatus;
+  lastResearchedAt?: string; // YYYY-MM-DD
+  officialSourceUrl?: string;
+  evidenceNote?: string;
+  researchNote?: string;
+}
+
 export interface SupportProgram {
   id: string;
   slug: string; // 例: tokyo-setagaya-child-medical-aid（全体で一意）
@@ -60,6 +95,8 @@ export interface SupportProgram {
 
   categorySlugs: string[];
   lifeEventSlugs: string[];
+  /** 細分類の支援テーマ（補聴器・紙おむつ等）。任意。大分類 categorySlugs と併用する。 */
+  topicSlugs?: string[];
   benefitType: BenefitType;
 
   /** 対象となる「可能性がある」人。断定しない。 */

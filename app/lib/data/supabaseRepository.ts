@@ -24,6 +24,7 @@ import {
   type PublishStatus,
   type SourceConfidence,
   type SupportProgram,
+  type SupportTopic,
 } from "./types";
 
 // ---- 行マッピング（snake_case DB → camelCase ドメイン） --------------------
@@ -58,6 +59,7 @@ export interface ProgramRow {
   municipality: { slug: string; prefecture: EmbeddedSlug } | null;
   categories: { category: EmbeddedSlug }[] | null;
   life_events: { life_event: EmbeddedSlug }[] | null;
+  topics: { topic: EmbeddedSlug }[] | null;
 }
 
 const PROGRAM_SELECT = `
@@ -69,7 +71,8 @@ const PROGRAM_SELECT = `
   status, updated_at,
   municipality:municipalities!inner ( slug, prefecture:prefectures!inner ( slug ) ),
   categories:support_program_categories ( category:categories ( slug ) ),
-  life_events:support_program_life_events ( life_event:life_events ( slug ) )
+  life_events:support_program_life_events ( life_event:life_events ( slug ) ),
+  topics:support_program_topics ( topic:support_topics ( slug ) )
 `;
 
 function undef<T>(v: T | null | undefined): T | undefined {
@@ -93,6 +96,9 @@ export function mapProgram(r: ProgramRow): SupportProgram | null {
       .filter((s): s is string => Boolean(s)),
     lifeEventSlugs: (r.life_events ?? [])
       .map((e) => e.life_event?.slug)
+      .filter((s): s is string => Boolean(s)),
+    topicSlugs: (r.topics ?? [])
+      .map((t) => t.topic?.slug)
       .filter((s): s is string => Boolean(s)),
     benefitType: r.benefit_type,
     targetPeople: r.target_people,
@@ -269,6 +275,40 @@ const fetchLifeEvents = cache(async (): Promise<LifeEvent[] | null> => {
   }));
 });
 
+const fetchTopics = cache(async (): Promise<SupportTopic[] | null> => {
+  const sb = getServerReadClient();
+  if (!sb) return null;
+  const { data, error } = await sb
+    .from("support_topics")
+    .select(
+      "slug, name, description, priority, sort_order, indexable, parent:categories ( slug )",
+    )
+    .order("sort_order", { ascending: true })
+    .order("slug", { ascending: true });
+  if (error) {
+    warnOnce("支援テーマの取得に失敗。", error.message);
+    return null;
+  }
+  const rows = (data ?? []) as unknown as {
+    slug: string;
+    name: string;
+    description: string | null;
+    priority: number | null;
+    sort_order: number | null;
+    indexable: boolean | null;
+    parent: { slug: string } | null;
+  }[];
+  return rows.map((r) => ({
+    slug: r.slug,
+    name: r.name,
+    description: undef(r.description),
+    parentCategorySlug: r.parent?.slug ?? undefined,
+    priority: r.priority ?? 0,
+    sortOrder: r.sort_order ?? 0,
+    indexable: r.indexable ?? true,
+  }));
+});
+
 // ---- supabaseRepository（DB 正式。unavailable は失敗させる） -------------
 
 export const supabaseRepository: SupportRepository = {
@@ -283,6 +323,9 @@ export const supabaseRepository: SupportRepository = {
   },
   async getLifeEvents() {
     return requireSupabaseRows(await fetchLifeEvents(), "life_events");
+  },
+  async getTopics() {
+    return requireSupabaseRows(await fetchTopics(), "support_topics");
   },
   async getGuides(): Promise<Guide[]> {
     // ガイドは編集コンテンツ。制度DBの source of truth とは別に静的管理する。
@@ -331,6 +374,10 @@ export const hybridRepository: SupportRepository = {
   async getLifeEvents() {
     const db = (await fetchLifeEvents()) ?? [];
     return unionBySlug(db, await seedRepository.getLifeEvents());
+  },
+  async getTopics() {
+    const db = (await fetchTopics()) ?? [];
+    return unionBySlug(db, await seedRepository.getTopics());
   },
   async getGuides(): Promise<Guide[]> {
     return seedRepository.getGuides();

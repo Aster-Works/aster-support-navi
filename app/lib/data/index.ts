@@ -15,6 +15,7 @@ import {
   type Municipality,
   type Prefecture,
   type SupportProgram,
+  type SupportTopic,
 } from "@/app/lib/data/types";
 
 // ---- リポジトリ読み取り（薄いローダ） -------------------------------------
@@ -28,6 +29,7 @@ const loadMunicipalities = (): Promise<Municipality[]> =>
   getRepository().getMunicipalities();
 const loadCategories = (): Promise<Category[]> => getRepository().getCategories();
 const loadLifeEvents = (): Promise<LifeEvent[]> => getRepository().getLifeEvents();
+const loadTopics = (): Promise<SupportTopic[]> => getRepository().getTopics();
 const loadGuides = (): Promise<Guide[]> => getRepository().getGuides();
 
 export interface ProgramFilters {
@@ -35,6 +37,7 @@ export interface ProgramFilters {
   municipalitySlug?: string;
   categorySlug?: string;
   lifeEventSlug?: string;
+  topicSlug?: string;
   onlineOnly?: boolean;
   hasDeadline?: boolean;
   keyword?: string;
@@ -150,6 +153,67 @@ export async function getLifeEventsForMunicipality(
   return (await getLifeEvents()).filter((e) => present.has(e.slug));
 }
 
+// ---- 支援テーマ（細分類）--------------------------------------------------
+export async function getTopics(): Promise<SupportTopic[]> {
+  return [...(await loadTopics())].sort(
+    (a, b) => a.sortOrder - b.sortOrder || a.slug.localeCompare(b.slug),
+  );
+}
+export async function getTopic(slug: string): Promise<SupportTopic | undefined> {
+  return (await loadTopics()).find((t) => t.slug === slug);
+}
+
+/** 公開制度が1件以上ある（＝ハブを出してよい）テーマのみ。 */
+export async function getPresentTopics(): Promise<SupportTopic[]> {
+  const present = new Set(
+    (await loadPublished()).flatMap((p) => p.topicSlugs ?? []),
+  );
+  return (await getTopics()).filter((t) => present.has(t.slug));
+}
+
+/** あるテーマの公開制度（全自治体横断）。 */
+export async function getProgramsByTopic(
+  topicSlug: string,
+): Promise<SupportProgram[]> {
+  return applyFilters(await loadPublished(), { topicSlug });
+}
+
+/** ある自治体に実在する（公開制度が紐づく）テーマのみ。 */
+export async function getTopicsForMunicipality(
+  prefectureSlug: string,
+  citySlug: string,
+): Promise<SupportTopic[]> {
+  const present = new Set(
+    (await loadPublished())
+      .filter(
+        (p) =>
+          p.prefectureSlug === prefectureSlug &&
+          p.municipalitySlug === citySlug,
+      )
+      .flatMap((p) => p.topicSlugs ?? []),
+  );
+  return (await getTopics()).filter((t) => present.has(t.slug));
+}
+
+/** テーマハブの params（公開制度を持つテーマのみ）。 */
+export async function getTopicParams(): Promise<{ topic: string }[]> {
+  return (await getPresentTopics()).map((t) => ({ topic: t.slug }));
+}
+
+/** テーマハブを index してよいか（薄いページを index させない・不変条件 §SEO）。
+ *  条件: 固有の説明文がある／複数自治体に具体差分がある／十分な公開件数。 */
+export function shouldIndexTopic(
+  topic: SupportTopic,
+  programs: SupportProgram[],
+): boolean {
+  if (!topic.indexable) return false;
+  if (!topic.description) return false;
+  const municipalities = new Set(
+    programs.map((p) => `${p.prefectureSlug}/${p.municipalitySlug}`),
+  );
+  return programs.length >= 3 && municipalities.size >= 2;
+}
+
 // ---- 制度 -----------------------------------------------------------------
 export async function getProgram(
   slug: string,
@@ -175,6 +239,8 @@ export function applyFilters(
     out = out.filter((p) => p.categorySlugs.includes(f.categorySlug!));
   if (f.lifeEventSlug)
     out = out.filter((p) => p.lifeEventSlugs.includes(f.lifeEventSlug!));
+  if (f.topicSlug)
+    out = out.filter((p) => (p.topicSlugs ?? []).includes(f.topicSlug!));
   if (f.onlineOnly) out = out.filter((p) => p.onlineApplicationAvailable);
   if (f.hasDeadline) out = out.filter(hasActiveDeadline);
   if (f.keyword) {

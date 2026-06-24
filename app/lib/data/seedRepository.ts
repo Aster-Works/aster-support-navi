@@ -9,6 +9,7 @@ import { lifeEvents } from "@/app/data/lifeEvents";
 import { municipalities } from "@/app/data/municipalities";
 import { prefectures } from "@/app/data/prefectures";
 import { programs } from "@/app/data/programs";
+import { topics } from "@/app/data/topics";
 import type { SupportRepository } from "./repository";
 import {
   isPublishable,
@@ -17,6 +18,7 @@ import {
   type Municipality,
   type Prefecture,
   type SupportProgram,
+  type SupportTopic,
 } from "./types";
 
 const publishedPrograms: SupportProgram[] = programs.filter(isPublishable);
@@ -33,6 +35,9 @@ export const seedRepository: SupportRepository = {
   },
   async getLifeEvents(): Promise<LifeEvent[]> {
     return lifeEvents;
+  },
+  async getTopics(): Promise<SupportTopic[]> {
+    return topics;
   },
   async getGuides(): Promise<Guide[]> {
     return guides;

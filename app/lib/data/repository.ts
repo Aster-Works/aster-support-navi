@@ -21,6 +21,7 @@ import type {
   Municipality,
   Prefecture,
   SupportProgram,
+  SupportTopic,
 } from "./types";
 
 export type DataSource = "seed" | "supabase" | "hybrid";
@@ -30,6 +31,8 @@ export interface SupportRepository {
   getMunicipalities(): Promise<Municipality[]>;
   getCategories(): Promise<Category[]>;
   getLifeEvents(): Promise<LifeEvent[]>;
+  /** 細分類の支援テーマ master。 */
+  getTopics(): Promise<SupportTopic[]>;
   getGuides(): Promise<Guide[]>;
   /** `isPublishable()` を通過した published 制度のみ（不変条件 §3）。 */
   getPublishedPrograms(): Promise<SupportProgram[]>;

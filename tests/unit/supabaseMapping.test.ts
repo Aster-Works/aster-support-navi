@@ -36,6 +36,7 @@ function fullRow(overrides: Partial<ProgramRow> = {}): ProgramRow {
     municipality: { slug: "setagaya", prefecture: { slug: "tokyo" } },
     categories: [{ category: { slug: "childcare" } }, { category: { slug: "birth" } }],
     life_events: [{ life_event: { slug: "childcare" } }],
+    topics: [{ topic: { slug: "hearing-aid" } }],
     ...overrides,
   };
 }
@@ -60,6 +61,7 @@ describe("mapProgram（DB行 → ドメイン型の往復）", () => {
     });
     expect(p!.categorySlugs).toEqual(["childcare", "birth"]);
     expect(p!.lifeEventSlugs).toEqual(["childcare"]);
+    expect(p!.topicSlugs).toEqual(["hearing-aid"]);
     expect(p!.uncertainFields).toEqual(["benefitAmountText"]);
   });
 
@@ -76,10 +78,11 @@ describe("mapProgram（DB行 → ドメイン型の往復）", () => {
     ).toBeNull();
   });
 
-  it("カテゴリ/生活イベントの空・欠落は空配列になる", () => {
-    const p = mapProgram(fullRow({ categories: null, life_events: [] }));
+  it("カテゴリ/生活イベント/テーマの空・欠落は空配列になる", () => {
+    const p = mapProgram(fullRow({ categories: null, life_events: [], topics: null }));
     expect(p!.categorySlugs).toEqual([]);
     expect(p!.lifeEventSlugs).toEqual([]);
+    expect(p!.topicSlugs).toEqual([]);
   });
 });
 
