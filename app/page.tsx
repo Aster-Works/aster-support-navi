@@ -165,7 +165,7 @@ export default async function HomePage() {
             <li key={e.slug}>
               <Link
                 href={`/search?event=${e.slug}`}
-                className="aw-card aw-card-hover group flex items-start gap-4"
+                className="aw-card aw-card-hover group flex h-full items-start gap-4"
               >
                 <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-aster-soft text-aster">
                   <LifeEventIcon name={e.icon} className="h-5 w-5" />
