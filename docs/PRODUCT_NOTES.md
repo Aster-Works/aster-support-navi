@@ -195,3 +195,11 @@ Vitest 52件 green / build 97ルート green（2026-06-18）。
 - Phase 3: Supabase Auth・保存リスト・家族プロフィール・期限リマインド（データ層を Supabase 実装へ）。
 - データ拡大: 23区→政令市、介護/住まい/低所得カテゴリ。レビューキュー・更新運用。
 - 公開前: 本番ドメイン **astersupport.com**（取得・Vercel接続・`NEXT_PUBLIC_SITE_URL` 設定済）、Search Console 登録、GA4 の事業用アカウント作成→`NEXT_PUBLIC_GA_ID` 設定（拡張計測オフ）、Vercel team の Pro 化（商用）、per-support OG 画像（和文フォント同梱）。法務（管轄文言・アクセス解析/委託先・運営者情報）は確定済。
+
+## 自治体独自支援（支援テーマ / 調査カバレッジ）
+
+大分類 categories の下に細分類 **support_topics** を追加し、補聴器・紙おむつ・産後ケア等の「見落としやすい
+自治体独自支援」をテーマ横断で検索/比較できるようにした。`support_program_topics`（多対多, 公開読取）と
+`municipality_topic_coverage`（自治体×テーマの調査台帳, **admin専用・内部**）を追加。公開UIは `/topics`・
+`/topics/[topic]`・自治体ページのテーマセクション・制度詳細のテーマチップ。設計と運用・パイロット結果・本番適用/
+ロールバックは [LOCAL_SUPPORT_EXPANSION.md](LOCAL_SUPPORT_EXPANSION.md) を参照。

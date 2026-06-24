@@ -19,6 +19,8 @@ import {
   getCategories,
   getRelatedPrograms,
   getAllPublishedPrograms,
+  getTopics,
+  getProgramsByTopic,
 } from "@/app/lib/data";
 import { hasActiveDeadline } from "@/app/lib/data/types";
 import { buildMetadata, articleJsonLd } from "@/app/lib/seo";
@@ -93,13 +95,32 @@ export default async function SupportDetailPage({
   const program = await getProgram(slug);
   if (!program) notFound();
 
-  const [pref, muni, categories, related] = await Promise.all([
+  const [pref, muni, categories, related, allTopics] = await Promise.all([
     getPrefecture(program.prefectureSlug),
     getMunicipality(program.prefectureSlug, program.municipalitySlug),
     getCategories(),
     getRelatedPrograms(program, 3),
+    getTopics(),
   ]);
   if (!pref || !muni) notFound();
+
+  // 細分類テーマ（補聴器等）と、同じテーマの他自治体制度（横断比較への導線）。
+  const programTopics = allTopics.filter((t) =>
+    (program.topicSlugs ?? []).includes(t.slug),
+  );
+  const primaryTopic = programTopics[0];
+  const sameTopicElsewhere = primaryTopic
+    ? (await getProgramsByTopic(primaryTopic.slug))
+        .filter(
+          (p) =>
+            p.slug !== program.slug &&
+            !(
+              p.prefectureSlug === program.prefectureSlug &&
+              p.municipalitySlug === program.municipalitySlug
+            ),
+        )
+        .slice(0, 6)
+    : [];
 
   const primaryCategory = categories.find(
     (c) => c.slug === program.categorySlugs[0],
@@ -165,6 +186,19 @@ export default async function SupportDetailPage({
               <span className="text-charcoal/70">／{primaryCategory.name}</span>
             )}
           </Link>
+          {programTopics.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {programTopics.map((t) => (
+                <Link
+                  key={t.slug}
+                  href={`/topics/${t.slug}`}
+                  className="aw-badge hover:bg-gold-soft"
+                >
+                  {t.name}
+                </Link>
+              ))}
+            </div>
+          )}
           <p className="mt-4 max-w-2xl text-[15px] leading-8 text-charcoal">
             {program.summary}
           </p>
@@ -359,6 +393,33 @@ export default async function SupportDetailPage({
             </h2>
             <ul className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {related.map((p) => (
+                <li key={p.slug} className="h-full">
+                  <SupportCard
+                    program={p}
+                    categoryName={catName(p.categorySlugs[0])}
+                  />
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+        {/* 同じテーマの他自治体（横断比較への導線） */}
+        {primaryTopic && sameTopicElsewhere.length > 0 && (
+          <section className="mt-14">
+            <div className="flex flex-wrap items-baseline justify-between gap-2">
+              <h2 className="text-lg font-bold text-fg">
+                他の自治体の「{primaryTopic.name}」
+              </h2>
+              <Link
+                href={`/topics/${primaryTopic.slug}`}
+                className="aw-link inline-flex items-center gap-1 text-[13px] font-semibold"
+              >
+                自治体で比べる
+                <Globe className="h-3.5 w-3.5" aria-hidden="true" />
+              </Link>
+            </div>
+            <ul className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {sameTopicElsewhere.map((p) => (
                 <li key={p.slug} className="h-full">
                   <SupportCard
                     program={p}

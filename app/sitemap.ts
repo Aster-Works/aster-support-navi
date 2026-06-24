@@ -7,6 +7,9 @@ import {
   getPrefectures,
   getGuides,
   getPresentCategories,
+  getPresentTopics,
+  getProgramsByTopic,
+  shouldIndexTopic,
 } from "@/app/lib/data";
 import { SAMPLE_PACKS } from "@/app/lib/pro/samples";
 
@@ -103,6 +106,33 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.5,
   }));
 
+  // テーマハブ: index 条件（shouldIndexTopic）を満たすものだけ載せる（薄いページを避ける）。
+  const presentTopics = await getPresentTopics();
+  const topicHubs = await Promise.all(
+    presentTopics.map(async (t) => ({
+      topic: t,
+      programs: await getProgramsByTopic(t.slug),
+    })),
+  );
+  const indexableTopics = topicHubs.filter(({ topic, programs }) =>
+    shouldIndexTopic(topic, programs),
+  );
+  const topicPages: MetadataRoute.Sitemap = indexableTopics.map(({ topic }) => ({
+    url: absoluteUrl(`/topics/${topic.slug}`),
+    changeFrequency: "weekly",
+    priority: 0.6,
+  }));
+  const topicsIndex: MetadataRoute.Sitemap =
+    indexableTopics.length > 0
+      ? [
+          {
+            url: absoluteUrl("/topics"),
+            changeFrequency: "weekly",
+            priority: 0.5,
+          },
+        ]
+      : [];
+
   return [
     ...staticPages,
     ...prefPages,
@@ -111,5 +141,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...supportPages,
     ...guidePages,
     ...comparePages,
+    ...topicsIndex,
+    ...topicPages,
   ];
 }

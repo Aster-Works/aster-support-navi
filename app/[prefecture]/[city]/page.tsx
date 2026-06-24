@@ -8,6 +8,7 @@ import {
   getProgramsByMunicipality,
   getLifeEventsForMunicipality,
   getCategoriesForMunicipality,
+  getTopicsForMunicipality,
   getActiveMunicipalityParams,
   isActiveMunicipality,
   getCategories,
@@ -100,11 +101,13 @@ export default async function MunicipalityPage({
     );
   }
 
-  const [lifeEvents, presentCategories, allCategories] = await Promise.all([
-    getLifeEventsForMunicipality(prefecture, city),
-    getCategoriesForMunicipality(prefecture, city),
-    getCategories(),
-  ]);
+  const [lifeEvents, presentCategories, allCategories, municipalityTopics] =
+    await Promise.all([
+      getLifeEventsForMunicipality(prefecture, city),
+      getCategoriesForMunicipality(prefecture, city),
+      getCategories(),
+      getTopicsForMunicipality(prefecture, city),
+    ]);
   const catName = (slug: string) =>
     allCategories.find((c) => c.slug === slug)?.name;
 
@@ -197,6 +200,31 @@ export default async function MunicipalityPage({
                     className="aw-chip"
                   >
                     {c.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {/* 見落としやすい自治体独自支援（テーマ） */}
+        {municipalityTopics.length > 0 && (
+          <section className="mt-8">
+            <h2 className="aw-subheading">
+              見落としやすい{muni.name}独自の支援
+            </h2>
+            <p className="mt-1 text-[13px] text-charcoal/70">
+              補聴器・紙おむつ・産後ケアなど、見落とされやすい細かな支援です。他の自治体とも比べられます。
+            </p>
+            <ul className="mt-3 flex flex-wrap gap-2">
+              {municipalityTopics.map((t) => (
+                <li key={t.slug}>
+                  <Link
+                    href={`/topics/${t.slug}`}
+                    className="aw-chip inline-flex items-center gap-1"
+                  >
+                    {t.name}
+                    <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
                   </Link>
                 </li>
               ))}
