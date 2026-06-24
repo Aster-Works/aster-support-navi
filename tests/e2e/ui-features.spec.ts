@@ -120,10 +120,10 @@ test.describe("制度検索 /search", () => {
   const cardsOf = (page: import("@playwright/test").Page) =>
     page.locator('main ul a[href^="/supports/"]');
 
-  test("ページネーションと表示件数（25→100→次ページ）", async ({ page }) => {
+  test("ページネーションと表示件数（10→100→次ページ）", async ({ page }) => {
     await page.goto("/search");
     const cards = cardsOf(page);
-    await expect(cards).toHaveCount(25); // 既定25件
+    await expect(cards).toHaveCount(10); // 既定10件
     await expect(page.getByText(/件目を表示/)).toBeVisible();
 
     await page.getByRole("link", { name: "100件ずつ表示" }).click();

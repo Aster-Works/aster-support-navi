@@ -19,7 +19,7 @@ export function SiteHeader() {
             width={512}
             height={512}
             priority
-            className="h-10 w-10 object-contain sm:hidden"
+            className="h-12 w-12 object-contain sm:hidden"
           />
           {/* デスクトップ・ライト: 横ロゴ（navyワードマーク） */}
           <Image
@@ -28,7 +28,7 @@ export function SiteHeader() {
             width={1607}
             height={363}
             priority
-            className="hidden h-11 w-auto max-w-[260px] object-contain sm:block dark:sm:hidden"
+            className="hidden h-12 w-auto max-w-[280px] object-contain sm:block dark:sm:hidden"
           />
           {/* デスクトップ・ダーク: マーク＋明色のテキスト（navyワードマークは暗背景で沈むため） */}
           <span className="hidden items-center gap-2 dark:sm:flex">
@@ -37,9 +37,9 @@ export function SiteHeader() {
               alt=""
               width={512}
               height={512}
-              className="h-9 w-9 object-contain"
+              className="h-10 w-10 object-contain"
             />
-            <span className="text-lg font-bold tracking-tight text-fg">
+            <span className="text-xl font-bold tracking-tight text-fg">
               {SITE.name}
             </span>
           </span>

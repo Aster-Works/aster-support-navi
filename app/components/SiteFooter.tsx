@@ -42,7 +42,7 @@ export function SiteFooter() {
               alt="Aster Support Navi"
               width={1607}
               height={363}
-              className="h-auto w-[250px] max-w-full object-contain dark:hidden"
+              className="h-auto w-[280px] max-w-full object-contain sm:w-[300px] dark:hidden"
             />
             {/* ダーク: navyワードマークは沈むため明色テキストで表す */}
             <span className="hidden text-xl font-bold tracking-tight text-fg dark:block">
@@ -54,7 +54,10 @@ export function SiteFooter() {
               住所と生活状況から、確認すべき支援制度と次にやることを整理します。
             </p>
             <p className="mt-4 text-[12px] text-charcoal/70">
-              {SITE.brand} が運営しています。
+              <a href={SITE.brandUrl} className="aw-link">
+                {SITE.brand}
+              </a>{" "}
+              が運営しています。
             </p>
           </div>
 

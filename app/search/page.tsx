@@ -32,8 +32,8 @@ type SP = Record<string, string | string[] | undefined>;
 const one = (v: string | string[] | undefined) =>
   Array.isArray(v) ? v[0] : v;
 
-const PER_PAGE_OPTIONS = [25, 50, 75, 100] as const;
-const DEFAULT_PER_PAGE = 25;
+const PER_PAGE_OPTIONS = [10, 25, 50, 75, 100] as const;
+const DEFAULT_PER_PAGE = 10;
 
 const SORT_OPTIONS = [
   { key: "checked", label: "確認日順" },

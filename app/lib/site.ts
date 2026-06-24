@@ -4,6 +4,7 @@ export const SITE = {
   name: "Aster Support Navi",
   shortName: "Support Navi",
   brand: "Aster Works",
+  brandUrl: "https://www.asterworks.org",
   // サイトの絶対URL（canonical/OG/sitemap の基点）。env が最優先だが、
   // NEXT_PUBLIC_SITE_URL が空文字 "" や未設定でも new URL("") でビルドを落とさないよう、
   // 本番(VERCEL_ENV=production)は確定ドメインに、それ以外はローカルにフォールバックする。
