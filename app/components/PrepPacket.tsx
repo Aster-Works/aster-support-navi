@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { ClipboardList, FileDown, Printer } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
 import { trackEvent } from "@/src/lib/analytics";
 
 export interface PrepProgram {
@@ -195,22 +196,41 @@ export function PrepPacket({
         <ol className="mt-4 space-y-5">
           {programs.map((p, i) => (
             <li key={p.slug} className="break-inside-avoid border-t border-soft-gray pt-4">
-              <h3 className="text-[15px] font-bold text-fg">
-                {i + 1}. {p.title}（{p.municipalityName}）
-              </h3>
-              <dl className="mt-2 space-y-1.5 text-[13px] leading-7 text-charcoal">
-                <Row label="対象となる可能性がある人" value={p.targetPeople} />
-                {p.deadlineText && <Row label="申請期限・受付" value={p.deadlineText} />}
-                {p.documentsText && <Row label="必要書類" value={p.documentsText} />}
-                <Row label="申請方法" value={p.methodText} />
-                {(p.officeName || p.phone) && (
-                  <Row
-                    label="問い合わせ先"
-                    value={[p.officeName, p.phone].filter(Boolean).join(" / ")}
-                  />
+              <div className="flex gap-4">
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-[15px] font-bold text-fg">
+                    {i + 1}. {p.title}（{p.municipalityName}）
+                  </h3>
+                  <dl className="mt-2 space-y-1.5 text-[13px] leading-7 text-charcoal">
+                    <Row label="対象となる可能性がある人" value={p.targetPeople} />
+                    {p.deadlineText && <Row label="申請期限・受付" value={p.deadlineText} />}
+                    {p.documentsText && <Row label="必要書類" value={p.documentsText} />}
+                    <Row label="申請方法" value={p.methodText} />
+                    {(p.officeName || p.phone) && (
+                      <Row
+                        label="問い合わせ先"
+                        value={[p.officeName, p.phone].filter(Boolean).join(" / ")}
+                      />
+                    )}
+                    <Row label="公式ページ" value={p.officialUrl} />
+                  </dl>
+                </div>
+                {/* 公式ページのQR（相談者がスマホで開ける） */}
+                {isHttpUrl(p.officialUrl) && (
+                  <div className="shrink-0 text-center">
+                    <QRCodeSVG
+                      value={p.officialUrl}
+                      size={68}
+                      level="M"
+                      bgColor="#ffffff"
+                      fgColor="#0d1b2a"
+                    />
+                    <p className="mt-1 text-[9px] leading-tight text-charcoal/70">
+                      公式ページ
+                    </p>
+                  </div>
                 )}
-                <Row label="公式ページ" value={p.officialUrl} />
-              </dl>
+              </div>
             </li>
           ))}
         </ol>
@@ -225,6 +245,15 @@ export function PrepPacket({
             </ul>
           </section>
         )}
+
+        {/* 次回確認日・メモ（手書き記入用） */}
+        <section className="mt-6 break-inside-avoid border-t border-soft-gray pt-4">
+          <p className="text-[13px] leading-8 text-charcoal">
+            次回の確認日：__________________　／　次に動くこと：__________________
+          </p>
+          <p className="mt-2 text-[13px] text-charcoal">メモ</p>
+          <div className="mt-1 h-16 rounded border border-soft-gray" />
+        </section>
       </div>
     </>
   );
