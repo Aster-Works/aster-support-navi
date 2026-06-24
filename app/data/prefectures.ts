@@ -38,4 +38,7 @@ export const prefectures: Prefecture[] = [
   { slug: "akita", name: "秋田県", nameKana: "あきたけん", region: "東北" },
   { slug: "yamagata", name: "山形県", nameKana: "やまがたけん", region: "東北" },
   { slug: "ibaraki", name: "茨城県", nameKana: "いばらきけん", region: "関東" },
+  // 中核市第6バッチの県（2026-06-24）
+  { slug: "kochi", name: "高知県", nameKana: "こうちけん", region: "四国" },
+  { slug: "okinawa", name: "沖縄県", nameKana: "おきなわけん", region: "沖縄" },
 ];

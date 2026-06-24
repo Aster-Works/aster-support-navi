@@ -21,7 +21,7 @@ import { fileURLToPath } from "node:url";
 import { programs as existing } from "@/app/data/programs";
 import { findForbiddenPhrases } from "@/app/lib/copy";
 
-const CHECK_DATE = "2026-06-21";
+const CHECK_DATE = "2026-06-24";
 const inputPath = process.argv[2];
 const fixedCategory = process.argv[3] ?? "livelihood";
 if (!inputPath) throw new Error("usage: tsx gen-append-programs.ts <json> <category>");

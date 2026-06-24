@@ -76,4 +76,10 @@ export const municipalities: Municipality[] = [
   { slug: "akita", prefectureSlug: "akita", name: "秋田市", nameKana: "あきたし", officialSiteUrl: "https://www.city.akita.lg.jp/", intro: "秋田市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
   { slug: "yamagata", prefectureSlug: "yamagata", name: "山形市", nameKana: "やまがたし", officialSiteUrl: "https://www.city.yamagata-yamagata.lg.jp/", intro: "山形市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
   { slug: "mito", prefectureSlug: "ibaraki", name: "水戸市", nameKana: "みとし", officialSiteUrl: "https://www.city.mito.lg.jp/", intro: "水戸市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
+  // 中核市第6バッチ（2026-06-24）
+  { slug: "kochi", prefectureSlug: "kochi", name: "高知市", nameKana: "こうちし", officialSiteUrl: "https://www.city.kochi.kochi.jp/", intro: "高知市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
+  { slug: "naha", prefectureSlug: "okinawa", name: "那覇市", nameKana: "なはし", officialSiteUrl: "https://www.city.naha.okinawa.jp/", intro: "那覇市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
+  { slug: "kawagoe", prefectureSlug: "saitama", name: "川越市", nameKana: "かわごえし", officialSiteUrl: "https://www.city.kawagoe.saitama.jp/", intro: "川越市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
+  { slug: "fukuyama", prefectureSlug: "hiroshima", name: "福山市", nameKana: "ふくやまし", officialSiteUrl: "https://www.city.fukuyama.hiroshima.jp/", intro: "福山市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
+  { slug: "toyohashi", prefectureSlug: "aichi", name: "豊橋市", nameKana: "とよはしし", officialSiteUrl: "https://www.city.toyohashi.lg.jp/", intro: "豊橋市に住む方・転入する方が確認したい、出産・子育て・医療・ひとり親などの支援制度を整理しています。" },
 ];
