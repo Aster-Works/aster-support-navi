@@ -14,7 +14,8 @@ import { createRateLimiter } from "@/app/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
-export const maxDuration = 60;
+// Vercel Pro の上限まで引き上げ、1日1回で多くのページを処理できるようにする。
+export const maxDuration = 300;
 
 const rateLimiter = createRateLimiter({ interval: 300_000, maxTokens: 1 });
 
@@ -35,8 +36,8 @@ export async function GET(req: Request): Promise<Response> {
 
   const url = new URL(req.url);
   const force = url.searchParams.get("force") === "1";
-  // maxDuration 60s に対して安全側の締切（55s）を設定。
-  const deadline = Date.now() + 55_000;
+  // maxDuration 300s に対し、DB書き込み・finishRun の余裕を残した締切（285s）。
+  const deadline = Date.now() + 285_000;
 
   try {
     const summary = await runCrawlerService({ trigger: "cron", force, deadline });

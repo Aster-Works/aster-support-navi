@@ -12,7 +12,8 @@ import { createRateLimiter } from "@/app/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
-export const maxDuration = 60;
+// 余裕を持たせて 504 を防ぐ。手動「全体」は下の deadline でブラウザ待ちを ~2分に抑える。
+export const maxDuration = 300;
 
 const rateLimiter = createRateLimiter({ interval: 60_000, maxTokens: 3 });
 
@@ -55,7 +56,9 @@ export async function POST(req: Request): Promise<Response> {
       ? body.sourceId
       : undefined;
 
-  const deadline = Date.now() + 55_000;
+  // 手動実行はブラウザが待つので ~2分で打ち切って返す（残りは翌日の cron が巡回）。
+  // maxDuration(300s) に対し十分なマージンがあり 504 にならない。
+  const deadline = Date.now() + 110_000;
   try {
     const summary = await runCrawlerService({
       trigger: "manual",
