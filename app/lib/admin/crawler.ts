@@ -7,9 +7,11 @@
  */
 import { getSupabase } from "@/app/lib/supabase";
 import { buildSupportSlug } from "@/app/lib/slug";
+import { escapeLike } from "@/app/lib/sanitize";
 import type {
   CandidateStatus,
   ChangeType,
+  CrawlStatus,
 } from "@/app/lib/crawler/types";
 
 function client() {
@@ -525,4 +527,81 @@ export async function triggerManualRun(sourceId?: string): Promise<ManualRunResu
     throw new Error(body.error ?? `手動実行に失敗しました (${res.status})`);
   }
   return (await res.json()) as ManualRunResult;
+}
+
+// ---- 取得ページ（変更ページ一覧） -----------------------------------------
+export interface CrawledDocAdmin {
+  id: string;
+  url: string;
+  canonicalUrl: string | null;
+  title: string | null;
+  contentType: string | null;
+  statusCode: number | null;
+  crawlStatus: CrawlStatus | string;
+  isChanged: boolean;
+  changedAt: string | null;
+  fetchedAt: string | null;
+  errorMessage: string | null;
+  sourceName: string | null;
+  municipalityName: string | null;
+  prefecture: string | null;
+}
+
+export interface CrawledDocFilter {
+  /** 既定 true＝変更があったページのみ。false で全件。 */
+  changedOnly?: boolean;
+  crawlStatus?: CrawlStatus | "all";
+  sourceId?: string;
+  /** URL / タイトルの部分一致。 */
+  q?: string;
+  limit?: number;
+}
+
+const DOC_SELECT =
+  "id, url, canonical_url, title, content_type, status_code, crawl_status, " +
+  "is_changed, changed_at, fetched_at, error_message, source_id, " +
+  "crawler_sources ( name, municipality_name, prefecture )";
+
+function mapDoc(r: Record<string, unknown>): CrawledDocAdmin {
+  const src = r.crawler_sources as
+    | { name?: string; municipality_name?: string | null; prefecture?: string | null }
+    | null;
+  return {
+    id: String(r.id),
+    url: String(r.url ?? ""),
+    canonicalUrl: (r.canonical_url as string | null) ?? null,
+    title: (r.title as string | null) ?? null,
+    contentType: (r.content_type as string | null) ?? null,
+    statusCode: typeof r.status_code === "number" ? r.status_code : null,
+    crawlStatus: String(r.crawl_status ?? ""),
+    isChanged: Boolean(r.is_changed),
+    changedAt: (r.changed_at as string | null) ?? null,
+    fetchedAt: (r.fetched_at as string | null) ?? null,
+    errorMessage: (r.error_message as string | null) ?? null,
+    sourceName: src?.name ?? null,
+    municipalityName: src?.municipality_name ?? null,
+    prefecture: src?.prefecture ?? null,
+  };
+}
+
+export async function fetchCrawledDocuments(
+  f: CrawledDocFilter = {},
+): Promise<CrawledDocAdmin[]> {
+  let q = client()
+    .from("crawled_documents")
+    .select(DOC_SELECT)
+    .order("changed_at", { ascending: false, nullsFirst: false })
+    .order("fetched_at", { ascending: false, nullsFirst: false })
+    .limit(f.limit ?? 300);
+  if (f.changedOnly !== false) q = q.eq("is_changed", true);
+  if (f.crawlStatus && f.crawlStatus !== "all") q = q.eq("crawl_status", f.crawlStatus);
+  if (f.sourceId) q = q.eq("source_id", f.sourceId);
+  if (f.q && f.q.trim()) {
+    // PostgREST or() の区切り文字を壊さないよう LIKE エスケープ＋記号除去。
+    const term = escapeLike(f.q.trim()).replace(/[(),*]/g, "");
+    if (term) q = q.or(`url.ilike.%${term}%,title.ilike.%${term}%`);
+  }
+  const { data, error } = await q;
+  if (error) throw new Error(error.message);
+  return ((data ?? []) as unknown as Record<string, unknown>[]).map(mapDoc);
 }

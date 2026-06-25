@@ -140,7 +140,11 @@ export default function AdminCrawlerPage() {
           <Link href="/admin/crawler/review" className="text-aster hover:underline">
             候補レビュー
           </Link>
-          で承認したものだけです。
+          で承認したものだけです。取得・変更のあったページは
+          <Link href="/admin/crawler/documents" className="text-aster hover:underline">
+            変更ページ一覧
+          </Link>
+          で確認できます（AI抽出オフでも見られます）。
         </p>
       </div>
 
