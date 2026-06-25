@@ -85,6 +85,7 @@ migration で管理。新規制度データは次のいずれか:
 | 紙おむつ支給・助成（elderly-diapers） | 23/23 | 22 | 1（品川） | 20260624150000 |
 | 産後ケア事業（postpartum-care） | 23/23 | 23 | 0 | 20260624160000 |
 | 福祉タクシー（welfare-taxi） | 21 found+1 found(未取得)/1 not_found | 21 | 0 | 20260624170000 |
+| 産前産後ヘルパー（prenatal-postpartum-helper） | 22 found/1 needs_review | 22 | 0 | 20260624180000 |
 
 ## 未完了範囲（次の拡張候補）
 
