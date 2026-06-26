@@ -89,6 +89,10 @@ migration で管理。新規制度データは次のいずれか:
 | 緊急通報・見守り（emergency-alert）※未適用 | 23/23 | 23 | 0 | 20260624190000（適用済） |
 | エアコン助成（air-conditioner-energy） | 23/23 | 23 | 0 | 20260624200000 |
 
+## 他地域（政令市）展開
+
+- 補聴器助成（hearing-aid）を政令市20市へ展開: 16 found/公開、4 not_found（千葉市・川崎市・堺市・北九州市＝公式で確認できず台帳記録）。migration 20260624210000。統合スクリプトを多県対応に一般化（program に prefectureSlug/municipalitySlug、slug=`{pref}-{muni}-{topic}` 正規化、CITYMAPで coverage 解決）。
+
 ## 未完了範囲（次の拡張候補）
 
 - §4 優先3テーマ（補聴器・紙おむつ・産後ケア）は東京23区で完了。次: 他テーマ（福祉タクシー・産前産後ヘルパー等）・他地域。
