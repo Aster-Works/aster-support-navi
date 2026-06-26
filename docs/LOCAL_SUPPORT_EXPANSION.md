@@ -86,7 +86,8 @@ migration で管理。新規制度データは次のいずれか:
 | 産後ケア事業（postpartum-care） | 23/23 | 23 | 0 | 20260624160000 |
 | 福祉タクシー（welfare-taxi） | 21 found+1 found(未取得)/1 not_found | 21 | 0 | 20260624170000 |
 | 産前産後ヘルパー（prenatal-postpartum-helper） | 22 found/1 needs_review | 22 | 0 | 20260624180000 |
-| 緊急通報・見守り（emergency-alert）※未適用 | 23/23 | 23 | 0 | 20260624190000（IPv6不通でDB適用保留） |
+| 緊急通報・見守り（emergency-alert）※未適用 | 23/23 | 23 | 0 | 20260624190000（適用済） |
+| エアコン助成（air-conditioner-energy） | 23/23 | 23 | 0 | 20260624200000 |
 
 ## 未完了範囲（次の拡張候補）
 
