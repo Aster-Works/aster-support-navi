@@ -13,8 +13,15 @@ export interface MuniOption {
 }
 
 /** 自治体名から探すための入力（datalist 補完）。
- *  該当する active 自治体があればその自治体ページへ、なければ検索ページへ。 */
-export function HomeSearch({ municipalities }: { municipalities: MuniOption[] }) {
+ *  該当する active 自治体があればその自治体ページへ、なければ検索ページへ。
+ *  onDark: 濃紺ヒーロー等の暗背景に置くとき、送信ボタンに縁取りを足して輪郭を出す。 */
+export function HomeSearch({
+  municipalities,
+  onDark = false,
+}: {
+  municipalities: MuniOption[];
+  onDark?: boolean;
+}) {
   const router = useRouter();
   const listId = useId();
   const inputId = useId();
@@ -72,7 +79,10 @@ export function HomeSearch({ municipalities }: { municipalities: MuniOption[] })
           ))}
         </datalist>
       </div>
-      <button type="submit" className="btn-primary shrink-0">
+      <button
+        type="submit"
+        className={`btn-primary shrink-0${onDark ? " ring-1 ring-white/20" : ""}`}
+      >
         <Search className="h-4 w-4" aria-hidden="true" />
         探す
       </button>

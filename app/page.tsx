@@ -25,7 +25,7 @@ import { buildAreaGroups } from "@/app/lib/region";
 import { buildMetadata } from "@/app/lib/seo";
 import { COPY } from "@/app/lib/copy";
 import { HomeSearch, type MuniOption } from "@/app/components/HomeSearch";
-import { LifeEventIcon } from "@/app/components/Icon";
+import { LifeEventIcon, lifeEventTint } from "@/app/components/Icon";
 import { SupportCard } from "@/app/components/SupportCard";
 import { SectionHeading } from "@/app/components/SectionHeading";
 import { AreaExplorer } from "@/app/components/AreaExplorer";
@@ -76,21 +76,21 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* Hero */}
-      <section className="relative overflow-hidden border-b border-soft-gray/70">
+      {/* Hero（全幅の濃紺・中央寄せ・白文字。上部に控えめなゴールドの放射光） */}
+      <section className="relative overflow-hidden bg-navy text-white">
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(60%_60%_at_85%_-10%,var(--color-gold-soft)_0%,transparent_60%)]"
+          className="pointer-events-none absolute inset-0 -z-0 bg-[radial-gradient(70%_65%_at_50%_-15%,color-mix(in_srgb,var(--color-gold)_22%,transparent)_0%,transparent_62%)]"
         />
-        <div className="aw-container py-16 sm:py-20">
-          <div className="max-w-2xl">
-            <p className="aw-eyebrow">
+        <div className="aw-container relative py-16 sm:py-24">
+          <div className="mx-auto max-w-2xl text-center">
+            <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-gold">
               <Compass className="h-3.5 w-3.5" aria-hidden="true" />
               支援制度ナビ・全国の主要自治体を順次整備中
             </p>
             {/* 句読点（読点）でのみ改行されるよう、各節を inline-block の塊にする
                （「見落とさな／い。」のような語中での折り返しを防ぐ）。 */}
-            <h1 className="mt-4 text-3xl font-bold leading-tight tracking-tight text-fg sm:text-[42px] sm:leading-[1.2]">
+            <h1 className="mt-5 text-3xl font-bold leading-tight tracking-tight sm:text-[44px] sm:leading-[1.18]">
               {COPY.brandPromise.split("、").map((part, i, arr) => (
                 <span key={part} className="inline-block">
                   {part}
@@ -98,32 +98,31 @@ export default async function HomePage() {
                 </span>
               ))}
             </h1>
-            <p className="mt-5 text-[16px] leading-8 text-charcoal">
+            <p className="mx-auto mt-5 max-w-xl text-[15px] leading-8 text-white/80">
               {COPY.tagline}
-              <br className="hidden sm:block" />
               役所サイトを行き来しなくても、自治体と生活状況から「確認すべき制度」と「次にやること」が分かります。
             </p>
 
-            <div className="mt-8 max-w-xl">
-              <HomeSearch municipalities={muniOptions} />
-              <p className="mt-3 flex items-center gap-1.5 text-[12px] text-charcoal/70">
-                <ShieldCheck className="h-3.5 w-3.5 text-ok" aria-hidden="true" />
+            <div className="mx-auto mt-8 max-w-xl text-left">
+              <HomeSearch municipalities={muniOptions} onDark />
+              <p className="mt-3 flex items-center justify-center gap-1.5 text-[12px] text-white/70">
+                <ShieldCheck className="h-3.5 w-3.5 text-gold" aria-hidden="true" />
                 各制度に公式ページと最終確認日を明記。対象可否は断定しません。
               </p>
             </div>
 
-            <div className="mt-6 flex flex-wrap items-center gap-3">
+            <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
               {/* diagnosis_start: ホームHeroの診断CTAをクリックした時に発火。 */}
               <TrackedLink
                 href="/check"
-                className="btn-primary"
+                className="btn-gold"
                 eventName="diagnosis_start"
                 eventParams={{ source: "home_hero" }}
               >
                 <ClipboardCheck className="h-4 w-4" aria-hidden="true" />
                 かんたん診断ではじめる
               </TrackedLink>
-              <Link href="/search" className="btn-secondary">
+              <Link href="/search" className="btn-gold-ghost">
                 <Search className="h-4 w-4" aria-hidden="true" />
                 制度を一覧から探す
               </Link>
@@ -161,32 +160,35 @@ export default async function HomePage() {
           description="制度名を知らなくても大丈夫です。あなたの状況に近いものから始めてください。"
         />
         <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {lifeEvents.map((e) => (
-            <li key={e.slug}>
-              <Link
-                href={`/search?event=${e.slug}`}
-                className="aw-card aw-card-hover group flex h-full items-start gap-4"
-              >
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-aster-soft text-aster">
-                  <LifeEventIcon name={e.icon} className="h-5 w-5" />
-                </span>
-                <span className="flex-1">
-                  <span className="flex items-center justify-between">
-                    <span className="text-[15px] font-bold text-fg">
-                      {e.name}
+          {lifeEvents.map((e) => {
+            const tint = lifeEventTint(e.slug);
+            return (
+              <li key={e.slug} className="h-full">
+                <Link
+                  href={`/search?event=${e.slug}`}
+                  className={`aw-card aw-card-hover group flex h-full items-start gap-4 border-transparent ${tint.soft}`}
+                >
+                  <span className={`shrink-0 ${tint.ink}`}>
+                    <LifeEventIcon name={e.icon} className="h-7 w-7" />
+                  </span>
+                  <span className="flex-1">
+                    <span className="flex items-center justify-between">
+                      <span className="text-[15px] font-bold text-fg">
+                        {e.name}
+                      </span>
+                      <ArrowRight
+                        className="h-4 w-4 text-fg/30 transition-transform group-hover:translate-x-0.5 group-hover:text-fg"
+                        aria-hidden="true"
+                      />
                     </span>
-                    <ArrowRight
-                      className="h-4 w-4 text-charcoal/40 transition-transform group-hover:translate-x-0.5 group-hover:text-fg"
-                      aria-hidden="true"
-                    />
+                    <span className="mt-1 block text-[13px] leading-6 text-charcoal">
+                      {e.description}
+                    </span>
                   </span>
-                  <span className="mt-1 block text-[13px] leading-6 text-charcoal">
-                    {e.description}
-                  </span>
-                </span>
-              </Link>
-            </li>
-          ))}
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       </section>
 

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Building2, MapPinned } from "lucide-react";
+import { RegionMap } from "@/app/components/RegionMap";
 import type { AreaGroup } from "@/app/lib/region";
 
 type AreaExplorerProps = {
@@ -7,50 +7,53 @@ type AreaExplorerProps = {
   compact?: boolean;
 };
 
+/** 地方カードの一覧。各カードは「地方シルエット＋地方名＋都道府県リンク（中黒区切り）」で、
+ *  Stitch のエリアセクション配置を踏襲する。compact=false のときは県名の後ろに掲載自治体数を添える。 */
 export function AreaExplorer({ groups, compact = false }: AreaExplorerProps) {
   if (groups.length === 0) return null;
 
   return (
-    <ul className="grid items-start gap-4 md:grid-cols-2 xl:grid-cols-3">
+    <ul className="grid items-stretch gap-4 sm:grid-cols-2 xl:grid-cols-3">
       {groups.map((group) => (
-        <li key={group.slug} className="aw-card">
-          <div className="flex items-start gap-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-ok-soft text-ok">
-              <MapPinned className="h-5 w-5" aria-hidden="true" />
-            </span>
-            <div className="min-w-0 flex-1">
-              <h3 className="text-lg font-bold text-fg">{group.name}</h3>
-              <p className="mt-0.5 text-[12px] leading-6 text-charcoal/70">
-                {group.prefectures.length}都道府県・{group.municipalityCount}
-                自治体を掲載中
-              </p>
+        <li
+          key={group.slug}
+          className="aw-card flex h-full items-start gap-4 p-5"
+        >
+          <RegionMap
+            region={group.name}
+            className="mt-0.5 h-14 w-14 shrink-0 text-navy dark:text-white/85"
+          />
+          <div className="min-w-0 flex-1">
+            <div className="flex items-baseline justify-between gap-2">
+              <h3 className="text-[15px] font-bold text-fg">{group.name}</h3>
+              <span className="shrink-0 text-[11px] text-charcoal/60">
+                {group.prefectures.length}
+                <span className="mx-0.5">/</span>
+                {group.municipalityCount}自治体
+              </span>
             </div>
-          </div>
-
-          <div className="mt-4 grid gap-2">
-            {group.prefectures.map((prefecture) => (
-              <Link
-                key={prefecture.slug}
-                href={`/${prefecture.slug}`}
-                className="group/pref flex min-h-12 items-center justify-between gap-3 rounded-xl border border-soft-gray bg-surface px-3.5 py-2.5 text-left transition-colors hover:border-ok/35 hover:bg-ok-soft/35"
-              >
-                <span className="min-w-0">
-                  <span className="block text-[14px] font-bold leading-6 text-fg">
+            <div className="mt-2 flex flex-wrap text-[13px] leading-6 text-charcoal/85">
+              {group.prefectures.map((prefecture, i) => (
+                <span key={prefecture.slug} className="whitespace-nowrap">
+                  <Link
+                    href={`/${prefecture.slug}`}
+                    className="rounded-sm underline-offset-2 transition-colors hover:text-navy hover:underline dark:hover:text-gold"
+                  >
                     {prefecture.name}
-                  </span>
-                  {!compact && (
-                    <span className="mt-0.5 flex items-center gap-1 text-[11px] text-charcoal/75">
-                      <Building2 className="h-3.5 w-3.5" aria-hidden="true" />
-                      {prefecture.munis.length}自治体
+                    {!compact && (
+                      <span className="ml-0.5 text-[11px] text-charcoal/45">
+                        ({prefecture.munis.length})
+                      </span>
+                    )}
+                  </Link>
+                  {i < group.prefectures.length - 1 && (
+                    <span aria-hidden="true" className="mx-1.5 text-charcoal/25">
+                      ・
                     </span>
                   )}
                 </span>
-                <ArrowRight
-                  className="h-4 w-4 shrink-0 text-charcoal/35 transition-transform group-hover/pref:translate-x-0.5 group-hover/pref:text-ok"
-                  aria-hidden="true"
-                />
-              </Link>
-            ))}
+              ))}
+            </div>
           </div>
         </li>
       ))}

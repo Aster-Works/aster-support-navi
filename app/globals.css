@@ -46,6 +46,17 @@
   --color-ok: #3a7a63; /* 確認済・前向き（深緑） */
   --color-ok-soft: #e7f0ec;
 
+  /* 生活イベントの装飾アクセント（意味を持たない「気分」の色。状態系セマンティック色とは別枠）。
+     ホーム・自治体ページ・生活イベント詳細で、イベントごとに柔らかく塗り分けるために使う。 */
+  --color-rose: #9c5568; /* 妊娠・出産 */
+  --color-rose-soft: #f6e9ec;
+  --color-peach: #a15a2e; /* 子育て・家族の介護（あたたかさ） */
+  --color-peach-soft: #fae4d0;
+  --color-sky: #2f6a86; /* 引っ越し・住まい（開放感） */
+  --color-sky-soft: #e3eef3;
+  --color-sage: #4a6e3e; /* 保育園・就学（成長） */
+  --color-sage-soft: #e8f0df;
+
   /* フォント（next/font が変数を注入） */
   --font-sans: var(--font-inter), var(--font-noto), ui-sans-serif, system-ui,
     -apple-system, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo,
@@ -138,6 +149,16 @@
   --color-info-soft: #182335;
   --color-ok-soft: #122620;
   --color-aster-soft: #211d30;
+
+  /* 生活イベントの装飾アクセント（ダークで持ち上げ） */
+  --color-rose: #d99aab;
+  --color-rose-soft: #2a1920;
+  --color-peach: #dba374;
+  --color-peach-soft: #2a1f14;
+  --color-sky: #7fb8d4;
+  --color-sky-soft: #16262f;
+  --color-sage: #93c17e;
+  --color-sage-soft: #1a2617;
 }
 
 /* ダーク時のコンポーネント微調整 */
@@ -167,6 +188,15 @@
   }
   .btn-secondary {
     @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-medium tracking-wide transition-all duration-200 ease-out border border-fg/15 bg-surface/70 text-fg hover:border-fg/30 hover:bg-surface;
+  }
+  /* ゴールドの塗りボタン（濃紺ヒーローなど暗背景の主要CTA）。ライト/ダーク両モードで
+     ゴールド上に濃い文字を固定し、コントラストを確保する。 */
+  .btn-gold {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-medium tracking-wide transition-all duration-200 ease-out bg-gold text-[#1a1205] shadow-sm hover:-translate-y-0.5 hover:bg-gold-soft hover:text-[#1a1205] hover:shadow-md;
+  }
+  /* ゴールドの輪郭ボタン（暗背景の副次CTA）。塗りの btn-gold と対で階層を作る。 */
+  .btn-gold-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-medium tracking-wide transition-all duration-200 ease-out border border-gold/55 bg-transparent text-gold hover:-translate-y-0.5 hover:border-gold hover:bg-gold/10;
   }
 
   .aw-eyebrow {

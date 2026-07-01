@@ -18,7 +18,7 @@ import { hasActiveDeadline } from "@/app/lib/data/types";
 import { Breadcrumbs } from "@/app/components/Breadcrumbs";
 import { SectionHeading } from "@/app/components/SectionHeading";
 import { SupportCard } from "@/app/components/SupportCard";
-import { LifeEventIcon } from "@/app/components/Icon";
+import { LifeEventIcon, lifeEventTint } from "@/app/components/Icon";
 import { JsonLd } from "@/app/components/JsonLd";
 import { Disclaimer } from "@/app/components/Disclaimer";
 import { formatJaDate } from "@/app/lib/dates";
@@ -163,25 +163,30 @@ export default async function MunicipalityPage({
               生活イベントから探す
             </h2>
             <ul className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {lifeEvents.map((e) => (
-                <li key={e.slug}>
-                  <Link
-                    href={`/${pref.slug}/${muni.slug}/${e.slug}`}
-                    className="aw-card aw-card-hover group flex items-center gap-3 p-4 sm:p-4"
-                  >
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-aster-soft text-aster">
-                      <LifeEventIcon name={e.icon} className="h-5 w-5" />
-                    </span>
-                    <span className="flex-1 text-[14px] font-bold text-fg">
-                      {e.name}
-                    </span>
-                    <ArrowRight
-                      className="h-4 w-4 text-charcoal/40 transition-transform group-hover:translate-x-0.5 group-hover:text-fg"
-                      aria-hidden="true"
-                    />
-                  </Link>
-                </li>
-              ))}
+              {lifeEvents.map((e) => {
+                const tint = lifeEventTint(e.slug);
+                return (
+                  <li key={e.slug}>
+                    <Link
+                      href={`/${pref.slug}/${muni.slug}/${e.slug}`}
+                      className="aw-card aw-card-hover group flex items-center gap-3 p-4 sm:p-4"
+                    >
+                      <span
+                        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${tint.soft} ${tint.ink}`}
+                      >
+                        <LifeEventIcon name={e.icon} className="h-5 w-5" />
+                      </span>
+                      <span className="flex-1 text-[14px] font-bold text-fg">
+                        {e.name}
+                      </span>
+                      <ArrowRight
+                        className="h-4 w-4 text-charcoal/40 transition-transform group-hover:translate-x-0.5 group-hover:text-fg"
+                        aria-hidden="true"
+                      />
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
           </section>
         )}

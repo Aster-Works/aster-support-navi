@@ -14,7 +14,7 @@ import { buildMetadata } from "@/app/lib/seo";
 import { Breadcrumbs } from "@/app/components/Breadcrumbs";
 import { SectionHeading } from "@/app/components/SectionHeading";
 import { SupportCard } from "@/app/components/SupportCard";
-import { LifeEventIcon } from "@/app/components/Icon";
+import { LifeEventIcon, lifeEventTint } from "@/app/components/Icon";
 import { Disclaimer } from "@/app/components/Disclaimer";
 import { formatJaDate } from "@/app/lib/dates";
 
@@ -110,13 +110,16 @@ export default async function LifeEventPage({
     .map((p) => p.lastOfficialCheckedAt)
     .sort()
     .at(-1);
+  const tint = lifeEventTint(le.slug);
 
   return (
     <>
       <Breadcrumbs crumbs={crumbs} />
       <div className="aw-container py-10">
         <div className="flex items-start gap-4">
-          <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-aster-soft text-aster">
+          <span
+            className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl ${tint.soft} ${tint.ink}`}
+          >
             <LifeEventIcon name={le.icon} className="h-7 w-7" />
           </span>
           <SectionHeading
