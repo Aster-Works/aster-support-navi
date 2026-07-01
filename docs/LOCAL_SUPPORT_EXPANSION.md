@@ -93,6 +93,7 @@ migration で管理。新規制度データは次のいずれか:
 
 - 補聴器助成（hearing-aid）を政令市20市へ展開: 16 found/公開、4 not_found（千葉市・川崎市・堺市・北九州市）。migration 20260624210000。
 - 紙おむつ支給・助成（elderly-diapers）を政令市20市へ展開: 17 found/公開、1 not_found（岡山市）、1 needs_review（熊本市）、横浜市はok判定だがprogram未取得のため公開せず。migration 20260624220000。
+- 緊急通報・見守り（emergency-alert）を政令市20市へ展開: 17 found/公開、1 not_found（熊本市）、横浜市・大阪市はok判定だがprogram未取得のため公開せず。migration 20260624230000。
 - 統合スクリプトを多県対応に一般化（program に prefectureSlug/municipalitySlug、slug=`{pref}-{muni}-{topic}` 正規化、CITYMAPで coverage 解決）。
 
 ## 未完了範囲（次の拡張候補）
