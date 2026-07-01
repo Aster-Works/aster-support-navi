@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { MapPin } from "lucide-react";
+import { MapPin, Map, ArrowRight } from "lucide-react";
 import {
   getPrefecture,
   getPrefectures,
@@ -9,10 +9,8 @@ import {
   getActiveMunicipalities,
 } from "@/app/lib/data";
 import { buildMetadata } from "@/app/lib/seo";
-import { buildRegionGroups } from "@/app/lib/region";
 import { Breadcrumbs } from "@/app/components/Breadcrumbs";
 import { SectionHeading } from "@/app/components/SectionHeading";
-import { RegionBrowse } from "@/app/components/RegionBrowse";
 
 export const revalidate = 86400;
 export const dynamicParams = true;
@@ -49,18 +47,16 @@ export default async function PrefecturePage({
   const pref = await getPrefecture(prefecture);
   if (!pref) notFound();
 
-  const [all, active, allActive, prefectures] = await Promise.all([
+  const [all, active, allActive] = await Promise.all([
     getMunicipalities(pref.slug),
     getActiveMunicipalities(pref.slug),
-    getActiveMunicipalities(), // 全都道府県（他の地域への導線用）
-    getPrefectures(),
+    getActiveMunicipalities(), // 他の地域への導線を出すかの判定用（全都道府県）
   ]);
   const activeSlugs = new Set(active.map((m) => m.slug));
   // 「すべての自治体」は制度ありカードと重複するため、未整備（準備中）の自治体だけを別枠で出す。
   const inactive = all.filter((m) => !activeSlugs.has(m.slug));
-  const otherGroups = buildRegionGroups(allActive, prefectures, {
-    exclude: pref.slug,
-  });
+  // 他の都道府県に公開制度があるか（あればエリア選択パネルへの導線を出す）。
+  const hasOtherAreas = allActive.some((m) => m.prefectureSlug !== pref.slug);
 
   return (
     <>
@@ -127,16 +123,26 @@ export default async function PrefecturePage({
           </section>
         )}
 
-        {otherGroups.length > 0 && (
+        {hasOtherAreas && (
           <section className="mt-12 border-t border-soft-gray pt-8">
-            <h2 className="aw-subheading">
-              他の都道府県から探す
-            </h2>
-            <p className="mt-1 text-[13px] text-charcoal/70">
-              政令指定都市など、{pref.name}以外の地域も整備しています。
-            </p>
-            <div className="mt-4">
-              <RegionBrowse groups={otherGroups} />
+            <div className="aw-card flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-start gap-3.5">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-navy/5 text-navy dark:bg-white/10 dark:text-white">
+                  <Map className="h-5 w-5" aria-hidden="true" />
+                </span>
+                <div>
+                  <h2 className="text-[15px] font-bold text-fg">
+                    他の都道府県から探す
+                  </h2>
+                  <p className="mt-1 text-[13px] leading-6 text-charcoal/75">
+                    政令指定都市など、{pref.name}以外の地域も整備しています。エリア一覧から選び直せます。
+                  </p>
+                </div>
+              </div>
+              <Link href="/area" className="btn-secondary shrink-0">
+                エリアから探す
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </Link>
             </div>
           </section>
         )}
