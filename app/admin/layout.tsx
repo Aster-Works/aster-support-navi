@@ -9,6 +9,7 @@ import {
   Activity,
   Radar,
   Bot,
+  Map,
 } from "lucide-react";
 import { AdminGate } from "./AdminGate";
 
@@ -25,6 +26,7 @@ const NAV = [
   { href: "/admin/review-queue", label: "レビュー", icon: Inbox },
   { href: "/admin/crawler", label: "クローラ", icon: Radar },
   { href: "/admin/crawler/review", label: "候補", icon: Bot },
+  { href: "/admin/coverage", label: "カバレッジ", icon: Map },
   { href: "/admin/activity", label: "履歴", icon: Activity },
 ];
 
